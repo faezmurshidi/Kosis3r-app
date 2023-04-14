@@ -1,0 +1,13 @@
+current directory: /Users/faezmurshidi/Documents/GitHub/Kosis3r/vendor/bundle/ruby/2.7.0/gems/json-2.6.3/ext/json
+/Users/faezmurshidi/.rvm/rubies/ruby-2.7.0/bin/ruby -I /Users/faezmurshidi/.rvm/rubies/ruby-2.7.0/lib/ruby/2.7.0 -r ./siteconf20230407-35022-1byfg1b.rb extconf.rb
+creating Makefile
+
+current directory: /Users/faezmurshidi/Documents/GitHub/Kosis3r/vendor/bundle/ruby/2.7.0/gems/json-2.6.3/ext/json
+make "DESTDIR=" clean
+
+current directory: /Users/faezmurshidi/Documents/GitHub/Kosis3r/vendor/bundle/ruby/2.7.0/gems/json-2.6.3/ext/json
+make "DESTDIR="
+make: Nothing to be done for `all'.
+
+current directory: /Users/faezmurshidi/Documents/GitHub/Kosis3r/vendor/bundle/ruby/2.7.0/gems/json-2.6.3/ext/json
+make "DESTDIR=" install

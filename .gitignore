@@ -1,0 +1,49 @@
+# Dependency directories
+node_modules/
+ios/Pods/
+
+# Build artifacts
+*.log
+ios/build/
+android/build/
+android/app/build/
+
+# Keystore and other sensitive files
+*.jks
+*.keystore
+*.properties
+*.pem
+*.p12
+
+# Xcode related files
+*.xcuserstate
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+!default.pbxuser
+!default.mode1v3
+!default.mode2v3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+.idea/
+
+# VSCode related files
+.vscode/
+
+# Miscellaneous files
+.DS_Store
+*.bak
+*.swp
+*~
+*.tmp
+*.tmp.*
+*.sublime*
+*.eslintrc.json
+*.eslintcache
+
+# Yarn lockfile
+yarn.lock
