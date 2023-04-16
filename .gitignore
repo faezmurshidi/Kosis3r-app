@@ -8,6 +8,14 @@ ios/build/
 android/build/
 android/app/build/
 
+# Gradle files
+.gradle/
+gradlew
+gradlew.bat
+gradle.properties
+local.properties
+
+
 # Keystore and other sensitive files
 *.jks
 *.keystore

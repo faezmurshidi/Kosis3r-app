@@ -1,0 +1,47 @@
+{
+    "project_info": {
+      "project_number": "234848359612",
+      "project_id": "kosis-dev",
+      "storage_bucket": "kosis-dev.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:234848359612:android:8b732fe6ea975222a8acb9",
+          "android_client_info": {
+            "package_name": "com.kosis3r"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "234848359612-754g29o4vpo1dolt2j0rtq9sr3pr76s2.apps.googleusercontent.com",
+            "client_type": 1,
+            "android_info": {
+              "package_name": "com.kosis3r",
+              "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+            }
+          },
+          {
+            "client_id": "234848359612-acbnbkrto1lc5jmmsk7qteohvdon4pgg.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "AIzaSyBogzppBraqyA4O-cJKTJud8r-Xj2J-tr8"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": [
+              {
+                "client_id": "234848359612-acbnbkrto1lc5jmmsk7qteohvdon4pgg.apps.googleusercontent.com",
+                "client_type": 3
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }
