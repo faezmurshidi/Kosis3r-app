@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import {
   Button,
@@ -8,6 +8,9 @@ import {
   DefaultTheme,
 } from 'react-native-paper';
 import { AuthContext } from '../App';
+import auth from '@react-native-firebase/auth';
+import { Picker } from '@react-native-picker/picker';
+import i18n from '../i18n';
 
 const theme = {
   ...DefaultTheme,
@@ -22,21 +25,49 @@ const theme = {
 const LoginScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const { setUser } = useContext(AuthContext);
+  const [language, setLanguage] = useState('en');
+  const [code, setCode] = useState('');
+  const [confirm, setConfirm] = useState(null);
+
+  // Handle login
+  function onAuthStateChanged(user) {
+    if (user) {
+      console.log('user', user);
+      // Some Android devices can automatically process the verification code (OTP) message, and the user would NOT need to enter the code.
+      // Actually, if he/she tries to enter it, he/she will get an error message because the code was already used in the background.
+      // In this function, make sure you hide the component(s) for entering the code and/or navigate away from this screen.
+      // It is also recommended to display a message to the user informing him/her that he/she has successfully logged in.
+      setUser(user);
+    }
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  const changeLanguage = (newLanguage) => {
+    i18n.changeLanguage(newLanguage);
+    setLanguage(newLanguage);
+  };
 
   const loginUser = async () => {
     try {
-      // Perform the login process here (e.g., Firebase Auth)
-      const user = {
-        uid: '123456',
-        displayName: 'John Doe',
-      };
-
-      // Update the user state in AuthContext
-      setUser(user);
+      const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+      console.log('confirmation', confirmation);
+      setConfirm(confirmation);
     } catch (error) {
       // Handle login errors
     }
   };
+
+  async function confirmCode() {
+    try {
+      await confirm.confirm(code);
+    } catch (error) {
+      console.log('Invalid code.');
+    }
+  }
 
   const skipLogin = () => {
     const mockUser = {
@@ -52,7 +83,15 @@ const LoginScreen = () => {
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <Title style={styles.title}>Login</Title>
+        <Title style={styles.title}>KitaKitar</Title>
+        <Picker
+          selectedValue={language}
+          onValueChange={(itemValue) => changeLanguage(itemValue)}
+          style={styles.languagePicker}
+        >
+          <Picker.Item label="English" value="en" />
+          <Picker.Item label="Bahasa Malaysia" value="ms" />
+        </Picker>
         <TextInput
           label="Phone Number"
           value={phoneNumber}
@@ -62,8 +101,27 @@ const LoginScreen = () => {
           style={styles.input}
         />
         <Button mode="contained" onPress={loginUser} style={styles.button}>
-          Login
+          Login with Phone
         </Button>
+        {confirm && (
+          <>
+            <TextInput
+              label="Confirmation Code"
+              value={code}
+              onChangeText={setCode}
+              mode="outlined"
+              keyboardType="number-pad"
+              style={styles.input}
+            />
+            <Button
+              mode="contained"
+              onPress={confirmCode}
+              style={styles.button}
+            >
+              Confirm Code
+            </Button>
+          </>
+        )}
         {__DEV__ && (
           <Button mode="outlined" onPress={skipLogin} style={styles.button}>
             Skip Login (Dev Only)

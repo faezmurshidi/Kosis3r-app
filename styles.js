@@ -8,6 +8,18 @@ const styles = StyleSheet.create({
     tertiary: '#F5F5F5',
     text: '#333333',
     accent: '#FFC107',
+    background: {
+      light: {
+        offwhite: '#F5F5F5',
+        lightGray: '#E0E0E0',
+        lightBeige: '#F5F5F5',
+      },
+      dark: {
+        offBlack: '#333333',
+        darkGray: '#424242',
+        darkerGray: '#212121',
+      },
+    },
   },
 
   // Typography

@@ -1,33 +1,50 @@
 // CustomButton.js
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import {
+  TouchableOpacity,
+  TouchableNativeFeedback,
+  Text,
+  StyleSheet,
+  Platform,
+  View,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styles from '../styles';
 
 const CustomButton = ({ onPress, title }) => {
+  const TouchableComponent =
+    Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
+
+  const buttonContent = (
+    <LinearGradient
+      colors={[styles.colors.primary, styles.colors.secondary]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={buttonStyles.button}
+    >
+      <Text style={[styles.typography.primaryButton, buttonStyles.buttonText]}>
+        {title}
+      </Text>
+    </LinearGradient>
+  );
+
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-      <LinearGradient
-        colors={[styles.colors.primary, styles.colors.secondary]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={buttonStyles.button}
-      >
-        <Text
-          style={[styles.typography.primaryButton, buttonStyles.buttonText]}
-        >
-          {title}
-        </Text>
-      </LinearGradient>
-    </TouchableOpacity>
+    <TouchableComponent onPress={onPress} useForeground>
+      {Platform.OS === 'android' ? (
+        <View style={buttonStyles.androidWrapper}>{buttonContent}</View>
+      ) : (
+        buttonContent
+      )}
+    </TouchableComponent>
   );
 };
 
 const buttonStyles = StyleSheet.create({
   button: {
-    borderRadius: 25,
+    borderRadius: 10,
     paddingHorizontal: 20,
     paddingVertical: 12,
+    margin: 8,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -41,6 +58,10 @@ const buttonStyles = StyleSheet.create({
   },
   buttonText: {
     color: styles.colors.tertiary,
+  },
+  androidWrapper: {
+    borderRadius: 10,
+    overflow: 'hidden',
   },
 });
 
