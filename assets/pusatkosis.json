@@ -1,0 +1,316 @@
+
+    [
+      {
+        "state": "Johor",
+        "locations": [
+          {
+            "id": 1,
+            "daerah": "Johor Bahru",
+            "fasiliti": "PPR Desa Mutiara",
+            "alamat": "Jalan Desa Mutiara 8, 81100 Johor Bahru, Johor",
+            "no_telefon": "017-9301184",
+            "pegawai": "MOHD HISYAM BIN ISMAIL",
+            "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+            "latitud": 1.540818,
+            "longitud": 103.747924
+          },
+          {
+            "id": 2,
+            "daerah": "Johor Bahru",
+            "fasiliti": "PPR Kempas",
+            "alamat": "Kempas Baru, 81200 Johor Bahru, Johor",
+            "no_telefon": "017-2958515",
+            "pegawai": "MUHAMMAD HAZIQ BIN KHALID",
+            "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+            "latitud": 1.514726,
+            "longitud": 103.71144
+          }
+        ]
+      },
+      {
+        "state": "Melaka",
+        "locations": [
+          {
+            "id": 1,
+            "daerah": "Hang Tuah Jaya",
+            "fasiliti": "PPR Tehel",
+            "alamat": "75450 Jasin, Melaka",
+            "no_telefon": "N/A",
+            "pegawai": "N/A",
+            "jenis_fasiliti": "N/A",
+            "latitud": 2.249378
+          }
+        ]
+      },
+      {
+        "state": "Negeri Sembilan",
+        "locations": [
+          {
+            "id": 1,
+            "daerah": "Seremban",
+            "fasiliti": "PPR Bersepadu Senawang (PPR Jasmin)",
+            "alamat": "Jalan Orkid 13, Taman Senawang Indah, 70450 Seremban, Negeri Sembilan",
+            "no_telefon": "019-3651000",
+            "pegawai": "PN HARNIE",
+            "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+            "latitud": 2.691241,
+            "longitud": 101.99674
+          }
+        ]
+      },
+      {
+        "state": "Perlis",
+        "locations": [
+          {
+            "id": 1,
+            "daerah": "Kangar",
+            "fasiliti": "PPR Seri Sena",
+            "alamat": "PUSAT ZECOMM BLOK A, ARAS BAWAH , A-1 PANGSAPURI SENA , 01000 KANGAR PERLIS",
+            "no_telefon": [
+              "019-434 1255",
+              "013-3913173"
+            ],
+            "pegawai": [
+              "NORMI",
+              "RAHMAT"
+            ],
+            "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+            "latitud": "N6.26'08.9",
+            "longitud": "100.12'03.0"
+        }
+      ]
+    },
+    {
+      "state": "Kedah",
+      "locations": [
+        {
+          "id": 1,
+          "daerah": "Langkawi",
+          "fasiliti": "PPR Taman Dahlia",
+          "alamat": "Lebuh Dahlia, 07000 Langkawi, Kedah",
+          "no_telefon": [
+            "04-9660031",
+            "0173420186",
+            "0125515812"
+          ],
+          "pegawai": [
+            "ENCIK MASROL",
+            "MICHAELY"
+          ],
+          "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (ZeComm)",
+          "latitud": 6.332167,
+          "longitud": 99.853231
+        },
+        {
+            "id": 2,
+            "daerah": "Sungai Petani",
+            "fasiliti": "PPR Paya Nahu 2",
+            "alamat": "Jalan Paya Nahu 2, 08000 Sg. Petani, Kedah",
+            "no_telefon": [
+            "04-441 1745"
+            ],
+            "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (ZeComm)",
+            "latitud": 5.643734,
+            "longitud": 100.515558
+            }
+      ]
+    },
+    {
+      "state": "Perak",
+      "locations": [
+        {
+          "id": 3,
+          "daerah": "Taiping",
+          "fasiliti": "PPR Simpang Perdana",
+          "alamat": "Batu 2, Jalan Simpang 2, 34000 Taiping, Perak",
+          "no_telefon": "058740195",
+          "pegawai": [
+            "MOHD ELPISHAM BIN ABDULLAH: 0195731626",
+            "HASNOL BIN ABU HASSAN: 0125538917"
+          ],
+          "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+          "latitud": 4.828794,
+          "longitud": 100.723114
+        },
+        {
+          "id": 4,
+          "daerah": "Ipoh",
+          "fasiliti": "Rumah Pangsa Jalan Hospital (Pangsapuri Seri Kepayang)",
+          "alamat": "Jalan Hospital, 30450 Ipoh, Perak",
+          "no_telefon": [
+            "019-5189707",
+            "013-4747181",
+            "019-5587278"
+          ],
+          "pegawai": [
+            "MUHAMMAD NOH FAHMI BIN ILIAS",
+            "MIOR HAZIRUL ZAIMY BIN MIOR ZURAIDI",
+            "AHMAD SUHAILEE BIN MOHAMED ANUAR"
+          ],
+          "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+          "latitud": 4.602522,
+          "longitud": 101.096674
+        }
+      ]
+    },
+    {
+      "state": "Pulau Pinang",
+      "locations": [
+        {
+          "id": 5,
+          "daerah": "Seberang Perai",
+          "fasiliti": "PPR Taman Bagan Jaya",
+          "alamat": "Jalan Thamby Kecil, 12300 Butterworth, Pulau Pinang",
+          "no_telefon": [
+            "60128384598",
+            "60134825438"
+          ],
+          "pegawai": [
+            "MOHD RAZRIN BIN MUHIYUDDIN",
+            "NINI SYAHIRA BINTI ISMAIL"
+          ],
+          "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+          "latitud": 5.434889,
+          "longitud": 100.383677
+        },
+        {
+            "id": 6,
+            "daerah": "Timur Laut",
+            "fasiliti": "PPR Taman Manggis",
+            "alamat": "10450 George Town, Pulau Pinang",
+            "no_telefon": [
+              "01131601039",
+              "0189402435"
+            ],
+            "pegawai": [
+              "Muhammad Faizul Bin Ismail",
+              "Mohd Firdaus Bin Mohd Noor"
+            ],
+            "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+            "latitud": 5.418236,
+            "longitud": 100.326159
+          }
+        ]
+      },
+      {
+        "state": "Kuala Lumpur",
+        "locations": [
+          {
+            "id": 1,
+            "daerah": "Petaling Jaya",
+            "fasiliti": "PPR Lembah Subang 2",
+            "alamat": "Jalan PJU 1a/44, 47301 Petaling Jaya, Selangor",
+            "no_telefon": "N/A",
+            "pegawai": [
+              "N/A"
+            ],
+            "jenis_fasiliti": "Telah ditutup Orang Awam",
+            "email": [
+              "al.hafiz@swcorp.my",
+              "m.efendy@swcorp.my"
+            ],
+            "koordinat": "N/A"
+          }
+        ]
+      },
+      {
+        "state": "Pahang",
+        "locations": [
+          {
+            "id": 1,
+            "daerah": "Kuantan",
+            "fasiliti": "PPR Kampung Pak Mahat",
+            "alamat": "26060 Kuantan, Pahang",
+            "no_telefon": [
+              "09-5341608",
+              "019-9227848",
+              "013-2354436"
+            ],
+            "pegawai": [
+              "En. Fikhrie",
+              "En. Nik Zamawi"
+            ],
+            "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+            "latitud": 3.756035,
+            "longitud": 103.304282
+          },
+          {
+            "id": 2,
+            "daerah": "Temerloh",
+            "fasiliti": "Flat Seri Kemuning",
+            "alamat": "28000 Temerloh, Pahang",
+            "no_telefon": [
+              "019-9089556",
+              "0122477180"
+            ],
+            "pegawai": [
+              "En Yuzran"
+            ],
+            "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+            "latitud": 3.460386,
+            "longitud": 102.375664
+          }
+        ]
+      },
+      {
+        "state": "Kelantan",
+        "locations": [
+          {
+            "id": 3,
+            "daerah": "Kota Bharu",
+            "fasiliti": "PPR Kota Bharu",
+            "alamat": "15000 Bandar Kota Bharu, Kelantan",
+            "no_telefon": [
+              "09-7479722",
+              "012-9811576"
+            ],
+            "pegawai": [
+              "Pn Noor Ain binti Saari"
+            ],
+            "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+            "latitud": 6.140701,
+            "longitud": 102.241817
+        },
+        {
+          "id": 4,
+          "daerah": "Gua Musang",
+          "fasiliti": "PPR Gua Musang",
+          "alamat": "18300 Gua Musang, Kelantan",
+          "no_telefon": [
+            "09-9122439"
+          ],
+          "pegawai": [
+            "En Shamsul",
+            "En Firdaus"
+          ],
+          "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+          "latitud": 4.861191,
+          "longitud": 101.966458
+        }
+      ]
+    },
+    {
+      "state": "Terengganu",
+      "locations": [
+        {
+          "id": 5,
+          "daerah": "Kuala Terengganu",
+          "fasiliti": "PPR Padang Hiliran",
+          "alamat": "Jalan Kampung Padang, Kampung Hiliran, 21200 Kuala Terengganu, Terengganu",
+          "no_telefon": [
+            "011-10010780"
+          ],
+          "pegawai": [
+            "Pn Hayati Shaffini@Ariffin"
+          ],
+          "jenis_fasiliti": "Pusat Komuniti Sifar Sisa (KOSIS)",
+          "latitud": 5.3129,
+          "longitud": 103.126501
+        }
+      ]
+    }
+    
+]
+
+
+  

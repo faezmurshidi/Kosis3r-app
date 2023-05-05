@@ -6,6 +6,7 @@ import ProfileScreen from '../screens/Profile';
 import TransactionsScreen from '../screens/Transactions';
 import PaymentScreen from '../screens/Payments';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import ProfileStack from './ProfileStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -42,15 +43,6 @@ const MainTabs = () => {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="user" color={color} size={size + 4} />
-          ),
-        }}
-      />
-      <Tab.Screen
         name="Transactions"
         component={TransactionsScreen}
         options={{
@@ -65,6 +57,15 @@ const MainTabs = () => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="credit-card" color={color} size={size + 4} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileStack}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="user" color={color} size={size + 4} />
           ),
         }}
       />

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {
   View,
@@ -10,6 +11,8 @@ import { Card, Text } from 'react-native-paper';
 import Carousel from 'react-native-snap-carousel';
 import CustomButton from '../components/CustomButton';
 import TimeBasedLottie from '../components/TimeBasedLottie';
+import kosiscentre from '../assets/pusatkosis.json';
+import NearestCentre from '../components/NearestCentre';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -35,20 +38,43 @@ const Dashboard = () => {
     );
   };
 
+  kosiscentre.forEach((state) => {
+    console.log('test', state);
+  });
+
   return (
     <View style={styles.container}>
       <StatusBar
         backgroundColor="#E0E0E0" // Change the background color of the status bar
         barStyle="light-content" // Change the text/icons color (options: 'light-content', 'dark-content', or 'default')
       />
-      <ScrollView>
-        <View style={{ margin: 8 }}>
-          <Text variant="titleLarge">Good morning, {mockUserName}!</Text>
-          <Text variant="bodyMedium">
-            Level 1 | 65.8KG Dikitar Semula | 1.3 tan CO2 Dijimatkan{' '}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View>
+          <Text variant="headlineLarge" style={{ margin: 4 }}>
+            KitaKitar
           </Text>
+          <View
+            style={{
+              backgroundColor: '#87CEEB',
+              padding: 6,
+              borderRadius: 9,
+              marginTop: 4,
+            }}
+          >
+            <Text variant="titleMedium">Selamat Datang, {mockUserName}!</Text>
+            <Text variant="bodySmall">
+              Level 1 | 65.8KG Dikitar Semula | 1.3 tan CO2 Dijimatkan{' '}
+            </Text>
+            <View style={styles.section}>
+              <Text variant="titleMedium">Baki Semasa</Text>
+              <Text variant="headlineSmall">RM 35</Text>
+            </View>
+          </View>
         </View>
 
+        {/* nearest recycling centre */}
+
+        <NearestCentre />
         <View style={{ flexDirection: 'row', flex: 1 }}>
           <View style={{ flex: 1 }}>
             <CustomButton onPress={handlePress} title="Jualan" />
@@ -68,10 +94,6 @@ const Dashboard = () => {
           inactiveSlideOpacity={0.6}
           inactiveSlideScale={0.85}
         />
-        <Text style={styles.sectionTitle}>Nearest Recycling Center</Text>
-        <Text style={styles.nearestRecyclingCenterText}>
-          {mockNearestRecyclingCenter}
-        </Text>
       </ScrollView>
     </View>
   );
@@ -110,8 +132,17 @@ const styles = StyleSheet.create({
   },
   nearestRecyclingCenterText: {
     fontSize: 16,
-    marginBottom: 8,
+    padding: 8,
     color: '#2C2C2C',
+    alignSelf: 'center',
+  },
+  section: {
+    marginTop: 8,
+    margin: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#AFEEEE',
+    borderRadius: 8,
   },
 });
 
