@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#AFEEEE',
+    backgroundColor: '#93B8DF',
     marginTop: 6,
     borderRadius: 8,
     elevation: 4,
@@ -186,18 +186,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   section: {
-    backgroundColor: '#AFEEEE',
     padding: 16,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: '#1A237E',
+    color: '#FFDCC5',
   },
   nearestRecyclingCenterText: {
     fontSize: 16,
-    color: '#4A4A4A',
+    color: '#ACF7D2',
     fontWeight: 'bold',
   },
 });

@@ -15,7 +15,7 @@ const MainTabs = () => {
     <Tab.Navigator
       initialRouteName="Dashboard"
       screenOptions={{
-        tabBarShowLabel: true,
+        tabBarShowLabel: false,
         tabBarActiveTintColor: '#1e88e5',
         tabBarStyle: {
           backgroundColor: '#F5F5F5',
@@ -33,17 +33,17 @@ const MainTabs = () => {
       }}
     >
       <Tab.Screen
-        name="Dashboard"
+        name="Utama"
         component={DashboardScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name={'recycle'} color={color} size={size + 4} />
+            <FontAwesome5 name={'home'} color={color} size={size + 4} />
           ),
         }}
       />
       <Tab.Screen
-        name="Transactions"
+        name="Jualan"
         component={TransactionsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -52,7 +52,7 @@ const MainTabs = () => {
         }}
       />
       <Tab.Screen
-        name="Payment"
+        name="Akaun"
         component={PaymentScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -61,7 +61,7 @@ const MainTabs = () => {
         }}
       />
       <Tab.Screen
-        name="Profile"
+        name="Profil"
         component={ProfileStack}
         options={{
           tabBarIcon: ({ color, size }) => (

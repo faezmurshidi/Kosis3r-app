@@ -2,16 +2,40 @@ import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   // Colors
+  // colors: {
+  //   primary: '#4CAF50',
+  //   secondary: '#8BC34A',
+  //   tertiary: '#F5F5F5',
+  //   text: '#333333',
+  //   accent: '#FFC107',
+  //   background: {
+  //     light: {
+  //       offwhite: '#F5F5F5',
+  //       lightGray: '#E0E0E0',
+  //       lightBeige: '#F5F5F5',
+  //     },
+  //     dark: {
+  //       offBlack: '#333333',
+  //       darkGray: '#424242',
+  //       darkerGray: '#212121',
+  //     },
+  //   },
+  // },
+
   colors: {
     primary: '#4CAF50',
     secondary: '#8BC34A',
-    tertiary: '#F5F5F5',
-    text: '#333333',
+    tertiary: '#FFFFFF',
+    text: {
+      primary: '#333333',
+      secondary: '#5C5C5C',
+      light: '#FFFFFF',
+    },
     accent: '#FFC107',
     background: {
       light: {
-        offwhite: '#F5F5F5',
-        lightGray: '#E0E0E0',
+        offwhite: '#FFFFFF',
+        lightGray: '#F0F0F0',
         lightBeige: '#F5F5F5',
       },
       dark: {
@@ -20,6 +44,10 @@ const styles = StyleSheet.create({
         darkerGray: '#212121',
       },
     },
+    error: '#F44336',
+    success: '#81C784',
+    info: '#2196F3',
+    warning: '#FF9800',
   },
 
   // Typography

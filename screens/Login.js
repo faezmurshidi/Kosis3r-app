@@ -11,6 +11,7 @@ import { AuthContext } from '../App';
 import auth from '@react-native-firebase/auth';
 import { Picker } from '@react-native-picker/picker';
 import i18n from '../i18n';
+import LanguageSelector from '../components/LanguageSelector';
 
 const theme = {
   ...DefaultTheme,
@@ -72,7 +73,7 @@ const LoginScreen = () => {
   const skipLogin = () => {
     const mockUser = {
       uid: '123456',
-      displayName: 'John Doe',
+      displayName: 'Faez',
     };
     setUser(mockUser);
   };
@@ -84,14 +85,10 @@ const LoginScreen = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <Title style={styles.title}>KitaKitar</Title>
-        <Picker
-          selectedValue={language}
-          onValueChange={(itemValue) => changeLanguage(itemValue)}
-          style={styles.languagePicker}
-        >
-          <Picker.Item label="English" value="en" />
-          <Picker.Item label="Bahasa Malaysia" value="ms" />
-        </Picker>
+        <LanguageSelector
+          selectedLanguage={language}
+          onSelectLanguage={changeLanguage}
+        />
         <TextInput
           label="Phone Number"
           value={phoneNumber}
@@ -100,9 +97,11 @@ const LoginScreen = () => {
           keyboardType="phone-pad"
           style={styles.input}
         />
-        <Button mode="contained" onPress={loginUser} style={styles.button}>
-          Login with Phone
-        </Button>
+        {!confirm && (
+          <Button mode="contained" onPress={loginUser} style={styles.button}>
+            Log Masuk
+          </Button>
+        )}
         {confirm && (
           <>
             <TextInput

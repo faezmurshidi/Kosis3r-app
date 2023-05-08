@@ -5,6 +5,10 @@ const resources = {
   en: {
     translation: {
       login: 'Login',
+      Dashboard: {
+        title: 'Dashboard',
+        balance: 'Current Balance',
+      },
       recycleCategories: [
         'Paper',
         'Cardboard',
@@ -31,6 +35,10 @@ const resources = {
   ms: {
     translation: {
       login: 'Log masuk',
+      Dashboard: {
+        title: 'Papan Pemuka',
+        balance: 'Baki Semasa',
+      },
       recycleCategories: [
         'Kertas',
         'Kadbod',

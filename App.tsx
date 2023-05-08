@@ -3,6 +3,7 @@ import React, { createContext, useState, useEffect } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import AppNavigation from './navigation/AppNavigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Provider } from 'react-native-paper';
 
 export const AuthContext = createContext({});
 
@@ -69,8 +70,10 @@ export default function App() {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser: updateUser }}>
-      <AppNavigation />
-    </AuthContext.Provider>
+    <Provider>
+      <AuthContext.Provider value={{ user, setUser: updateUser }}>
+        <AppNavigation />
+      </AuthContext.Provider>
+    </Provider>
   );
 }

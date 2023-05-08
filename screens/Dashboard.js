@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,67 +7,57 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native';
-import { Card, Text } from 'react-native-paper';
-import Carousel from 'react-native-snap-carousel';
+import { Text } from 'react-native-paper';
 import CustomButton from '../components/CustomButton';
-import TimeBasedLottie from '../components/TimeBasedLottie';
-import kosiscentre from '../assets/pusatkosis.json';
+import style from '../styles';
 import NearestCentre from '../components/NearestCentre';
+import i18n from '../i18n';
+import { AuthContext } from '../App';
 
-const { width: screenWidth } = Dimensions.get('window');
-
-const Dashboard = () => {
+const Dashboard = ({ navigation }) => {
+  const { user } = useContext(AuthContext);
+  console.log('user', user);
   const handlePress = () => {
-    console.log('Button pressed');
+    navigation.navigate('Jualan');
   };
 
-  const mockUserName = 'John';
-  const mockPromos = [
-    { id: 1, title: 'Promo 1' },
-    { id: 2, title: 'Promo 2' },
-    { id: 3, title: 'Promo 3' },
-  ];
-
-  const mockNearestRecyclingCenter = 'Recycling Center A';
-
-  const renderPromoItem = ({ item }) => {
-    return (
-      <View style={styles.carouselItem}>
-        <Text style={styles.carouselText}>{item.title}</Text>
-      </View>
-    );
+  const goToAccount = () => {
+    navigation.navigate('Akaun');
   };
-
-  kosiscentre.forEach((state) => {
-    console.log('test', state);
-  });
 
   return (
     <View style={styles.container}>
       <StatusBar
-        backgroundColor="#E0E0E0" // Change the background color of the status bar
+        backgroundColor={style.colors.secondary} // Change the background color of the status bar
         barStyle="light-content" // Change the text/icons color (options: 'light-content', 'dark-content', or 'default')
       />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View>
-          <Text variant="headlineLarge" style={{ margin: 4 }}>
+        <View style={styles.profileSection}>
+          <Text
+            variant="headlineLarge"
+            style={{ margin: 4, color: style.colors.primary }}
+          >
             KitaKitar
           </Text>
-          <View
-            style={{
-              backgroundColor: '#87CEEB',
-              padding: 6,
-              borderRadius: 9,
-              marginTop: 4,
-            }}
-          >
-            <Text variant="titleMedium">Selamat Datang, {mockUserName}!</Text>
-            <Text variant="bodySmall">
+          <View style={styles.welcomeCard}>
+            <Text variant="titleMedium" style={{ alignSelf: 'center' }}>
+              Selamat Datang, {user.displayName}!
+            </Text>
+            <Text
+              variant="bodySmall"
+              style={{
+                alignSelf: 'center',
+                fontWeight: 'bold',
+                color: style.colors.background.light.offwhite,
+              }}
+            >
               Level 1 | 65.8KG Dikitar Semula | 1.3 tan CO2 Dijimatkan{' '}
             </Text>
             <View style={styles.section}>
-              <Text variant="titleMedium">Baki Semasa</Text>
-              <Text variant="headlineSmall">RM 35</Text>
+              <Text variant="titleMedium">{i18n.t('Dashboard.balance')}</Text>
+              <Text variant="headlineSmall" style={{ color: 'white' }}>
+                RM 35
+              </Text>
             </View>
           </View>
         </View>
@@ -77,23 +67,20 @@ const Dashboard = () => {
         <NearestCentre />
         <View style={{ flexDirection: 'row', flex: 1 }}>
           <View style={{ flex: 1 }}>
-            <CustomButton onPress={handlePress} title="Jualan" />
+            <CustomButton
+              onPress={handlePress}
+              title="Jualan"
+              icon={'recycle'}
+            />
           </View>
           <View style={{ flex: 1 }}>
-            <CustomButton onPress={handlePress} title="Akaun" />
+            <CustomButton
+              onPress={goToAccount}
+              title="Akaun"
+              icon={'file-invoice'}
+            />
           </View>
         </View>
-
-        <Text style={styles.sectionTitle}>Promos & Marketing Banners</Text>
-
-        <Carousel
-          data={mockPromos}
-          renderItem={renderPromoItem}
-          sliderWidth={screenWidth}
-          itemWidth={screenWidth * 0.8}
-          inactiveSlideOpacity={0.6}
-          inactiveSlideScale={0.85}
-        />
       </ScrollView>
     </View>
   );
@@ -103,37 +90,42 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: style.colors.background.light.offwhite,
+  },
+  welcomeCard: {
+    backgroundColor: '#ACCEF7',
+    padding: 6,
+    borderRadius: 9,
+    marginTop: 4,
+  },
+  profileSection: {
+    marginBottom: 16,
   },
   greetingText: {
-    fontSize: 24,
     fontWeight: 'bold',
     marginTop: 16,
     marginBottom: 8,
-    color: '#333333',
+    color: style.colors.text.primary,
   },
   sectionTitle: {
-    fontSize: 18,
     fontWeight: 'bold',
     marginTop: 24,
     marginBottom: 8,
-    color: '#4A4A4A',
+    color: style.colors.text.primary,
   },
   carouselItem: {
-    backgroundColor: '#1e88e5',
+    backgroundColor: style.colors.primary,
     borderRadius: 10,
     padding: 24,
     justifyContent: 'center',
     alignItems: 'center',
   },
   carouselText: {
-    color: 'white',
-    fontSize: 18,
+    color: style.colors.background.light.offwhite,
   },
   nearestRecyclingCenterText: {
-    fontSize: 16,
     padding: 8,
-    color: '#2C2C2C',
+    color: style.colors.text.secondary,
     alignSelf: 'center',
   },
   section: {
@@ -141,7 +133,7 @@ const styles = StyleSheet.create({
     margin: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#AFEEEE',
+    backgroundColor: style.colors.background.light.lightBlue,
     borderRadius: 8,
   },
 });

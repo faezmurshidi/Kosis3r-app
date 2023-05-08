@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { TextInput, Button, Title, Text } from 'react-native-paper';
 import { addUserToFirestore } from '../firebase/firebaseUtils';
+import style from '../styles';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -39,61 +40,62 @@ const RegisterScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Register</Text>
-      <TextInput
-        placeholder="Name"
-        value={name}
-        onChangeText={setName}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-        keyboardType="email-address"
-      />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-        secureTextEntry
-      />
-      <View>
+      <ScrollView style={styles.scrollView}>
         <TextInput
-          placeholder="Address Line 1"
-          value={address.line1}
-          onChangeText={(text) => setAddress({ ...address, line1: text })}
+          placeholder="Name"
+          value={name}
+          onChangeText={setName}
           style={styles.input}
         />
         <TextInput
-          placeholder="Address Line 2"
-          value={address.line2}
-          onChangeText={(text) => setAddress({ ...address, line2: text })}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
           style={styles.input}
+          keyboardType="email-address"
         />
         <TextInput
-          placeholder="Postcode"
-          value={address.postcode}
-          onChangeText={(text) => setAddress({ ...address, postcode: text })}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
           style={styles.input}
+          secureTextEntry
         />
-        <TextInput
-          placeholder="City"
-          value={address.city}
-          onChangeText={(text) => setAddress({ ...address, city: text })}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="State"
-          value={address.state}
-          onChangeText={(text) => setAddress({ ...address, state: text })}
-          style={styles.input}
-        />
-      </View>
+        <View>
+          <TextInput
+            placeholder="Address Line 1"
+            value={address.line1}
+            onChangeText={(text) => setAddress({ ...address, line1: text })}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Address Line 2"
+            value={address.line2}
+            onChangeText={(text) => setAddress({ ...address, line2: text })}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Postcode"
+            value={address.postcode}
+            onChangeText={(text) => setAddress({ ...address, postcode: text })}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="City"
+            value={address.city}
+            onChangeText={(text) => setAddress({ ...address, city: text })}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="State"
+            value={address.state}
+            onChangeText={(text) => setAddress({ ...address, state: text })}
+            style={styles.input}
+          />
+        </View>
+      </ScrollView>
       <TouchableOpacity onPress={registerUser} style={styles.button}>
-        <Text style={styles.buttonText}>Register</Text>
+        <Text style={styles.buttonText}>Save Profile</Text>
       </TouchableOpacity>
     </View>
   );
@@ -102,8 +104,11 @@ const RegisterScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     paddingHorizontal: 16,
+  },
+  scrollView: {
+    flexGrow: 1,
+    marginBottom: 16,
   },
   title: {
     fontSize: 24,
