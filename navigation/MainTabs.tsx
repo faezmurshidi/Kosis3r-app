@@ -1,14 +1,28 @@
 // src/navigation/MainTabs.tsx
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import DashboardScreen from '../screens/Dashboard';
-import ProfileScreen from '../screens/Profile';
 import TransactionsScreen from '../screens/Transactions';
 import PaymentScreen from '../screens/Payments';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import ProfileStack from './ProfileStack';
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+const DashboardStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Utama"
+        component={DashboardScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen name="Jualan" component={TransactionsScreen} />
+    </Stack.Navigator>
+  );
+};
 
 const MainTabs = () => {
   return (
@@ -33,8 +47,8 @@ const MainTabs = () => {
       }}
     >
       <Tab.Screen
-        name="Utama"
-        component={DashboardScreen}
+        name="Dashboard"
+        component={DashboardStack}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
@@ -42,15 +56,7 @@ const MainTabs = () => {
           ),
         }}
       />
-      <Tab.Screen
-        name="Jualan"
-        component={TransactionsScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="receipt" color={color} size={size + 4} />
-          ),
-        }}
-      />
+
       <Tab.Screen
         name="Akaun"
         component={PaymentScreen}

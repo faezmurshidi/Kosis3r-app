@@ -40,8 +40,9 @@ export const uploadFileToStorage = async (path: string, file: Blob) => {
 };
 
 export const addUserToFirestore = async (user) => {
+  console.log('Adding user to Firestore:', user);
   const userRef = firestore().collection('users').doc(user.uid);
-
+  console.log('User ref:', userRef);
   try {
     await userRef.set({
       name: user.name,
@@ -57,5 +58,49 @@ export const addUserToFirestore = async (user) => {
     console.log('User added to Firestore');
   } catch (error) {
     console.log('Error adding user to Firestore:', error);
+  }
+};
+
+export const createTransactionFirestore = async (transaction, centerId) => {
+  console.log('Creating tx:', transaction);
+  const transactionsRef = firestore()
+    .collection('transactions')
+    .doc(centerId)
+    .collection('list');
+  console.log('Transactions ref:', transactionsRef);
+  try {
+    await transactionsRef.doc(transaction.id).set({
+      id: transaction.id,
+      timestamp: transaction.timestamp,
+      status: 'CREATED',
+      items: transaction.items,
+      user: transaction.user,
+    });
+    console.log('Adding tx to Firestore');
+  } catch (error) {
+    console.log('Error adding tx to Firestore:', error);
+  }
+};
+
+export const getCurrentRate = async (category) => {
+  const ratesRef = firestore().collection('rate').doc(category);
+  const ratesSnapshot = await ratesRef.get();
+  if (ratesSnapshot.exists) {
+    return ratesSnapshot.data();
+  } else {
+    throw new Error(`Rates for ${category} not found`);
+  }
+};
+
+export const getTransactions = async (centerId) => {
+  const transactionsRef = firestore()
+    .collection('transactions')
+    .doc(centerId)
+    .collection('list');
+  const transactionsSnapshot = await transactionsRef.get();
+  if (transactionsSnapshot.empty) {
+    return [];
+  } else {
+    return transactionsSnapshot.docs.map((doc) => doc.data());
   }
 };

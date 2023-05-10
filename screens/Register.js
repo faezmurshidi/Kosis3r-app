@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { TextInput, Button, Title, Text } from 'react-native-paper';
 import { addUserToFirestore } from '../firebase/firebaseUtils';
 import style from '../styles';
+import { AuthContext } from '../App';
 
 const RegisterScreen = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { user, setUser } = useContext(AuthContext);
+  const [name, setName] = useState(user.displayName);
+  const [email, setEmail] = useState(user.email);
   const [address, setAddress] = useState({
     line1: '',
     line2: '',
@@ -16,21 +17,19 @@ const RegisterScreen = () => {
     state: '',
   });
 
-  const registerUser = async () => {
+  const updateUser = async () => {
     try {
-      const { user } = await auth().createUserWithEmailAndPassword(
-        email,
-        password,
-      );
-
-      await user.updateProfile({ displayName: name });
-
+      // await user.updateProfile({ displayName: name });
       const userData = {
-        uid: user.uid,
+        uid: 'asdasdasdasd',
         name,
         email,
         address,
       };
+
+      console.log('User data:', userData);
+
+      setUser(userData);
 
       await addUserToFirestore(userData);
     } catch (error) {
@@ -53,13 +52,6 @@ const RegisterScreen = () => {
           onChangeText={setEmail}
           style={styles.input}
           keyboardType="email-address"
-        />
-        <TextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          style={styles.input}
-          secureTextEntry
         />
         <View>
           <TextInput
@@ -94,7 +86,7 @@ const RegisterScreen = () => {
           />
         </View>
       </ScrollView>
-      <TouchableOpacity onPress={registerUser} style={styles.button}>
+      <TouchableOpacity onPress={updateUser} style={styles.button}>
         <Text style={styles.buttonText}>Save Profile</Text>
       </TouchableOpacity>
     </View>

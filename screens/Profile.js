@@ -17,15 +17,10 @@ import style from '../styles';
 
 const ProfileScreen = ({ navigation }) => {
   const [isDarkMode, setIsDarkMode] = React.useState(false);
-  const { setUser } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
 
   const toggleDarkMode = () => {
     setIsDarkMode((prevState) => !prevState);
-  };
-  const user = {
-    name: 'John Doe',
-    email: 'johndoe@example.com',
-    phone: '+60123456789',
   };
 
   const sections = [

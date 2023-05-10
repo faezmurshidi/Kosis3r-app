@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,18 +6,62 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import { Dialog, Portal, RadioButton } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
+import moment from 'moment';
 
 import style from '../styles';
 
+const screenWidth = Dimensions.get('window').width;
+
 const mockData = [
-  { id: '1', type: 'deposit', amount: 100, date: '2023-05-01' },
-  { id: '2', type: 'withdraw', amount: 50, date: '2023-05-02' },
-  { id: '3', type: 'deposit', amount: 150, date: '2023-05-03' },
-  { id: '4', type: 'deposit', amount: 200, date: '2023-05-04' },
-  { id: '5', type: 'withdraw', amount: 75, date: '2023-05-05' },
+  {
+    id: '1',
+    type: 'Paper',
+    status: 'pending',
+    amount: 100,
+    weight: 10,
+    rate: 0.15,
+    date: '2023-05-01',
+  },
+  {
+    id: '2',
+    type: 'Can',
+    status: 'pending',
+    amount: 50,
+    weight: 10,
+    rate: 0.15,
+    date: '2023-05-02',
+  },
+  {
+    id: '3',
+    type: 'UCO',
+    status: 'pending',
+    amount: 150,
+    weight: 10,
+    rate: 0.15,
+    date: '2023-05-03',
+  },
+  {
+    id: '4',
+    type: 'deposit',
+    status: 'pending',
+    amount: 200,
+    weight: 10,
+    rate: 0.15,
+    date: '2023-05-04',
+  },
+  {
+    id: '5',
+    type: 'withdraw',
+    status: 'pending',
+    amount: 75,
+    weight: 10,
+    rate: 0.15,
+    date: '2023-05-05',
+  },
 ];
 
 const PaymentScreen = ({ navigation }) => {
@@ -27,18 +71,29 @@ const PaymentScreen = ({ navigation }) => {
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.transaction}>
-      <Text style={styles.transactionText}>
-        {item.type}: {item.amount} ({item.date})
-      </Text>
-    </View>
-  );
+  const renderItem = ({ item }) => {
+    const date = moment(Date.now()).format('DD MMMM YYYY');
+    return (
+      <View style={styles.transaction}>
+        <View style={styles.transactionInfoContainer}>
+          <Text>{date}</Text>
+          <Text>
+            {item.weight}g of {item.type} @ {item.rate}/Kg
+          </Text>
+          <Text>RM{item.amount}</Text>
+        </View>
+        <View style={styles.statusContainer}>
+          <View style={styles.indicator(item.status)} />
+          <Text style={styles.transactionStatus}>{item.status}</Text>
+        </View>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.balanceSection}>
-        <Text style={styles.balanceText}>Current Balance: $250</Text>
+        <Text style={styles.balanceText}>Baki Terkumpul: RM250</Text>
         <Button
           title="Withdraw Balance"
           onPress={showDialog}
@@ -79,8 +134,9 @@ const PaymentScreen = ({ navigation }) => {
         </Dialog>
       </Portal>
 
-      <Text style={styles.transactionsTitle}>Recent Transactions</Text>
+      <Text style={styles.transactionsTitle}>Transaksi Terkini</Text>
       <FlatList
+        style={styles.transactionsList}
         data={mockData}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
@@ -95,7 +151,7 @@ const PaymentScreen = ({ navigation }) => {
           labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
           datasets: [{ data: [50, 100, 150, 200, 250] }],
         }}
-        width={300}
+        width={screenWidth}
         height={220}
         chartConfig={{
           backgroundColor: style.colors.background.light.offwhite,
@@ -112,11 +168,9 @@ const PaymentScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: style.colors.background.light.offwhite,
-    paddingTop: 30,
   },
   title: {
     fontSize: 24,
@@ -125,8 +179,6 @@ const styles = StyleSheet.create({
     color: style.colors.text.primary,
   },
   balanceSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
     alignItems: 'center',
     width: '100%',
     marginTop: 20,
@@ -148,6 +200,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: style.colors.text.primary,
   },
+  transactionsList: {
+    width: '100%',
+    paddingHorizontal: 20,
+  },
   transaction: {
     marginTop: 10,
     paddingHorizontal: 20,
@@ -155,10 +211,30 @@ const styles = StyleSheet.create({
     backgroundColor: style.colors.background.light.lightGray,
     borderRadius: 8,
     marginBottom: 10,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
   },
-  transactionText: {
-    color: style.colors.text.secondary,
+  transactionInfoContainer: {
+    flex: 1,
   },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  transactionStatus: {
+    marginLeft: 5,
+  },
+  indicator: (status) => ({
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor:
+      status === 'pending'
+        ? 'yellow'
+        : status === 'cancelled'
+        ? 'red'
+        : 'green',
+  }),
   viewAll: {
     fontSize: 16,
     color: style.colors.primary,

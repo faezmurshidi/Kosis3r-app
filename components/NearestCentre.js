@@ -1,11 +1,13 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Dimensions, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, Linking } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import MapView, { Marker } from 'react-native-maps';
 import centers from '../assets/pusatkosis.json';
 import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
+import NavigationButton from './NavigationButton';
+import CustomButton from '../components/CustomButton';
 
-const NearestCentre = () => {
+const NearestCentre = ({ showMyLocation, onPress }) => {
   const [location, setLocation] = useState(null);
   const [nearestCenter, setNearestCenter] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -49,7 +51,6 @@ const NearestCentre = () => {
     let nearest = null;
 
     centers.forEach((state) => {
-      console.log('test', state);
       state.locations.forEach((center) => {
         const distance = haversineDistance(
           lat,
@@ -65,6 +66,19 @@ const NearestCentre = () => {
     });
 
     setNearestCenter(nearest);
+  };
+
+  const openNavigationApp = () => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${nearestCenter.latitude},${nearestCenter.longitude}`;
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (supported) {
+          Linking.openURL(url);
+        } else {
+          console.log("Can't open navigation app");
+        }
+      })
+      .catch((error) => console.log(error));
   };
 
   const haversineDistance = (lat1, lon1, lat2, lon2) => {
@@ -95,9 +109,6 @@ const NearestCentre = () => {
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   }, []);
-
-  console.log('nearestCenter', nearestCenter);
-  console.log('location', location);
 
   const mapViewRef = useRef(null);
 
@@ -161,6 +172,21 @@ const NearestCentre = () => {
           />
         </MapView>
       )}
+
+      <View style={{ flexDirection: 'row', flex: 1 }}>
+        <View style={{ flex: 1 }}>
+          <CustomButton
+            onPress={() => onPress(nearestCenter)}
+            title="Jualan"
+            icon={'recycle'}
+          />
+          <CustomButton
+            onPress={openNavigationApp}
+            title="Bawa saya ke sana"
+            icon={'location-arrow'}
+          />
+        </View>
+      </View>
     </View>
   );
 };

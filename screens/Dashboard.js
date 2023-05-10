@@ -6,6 +6,7 @@ import {
   Dimensions,
   StatusBar,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import { Text } from 'react-native-paper';
 import CustomButton from '../components/CustomButton';
@@ -13,12 +14,13 @@ import style from '../styles';
 import NearestCentre from '../components/NearestCentre';
 import i18n from '../i18n';
 import { AuthContext } from '../App';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const Dashboard = ({ navigation }) => {
   const { user } = useContext(AuthContext);
   console.log('user', user);
-  const handlePress = () => {
-    navigation.navigate('Jualan');
+  const handlePress = (nearestCenter) => {
+    navigation.navigate('Jualan', { nearestCenter: nearestCenter });
   };
 
   const goToAccount = () => {
@@ -41,7 +43,7 @@ const Dashboard = ({ navigation }) => {
           </Text>
           <View style={styles.welcomeCard}>
             <Text variant="titleMedium" style={{ alignSelf: 'center' }}>
-              Selamat Datang, {user.displayName}!
+              Selamat Datang, {user.name}!
             </Text>
             <Text
               variant="bodySmall"
@@ -53,34 +55,29 @@ const Dashboard = ({ navigation }) => {
             >
               Level 1 | 65.8KG Dikitar Semula | 1.3 tan CO2 Dijimatkan{' '}
             </Text>
-            <View style={styles.section}>
+            <TouchableOpacity style={styles.section} onPress={goToAccount}>
               <Text variant="titleMedium">{i18n.t('Dashboard.balance')}</Text>
-              <Text variant="headlineSmall" style={{ color: 'white' }}>
-                RM 35
-              </Text>
-            </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <FontAwesome5
+                  name={'money-bill-wave'}
+                  color={style.colors.primary}
+                  size={16}
+                  paddingHorizontal={6}
+                />
+                <Text
+                  variant="headlineSmall"
+                  style={{ color: style.colors.primary }}
+                >
+                  RM 35
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* nearest recycling centre */}
 
-        <NearestCentre />
-        <View style={{ flexDirection: 'row', flex: 1 }}>
-          <View style={{ flex: 1 }}>
-            <CustomButton
-              onPress={handlePress}
-              title="Jualan"
-              icon={'recycle'}
-            />
-          </View>
-          <View style={{ flex: 1 }}>
-            <CustomButton
-              onPress={goToAccount}
-              title="Akaun"
-              icon={'file-invoice'}
-            />
-          </View>
-        </View>
+        <NearestCentre showMyLocation={false} onPress={handlePress} />
       </ScrollView>
     </View>
   );
@@ -133,7 +130,7 @@ const styles = StyleSheet.create({
     margin: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: style.colors.background.light.lightBlue,
+    backgroundColor: style.colors.background.light.lightBeige,
     borderRadius: 8,
   },
 });
