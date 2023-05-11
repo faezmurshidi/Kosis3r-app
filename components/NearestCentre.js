@@ -6,6 +6,8 @@ import centers from '../assets/pusatkosis.json';
 import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import NavigationButton from './NavigationButton';
 import CustomButton from '../components/CustomButton';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import style from '../styles';
 
 const NearestCentre = ({ showMyLocation, onPress }) => {
   const [location, setLocation] = useState(null);
@@ -137,12 +139,20 @@ const NearestCentre = ({ showMyLocation, onPress }) => {
     <View style={styles.container}>
       {errorMsg && <Text style={styles.errorText}>{errorMsg}</Text>}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Pusat Kosis Terdekat</Text>
-        {nearestCenter && (
-          <Text style={styles.nearestRecyclingCenterText}>
-            {nearestCenter.fasiliti}
-          </Text>
-        )}
+        <FontAwesome5Icon
+          name="store"
+          size={18}
+          color={style.colors.accent}
+          style={{ marginRight: 8, marginTop: 2 }}
+        />
+        <View>
+          <Text style={styles.sectionTitle}>Pusat Kosis Terdekat</Text>
+          {nearestCenter && (
+            <Text style={styles.nearestRecyclingCenterText}>
+              {nearestCenter.fasiliti}
+            </Text>
+          )}
+        </View>
       </View>
       {location && nearestCenter && (
         <MapView
@@ -195,11 +205,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#93B8DF',
+    backgroundColor: style.colors.paper.ivory,
     marginTop: 6,
-    borderRadius: 8,
-    elevation: 4,
+    borderRadius: 18,
+    marginHorizontal: 12,
   },
   errorText: {
     fontSize: 16,
@@ -207,22 +216,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   map: {
-    width: Dimensions.get('window').width,
+    padding: 12,
     height: 240,
     borderRadius: 8,
   },
   section: {
-    padding: 16,
+    padding: 12,
+    flexDirection: 'row',
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: '#FFDCC5',
+    color: style.colors.accent,
   },
   nearestRecyclingCenterText: {
     fontSize: 16,
-    color: '#ACF7D2',
+    color: style.colors.text.primary,
     fontWeight: 'bold',
   },
 });

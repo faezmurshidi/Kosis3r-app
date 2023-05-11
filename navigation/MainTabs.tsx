@@ -31,6 +31,7 @@ const MainTabs = () => {
       screenOptions={{
         tabBarShowLabel: false,
         tabBarActiveTintColor: '#1e88e5',
+        tabBarActiveBackgroundColor: '#F5F5F5',
         tabBarStyle: {
           backgroundColor: '#F5F5F5',
           borderTopWidth: 0,
@@ -41,7 +42,7 @@ const MainTabs = () => {
           elevation: 10,
           shadowColor: '#000',
           shadowOpacity: 0.1,
-          shadowOffset: { width: 0, height: 2 },
+          shadowOffset: { width: 0, height: -2 },
           shadowRadius: 10,
         },
       }}

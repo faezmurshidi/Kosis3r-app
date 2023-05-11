@@ -1,6 +1,9 @@
 // components/LanguageSelector.js
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import style from '../styles';
+import Icon from 'react-native-ionicons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const LanguageSelector = ({ selectedLanguage, onSelectLanguage }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -12,11 +15,22 @@ const LanguageSelector = ({ selectedLanguage, onSelectLanguage }) => {
 
   return (
     <>
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <Text style={styles.languageText}>
-          {selectedLanguage === 'en' ? 'Eng' : 'BM'}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.languageButtonContainer}>
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          style={[styles.languageButton, { borderColor: style.colors.accent }]}
+        >
+          <FontAwesome5 name="globe" size={16} color={style.colors.accent} />
+          <Text style={styles.languageButtonText}>
+            {selectedLanguage === 'en' ? 'English' : 'Bahasa Malaysia'}
+          </Text>
+          <FontAwesome5
+            name="caret-down"
+            size={16}
+            color={style.colors.accent}
+          />
+        </TouchableOpacity>
+      </View>
 
       <Modal
         animationType="slide"
@@ -47,8 +61,25 @@ const LanguageSelector = ({ selectedLanguage, onSelectLanguage }) => {
 };
 
 const styles = StyleSheet.create({
-  languageText: {
-    fontSize: 16,
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 30,
+    borderRadius: 100,
+    borderWidth: 1,
+    paddingVertical: 3,
+    paddingLeft: 6,
+    paddingRight: 10,
+  },
+  languageButtonText: {
+    lineHeight: 24,
+    paddingHorizontal: 10,
+    color: style.colors.accent,
+  },
+  languageButtonContainer: {
+    alignItems: 'center',
+    paddingTop: 14,
+    paddingBottom: 23,
   },
   centeredView: {
     flex: 1,

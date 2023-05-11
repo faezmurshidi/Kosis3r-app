@@ -40,49 +40,80 @@ const RegisterScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
+        <Text
+          style={{
+            color: style.colors.text.secondary,
+            padding: 2,
+            paddingTop: 8,
+          }}
+        >
+          Tell us more about yourself...
+        </Text>
+
         <TextInput
-          placeholder="Name"
+          label="Name"
           value={name}
           onChangeText={setName}
           style={styles.input}
+          mode="outlined"
+          activeOutlineColor={style.colors.accent}
+          outlineColor={style.colors.secondary}
         />
         <TextInput
-          placeholder="Email"
+          label="Email"
           value={email}
           onChangeText={setEmail}
           style={styles.input}
           keyboardType="email-address"
+          mode="outlined"
+          activeOutlineColor={style.colors.accent}
+          outlineColor={style.colors.secondary}
         />
         <View>
           <TextInput
-            placeholder="Address Line 1"
+            label="Address Line 1"
             value={address.line1}
             onChangeText={(text) => setAddress({ ...address, line1: text })}
             style={styles.input}
+            mode="outlined"
+            activeOutlineColor={style.colors.accent}
+            outlineColor={style.colors.secondary}
           />
           <TextInput
-            placeholder="Address Line 2"
+            label="Address Line 2"
             value={address.line2}
             onChangeText={(text) => setAddress({ ...address, line2: text })}
             style={styles.input}
+            mode="outlined"
+            activeOutlineColor={style.colors.accent}
+            outlineColor={style.colors.secondary}
           />
           <TextInput
-            placeholder="Postcode"
+            label="Postcode"
             value={address.postcode}
             onChangeText={(text) => setAddress({ ...address, postcode: text })}
             style={styles.input}
+            mode="outlined"
+            activeOutlineColor={style.colors.accent}
+            outlineColor={style.colors.secondary}
           />
           <TextInput
-            placeholder="City"
+            label="City"
             value={address.city}
             onChangeText={(text) => setAddress({ ...address, city: text })}
             style={styles.input}
+            mode="outlined"
+            activeOutlineColor={style.colors.accent}
+            outlineColor={style.colors.secondary}
           />
           <TextInput
-            placeholder="State"
+            label="State"
             value={address.state}
             onChangeText={(text) => setAddress({ ...address, state: text })}
             style={styles.input}
+            mode="outlined"
+            activeOutlineColor={style.colors.accent}
+            outlineColor={style.colors.secondary}
           />
         </View>
       </ScrollView>
@@ -109,17 +140,14 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
     marginBottom: 16,
+    outlineStyle: '#FFC0CB',
   },
   button: {
-    backgroundColor: '#3498db',
-    borderRadius: 4,
+    backgroundColor: style.colors.primary,
+    borderRadius: 12,
     paddingHorizontal: 12,
+    height: 48,
     paddingVertical: 8,
     alignItems: 'center',
     justifyContent: 'center',

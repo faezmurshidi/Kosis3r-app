@@ -61,6 +61,25 @@ export const addUserToFirestore = async (user) => {
   }
 };
 
+export const fetchUserFromFirestore = async (uid, setUser) => {
+  console.log('Fetching user from Firestore:', uid);
+  const userRef = firestore().collection('users').doc(uid);
+  console.log('User ref:', userRef);
+  try {
+    const userSnapshot = await userRef.get();
+    if (userSnapshot.exists) {
+      console.log('User found in Firestore');
+      console.log('User data:', userSnapshot.data());
+      setUser(userSnapshot.data());
+    } else {
+      console.log('User not found in Firestore');
+      return null;
+    }
+  } catch (error) {
+    console.log('Error fetching user from Firestore:', error);
+  }
+};
+
 export const createTransactionFirestore = async (transaction, centerId) => {
   console.log('Creating tx:', transaction);
   const transactionsRef = firestore()
@@ -102,5 +121,15 @@ export const getTransactions = async (centerId) => {
     return [];
   } else {
     return transactionsSnapshot.docs.map((doc) => doc.data());
+  }
+};
+
+export const getNews = async () => {
+  const newsRef = firestore().collection('news');
+  const newsSnapshot = await newsRef.get();
+  if (newsSnapshot.empty) {
+    return [];
+  } else {
+    return newsSnapshot.docs.map((doc) => doc.data());
   }
 };

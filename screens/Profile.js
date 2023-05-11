@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
@@ -9,27 +9,50 @@ import {
   ScrollView,
   SafeAreaView,
   SectionList,
+  RefreshControl,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { AuthContext } from '../App';
 import style from '../styles';
+import { fetchUserFromFirestore } from '../firebase/firebaseUtils';
+import { Avatar } from 'react-native-paper';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import i18n from '../i18n';
 
 const ProfileScreen = ({ navigation }) => {
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const { user, setUser } = useContext(AuthContext);
+  const [refreshing, setRefreshing] = useState(false);
+
+  console.log(i18n);
+
+  const fetchUserDetails = async () => {
+    setRefreshing(true);
+    fetchUserFromFirestore(user.uid, setUser);
+    setRefreshing(false);
+  };
 
   const toggleDarkMode = () => {
     setIsDarkMode((prevState) => !prevState);
+  };
+
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === 'en' ? 'ms' : 'en');
   };
 
   const sections = [
     {
       title: 'User Details',
       data: [
-        { title: 'Name', value: user.name },
+        { title: 'Name', value: 'Faez Murshidi' },
         { title: 'Email', value: user.email },
         { title: 'Phone', value: user.phone },
+        {
+          title: 'Language',
+          value: i18n.language === 'en' ? 'English' : 'Bahasa',
+          onPress: toggleLanguage,
+        },
       ],
     },
     {
@@ -69,7 +92,7 @@ const ProfileScreen = ({ navigation }) => {
         <View style={styles.sectionItemText}>
           <Text style={styles.sectionItemTitle}>{item.title}</Text>
           {item.value && (
-            <Text style={styles.sectionItemTitle}>{item.value}</Text>
+            <Text style={styles.sectionItemValue}>{item.value}</Text>
           )}
         </View>
       </View>
@@ -88,24 +111,20 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.profileContainer}>
-          <Image
-            style={styles.profileImage}
-            source={{
-              uri: 'https://www.example.com/path/to/profile/image.jpg',
-            }}
+      <SectionList
+        sections={sections}
+        keyExtractor={(item, index) => item + index}
+        renderItem={renderSectionItem}
+        renderSectionHeader={renderSectionHeader}
+        stickySectionHeadersEnabled={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={fetchUserDetails}
           />
-          <Text style={styles.displayName}>{user.name}</Text>
-        </View>
-        <SectionList
-          sections={sections}
-          keyExtractor={(item, index) => item + index}
-          renderItem={renderSectionItem}
-          renderSectionHeader={renderSectionHeader}
-          stickySectionHeadersEnabled={false}
-        />
-      </ScrollView>
+        }
+      />
+
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>

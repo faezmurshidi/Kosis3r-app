@@ -4,11 +4,13 @@ import messaging from '@react-native-firebase/messaging';
 import AppNavigation from './navigation/AppNavigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Provider } from 'react-native-paper';
+import { getNews } from './firebase/firebaseUtils';
 
 export const AuthContext = createContext({});
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [news, setNews] = useState([]);
   useEffect(() => {
     const restoreUser = async () => {
       try {
@@ -21,6 +23,20 @@ export default function App() {
       }
     };
     restoreUser();
+  }, []);
+
+  useEffect(() => {
+    const restoreNews = async () => {
+      try {
+        const newsData = await getNews();
+        if (newsData) {
+          setNews(newsData);
+        }
+      } catch (error) {
+        console.log('Error restoring news data:', error);
+      }
+    };
+    restoreNews();
   }, []);
 
   const updateUser = async (newUser) => {
@@ -71,7 +87,7 @@ export default function App() {
 
   return (
     <Provider>
-      <AuthContext.Provider value={{ user, setUser: updateUser }}>
+      <AuthContext.Provider value={{ user, setUser: updateUser, news }}>
         <AppNavigation />
       </AuthContext.Provider>
     </Provider>

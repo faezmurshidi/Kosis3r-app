@@ -5,9 +5,11 @@ const resources = {
   en: {
     translation: {
       login: 'Login',
+      phoneNo: 'Phone Number',
       Dashboard: {
         title: 'Dashboard',
         balance: 'Current Balance',
+        news: 'News',
       },
       recycleCategories: [
         { label: 'Paper', value: 'paper' },
@@ -35,9 +37,11 @@ const resources = {
   ms: {
     translation: {
       login: 'Log masuk',
+      phoneNo: 'No Telefon',
       Dashboard: {
         title: 'Papan Pemuka',
         balance: 'Baki Semasa',
+        news: 'Berita',
       },
       recycleCategories: [
         { label: 'Paper', value: 'paper' },

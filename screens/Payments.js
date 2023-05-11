@@ -6,11 +6,14 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  useWindowDimensions,
   Dimensions,
 } from 'react-native';
 import { Dialog, Portal, RadioButton } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
 import moment from 'moment';
+import PagerView from 'react-native-pager-view';
+import { TabView, SceneMap } from 'react-native-tab-view';
 
 import style from '../styles';
 
@@ -64,12 +67,33 @@ const mockData = [
   },
 ];
 
+const FirstRoute = () => (
+  <View style={{ flex: 1, backgroundColor: '#ff4081' }} />
+);
+
+const SecondRoute = () => (
+  <View style={{ flex: 1, backgroundColor: '#673ab7' }} />
+);
+
+const renderScene = SceneMap({
+  first: FirstRoute,
+  second: SecondRoute,
+});
+
 const PaymentScreen = ({ navigation }) => {
   const [visible, setVisible] = useState(false);
   const [withdrawMethod, setWithdrawMethod] = useState('ewallet');
 
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
+
+  const layout = useWindowDimensions();
+
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    { key: 'first', title: 'First' },
+    { key: 'second', title: 'Second' },
+  ]);
 
   const renderItem = ({ item }) => {
     const date = moment(Date.now()).format('DD MMMM YYYY');
@@ -91,7 +115,7 @@ const PaymentScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View>
       <View style={styles.balanceSection}>
         <Text style={styles.balanceText}>Baki Terkumpul: RM250</Text>
         <Button
@@ -134,34 +158,52 @@ const PaymentScreen = ({ navigation }) => {
         </Dialog>
       </Portal>
 
-      <Text style={styles.transactionsTitle}>Transaksi Terkini</Text>
-      <FlatList
-        style={styles.transactionsList}
-        data={mockData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
       />
-      <TouchableOpacity onPress={() => navigation.navigate('TransactionPage')}>
-        <Text style={styles.viewAll}>View All</Text>
-      </TouchableOpacity>
 
-      <Text style={styles.graphTitle}>Monthly Earnings</Text>
-      <LineChart
-        data={{
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-          datasets: [{ data: [50, 100, 150, 200, 250] }],
-        }}
-        width={screenWidth}
-        height={220}
-        chartConfig={{
-          backgroundColor: style.colors.background.light.offwhite,
-          backgroundGradientFrom: style.colors.background.light.offwhite,
-          backgroundGradientTo: style.colors.background.light.offwhite,
-          decimalPlaces: 0,
-          color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-        }}
-        bezier
-      />
+      {/* <PagerView
+        style={styles.pagerView}
+        orientation={'horizontal'}
+        initialPage={1}
+      >
+        <View key="1">
+          <Text style={styles.transactionsTitle}>Transaksi Terkini</Text>
+          <FlatList
+            style={styles.transactionsList}
+            data={mockData}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
+          <TouchableOpacity
+            onPress={() => navigation.navigate('TransactionPage')}
+          >
+            <Text style={styles.viewAll}>View All</Text>
+          </TouchableOpacity>
+        </View>
+        <View key="2">
+          <Text style={styles.graphTitle}>Monthly Earnings</Text>
+          <LineChart
+            data={{
+              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+              datasets: [{ data: [50, 100, 150, 200, 250] }],
+            }}
+            width={screenWidth}
+            height={220}
+            chartConfig={{
+              backgroundColor: style.colors.background.light.offwhite,
+              backgroundGradientFrom: style.colors.background.light.offwhite,
+              backgroundGradientTo: style.colors.background.light.offwhite,
+              decimalPlaces: 0,
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            }}
+            bezier
+          />
+        </View>
+      </PagerView> */}
     </View>
   );
 };
@@ -171,6 +213,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: style.colors.background.light.offwhite,
+  },
+  pagerView: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
   title: {
     fontSize: 24,

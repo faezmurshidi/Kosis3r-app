@@ -26,6 +26,14 @@ const styles = StyleSheet.create({
     primary: '#4CAF50',
     secondary: '#8BC34A',
     tertiary: '#FFFFFF',
+    gray: '#CDCDCD',
+    paper: {
+      ivory: '#FAF0E6',
+      antiqueWhite: '#FAEBD7',
+      beige: '#F5F5DC',
+      linen: '#FAF0E6',
+      offwhite: '#F8F8F8',
+    },
     text: {
       primary: '#333333',
       secondary: '#5C5C5C',
@@ -35,6 +43,7 @@ const styles = StyleSheet.create({
     background: {
       light: {
         offwhite: '#FFFFFF',
+        gray: '#F6F6F6',
         lightGray: '#F0F0F0',
         lightBeige: '#F5F5F5',
       },

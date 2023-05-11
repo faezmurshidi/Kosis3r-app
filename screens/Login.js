@@ -1,5 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  StatusBar,
+} from 'react-native';
 import {
   Button,
   TextInput,
@@ -12,6 +18,7 @@ import auth from '@react-native-firebase/auth';
 import { Picker } from '@react-native-picker/picker';
 import i18n from '../i18n';
 import LanguageSelector from '../components/LanguageSelector';
+import style from '../styles';
 
 const theme = {
   ...DefaultTheme,
@@ -24,7 +31,7 @@ const theme = {
 };
 
 const LoginScreen = () => {
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('+60');
   const { setUser } = useContext(AuthContext);
   const [language, setLanguage] = useState('en');
   const [code, setCode] = useState('');
@@ -33,7 +40,7 @@ const LoginScreen = () => {
   // Handle login
   function onAuthStateChanged(user) {
     if (user) {
-      console.log('user', user);
+      console.log('user@Firebase', user);
       // Some Android devices can automatically process the verification code (OTP) message, and the user would NOT need to enter the code.
       // Actually, if he/she tries to enter it, he/she will get an error message because the code was already used in the background.
       // In this function, make sure you hide the component(s) for entering the code and/or navigate away from this screen.
@@ -80,26 +87,29 @@ const LoginScreen = () => {
 
   return (
     <PaperProvider theme={theme}>
+      <StatusBar
+        backgroundColor={style.colors.background.light.offwhite} // Change the background color of the status bar
+        barStyle="dark-content" // Change the text/icons color (options: 'light-content', 'dark-content', or 'default')
+      />
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <Title style={styles.title}>KitaKitar</Title>
-        <LanguageSelector
-          selectedLanguage={language}
-          onSelectLanguage={changeLanguage}
-        />
+
         <TextInput
-          label="Phone Number"
+          label={i18n.t('phoneNo')}
           value={phoneNumber}
           onChangeText={setPhoneNumber}
           mode="outlined"
           keyboardType="phone-pad"
           style={styles.input}
+          activeOutlineColor={style.colors.accent}
+          outlineColor={style.colors.secondary}
         />
         {!confirm && (
           <Button mode="contained" onPress={loginUser} style={styles.button}>
-            Log Masuk
+            {i18n.t('login')}
           </Button>
         )}
         {confirm && (
@@ -111,6 +121,8 @@ const LoginScreen = () => {
               mode="outlined"
               keyboardType="number-pad"
               style={styles.input}
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
             />
             <Button
               mode="contained"
@@ -122,10 +134,14 @@ const LoginScreen = () => {
           </>
         )}
         {__DEV__ && (
-          <Button mode="outlined" onPress={skipLogin} style={styles.button}>
+          <Button mode="outlined" onPress={skipLogin} style={styles.skip}>
             Skip Login (Dev Only)
           </Button>
         )}
+        <LanguageSelector
+          selectedLanguage={language}
+          onSelectLanguage={changeLanguage}
+        />
       </KeyboardAvoidingView>
     </PaperProvider>
   );
@@ -136,18 +152,24 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 16,
+    backgroundColor: style.colors.paper.offwhite,
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: 12,
   },
   input: {
     marginBottom: 16,
+    outlineStyle: '#FFC0CB',
   },
   button: {
     marginBottom: 8,
+    backgroundColor: style.colors.primary,
+  },
+  skip: {
+    backgroundColor: style.colors.accent,
   },
 });
 

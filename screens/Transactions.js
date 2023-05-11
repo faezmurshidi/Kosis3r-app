@@ -1,13 +1,12 @@
 import React, { useState, useContext } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Image,
   ScrollView,
 } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { TextInput, Text, Divider } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { openPicker } from '@baronha/react-native-multiple-image-picker';
 import i18n from '../i18n';
@@ -18,6 +17,7 @@ import {
   getCurrentRate,
 } from '../firebase/firebaseUtils';
 import { AuthContext } from '../App';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 const TransactionsScreen = ({ route }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -103,6 +103,8 @@ const TransactionsScreen = ({ route }) => {
 
   const nearestCenter = route.params?.nearestCenter;
 
+  console.log('photo', photo);
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -111,11 +113,24 @@ const TransactionsScreen = ({ route }) => {
       >
         {nearestCenter && (
           <View style={styles.header}>
-            <Text>Anda kini berada di</Text>
-            <Text>{nearestCenter.fasiliti}</Text>
-            <Text>{nearestCenter.alamat}</Text>
+            <View style={{ alignItems: 'center' }}>
+              <FontAwesome5Icon
+                name="warehouse"
+                size={18}
+                color={style.colors.accent}
+                style={{ margin: 5, marginTop: 20 }}
+              />
+            </View>
+            <View style={{ padding: 2 }}>
+              <Text variant="labelLarge">Anda kini berada di</Text>
+              <Text variant="titleMedium">{nearestCenter.fasiliti}</Text>
+              <Text>{nearestCenter.alamat}</Text>
+            </View>
           </View>
         )}
+        <Text variant="labelLarge" style={{ marginBottom: 2 }}>
+          Jenis Barang Kitar Semula
+        </Text>
         <Picker
           selectedValue={selectedCategory}
           onValueChange={(itemValue) => setSelectedCategory(itemValue)}
@@ -127,29 +142,53 @@ const TransactionsScreen = ({ route }) => {
               <Picker.Item label={category.label} value={category.value} />
             ))}
         </Picker>
+
+        <Text variant="labelLarge" style={{ marginBottom: 2 }}>
+          Berat (KG)
+        </Text>
+
         <TextInput
           placeholder="Weight (KG)"
           value={weight}
           onChangeText={setWeight}
           style={styles.input}
           keyboardType="numeric"
+          mode="outlined"
+          activeOutlineColor={style.colors.accent}
+          outlineColor={style.colors.secondary}
         />
-        <View style={styles.todaysPrice}>
-          <Text>Harga Hari Ini:</Text>
-          <Text>{currentRate}</Text>
-        </View>
+
+        {selectedCategory && (
+          <View style={styles.todaysPrice}>
+            <Text>Harga Hari Ini:</Text>
+            <Text style={{ fontWeight: 'bold' }}>{currentRate}/g</Text>
+          </View>
+        )}
         <TouchableOpacity onPress={onPicker} style={styles.photoButton}>
           <Text style={styles.photoButtonText}>Tambah Gambar</Text>
         </TouchableOpacity>
-        {photo && <Image source={{ uri: photo.uri }} style={styles.image} />}
+        {photo && (
+          <Image
+            source={{ uri: 'file://' + photo.path }}
+            style={styles.image}
+          />
+        )}
       </ScrollView>
-      <TouchableOpacity onPress={submit} style={styles.doneButton}>
+
+      <View style={styles.footer}>
         <View style={styles.totalSale}>
-          <Text>Jumlah Jualan:</Text>
-          <Text>RM {totalSale}</Text>
+          <Text>Jumlah Jualan</Text>
+          <Text style={{ fontWeight: 'bold' }}>RM {totalSale}</Text>
         </View>
-        <Text style={styles.doneButtonText}>Selesai</Text>
-      </TouchableOpacity>
+        <Divider />
+        <TouchableOpacity
+          onPress={submit}
+          style={styles.doneButton}
+          disabled={weight && photo && selectedCategory ? false : true}
+        >
+          <Text style={styles.doneButtonText}>Selesai</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -158,13 +197,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: style.colors.background.light.offwhite,
-    paddingTop: 30,
+    paddingTop: 2,
+  },
+  header: {
+    padding: 12,
+    backgroundColor: style.colors.background.light.lightGray,
+    borderRadius: 8,
+    marginBottom: 20,
+    flexDirection: 'row',
   },
   todaysPrice: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    width: '80%',
     marginBottom: 20,
   },
   title: {
@@ -189,11 +232,10 @@ const styles = StyleSheet.create({
   photoButton: {
     backgroundColor: style.colors.primary,
     width: '80%',
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 16,
   },
   photoButtonText: {
     color: style.colors.background.light.offwhite,
@@ -213,32 +255,38 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '80%',
-    marginVertical: 20,
-    backgroundColor: style.colors.primary,
   },
   image: {
-    width: 200,
-    height: 200,
+    width: '80%',
+    height: 150,
     resizeMode: 'contain',
     marginTop: 16,
     borderRadius: 8,
   },
   scrollViewContent: {
-    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  footer: {
+    backgroundColor: style.colors.gray,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 14,
+    paddingHorizontal: 12,
+    paddingTop: 12,
+  },
   doneButton: {
     backgroundColor: style.colors.primary,
-    width: '100%',
+    width: '80%',
     paddingVertical: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    margin: 14,
+    borderRadius: 12,
   },
   doneButtonText: {
     color: style.colors.background.light.offwhite,
     fontSize: 16,
     fontWeight: 'bold',
+    alignSelf: 'center',
   },
 });
 
