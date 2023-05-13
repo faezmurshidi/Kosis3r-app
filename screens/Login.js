@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -12,6 +12,7 @@ import {
   Title,
   Provider as PaperProvider,
   DefaultTheme,
+  Text,
 } from 'react-native-paper';
 import { AuthContext } from '../App';
 import auth from '@react-native-firebase/auth';
@@ -19,6 +20,7 @@ import { Picker } from '@react-native-picker/picker';
 import i18n from '../i18n';
 import LanguageSelector from '../components/LanguageSelector';
 import style from '../styles';
+import { fetchUserFromFirestore } from '../firebase/firebaseUtils';
 
 const theme = {
   ...DefaultTheme,
@@ -30,22 +32,35 @@ const theme = {
   },
 };
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState('+60');
+  const [loading, setLoading] = useState(false);
   const { setUser } = useContext(AuthContext);
   const [language, setLanguage] = useState('en');
   const [code, setCode] = useState('');
   const [confirm, setConfirm] = useState(null);
 
+  const codeInputRef = useRef(null);
+
   // Handle login
   function onAuthStateChanged(user) {
+    setLoading(true);
     if (user) {
       console.log('user@Firebase', user);
       // Some Android devices can automatically process the verification code (OTP) message, and the user would NOT need to enter the code.
       // Actually, if he/she tries to enter it, he/she will get an error message because the code was already used in the background.
       // In this function, make sure you hide the component(s) for entering the code and/or navigate away from this screen.
       // It is also recommended to display a message to the user informing him/her that he/she has successfully logged in.
-      setUser(user);
+      // setUser({ uid: user.uid, phoneNumber: user.phoneNumber });
+      fetchUserFromFirestore(user, setUser).then((hasRegistered) => {
+        console.log('hasRegistered', hasRegistered);
+        setLoading(false);
+        if (hasRegistered) {
+          navigation.navigate('MainTabs', { screen: 'Dashboard' });
+        } else {
+          navigation.replace('EditProfile');
+        }
+      });
     }
   }
 
@@ -60,12 +75,16 @@ const LoginScreen = () => {
   };
 
   const loginUser = async () => {
+    setLoading(true);
     try {
       const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
       console.log('confirmation', confirmation);
       setConfirm(confirmation);
+      codeInputRef.current.focus();
     } catch (error) {
       // Handle login errors
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,6 +116,10 @@ const LoginScreen = () => {
       >
         <Title style={styles.title}>KitaKitar</Title>
 
+        <Text variant="labelLarge" style={{ margin: 12, alignSelf: 'center' }}>
+          {i18n.t('loginRegister')}
+        </Text>
+
         <TextInput
           label={i18n.t('phoneNo')}
           value={phoneNumber}
@@ -106,6 +129,8 @@ const LoginScreen = () => {
           style={styles.input}
           activeOutlineColor={style.colors.accent}
           outlineColor={style.colors.secondary}
+          returnKeyType="next"
+          onSubmitEditing={loginUser}
         />
         {!confirm && (
           <Button mode="contained" onPress={loginUser} style={styles.button}>
@@ -115,6 +140,7 @@ const LoginScreen = () => {
         {confirm && (
           <>
             <TextInput
+              ref={codeInputRef}
               label="Confirmation Code"
               value={code}
               onChangeText={setCode}
@@ -128,6 +154,7 @@ const LoginScreen = () => {
               mode="contained"
               onPress={confirmCode}
               style={styles.button}
+              loading={loading}
             >
               Confirm Code
             </Button>

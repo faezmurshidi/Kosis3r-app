@@ -45,8 +45,11 @@ export const addUserToFirestore = async (user) => {
   console.log('User ref:', userRef);
   try {
     await userRef.set({
+      uid: user.uid,
       name: user.name,
       email: user.email,
+      phoneNumber: user.phoneNumber,
+      wallet: user.wallet || 0,
       address: {
         line1: user.address.line1,
         line2: user.address.line2,
@@ -61,9 +64,9 @@ export const addUserToFirestore = async (user) => {
   }
 };
 
-export const fetchUserFromFirestore = async (uid, setUser) => {
-  console.log('Fetching user from Firestore:', uid);
-  const userRef = firestore().collection('users').doc(uid);
+export const fetchUserFromFirestore = async (user, setUser) => {
+  console.log('Fetching user from Firestore:', user.uid);
+  const userRef = firestore().collection('users').doc(user.uid);
   console.log('User ref:', userRef);
   try {
     const userSnapshot = await userRef.get();
@@ -71,30 +74,24 @@ export const fetchUserFromFirestore = async (uid, setUser) => {
       console.log('User found in Firestore');
       console.log('User data:', userSnapshot.data());
       setUser(userSnapshot.data());
+      return true;
     } else {
       console.log('User not found in Firestore');
-      return null;
+      setUser({ uid: user.uid, phoneNumber: user.phoneNumber });
+      return false;
     }
   } catch (error) {
     console.log('Error fetching user from Firestore:', error);
   }
 };
 
-export const createTransactionFirestore = async (transaction, centerId) => {
+export const createTransactionFirestore = async (transaction) => {
   console.log('Creating tx:', transaction);
-  const transactionsRef = firestore()
-    .collection('transactions')
-    .doc(centerId)
-    .collection('list');
+  const transactionsRef = firestore().collection('transactions');
+
   console.log('Transactions ref:', transactionsRef);
   try {
-    await transactionsRef.doc(transaction.id).set({
-      id: transaction.id,
-      timestamp: transaction.timestamp,
-      status: 'CREATED',
-      items: transaction.items,
-      user: transaction.user,
-    });
+    await transactionsRef.doc(transaction.id).set(transaction);
     console.log('Adding tx to Firestore');
   } catch (error) {
     console.log('Error adding tx to Firestore:', error);
@@ -111,17 +108,15 @@ export const getCurrentRate = async (category) => {
   }
 };
 
-export const getTransactions = async (centerId) => {
+export const getTransactions = async (uid) => {
+  console.log('Fetching transactions for:', uid);
   const transactionsRef = firestore()
     .collection('transactions')
-    .doc(centerId)
-    .collection('list');
+    .where('userId', '==', uid);
   const transactionsSnapshot = await transactionsRef.get();
-  if (transactionsSnapshot.empty) {
-    return [];
-  } else {
-    return transactionsSnapshot.docs.map((doc) => doc.data());
-  }
+  const transactions = transactionsSnapshot.docs.map((doc) => doc.data());
+  console.log('Transactions snapshot:', transactionsSnapshot);
+  return transactions;
 };
 
 export const getNews = async () => {
@@ -132,4 +127,11 @@ export const getNews = async () => {
   } else {
     return newsSnapshot.docs.map((doc) => doc.data());
   }
+};
+
+export const saveImageToStorage = async (path, image) => {
+  const storageRef = firebase.storage().ref('transactionImage');
+  const imageRef = storageRef.child(path);
+  await imageRef.putFile(image);
+  return await imageRef.getDownloadURL();
 };

@@ -8,6 +8,10 @@ import NavigationButton from './NavigationButton';
 import CustomButton from '../components/CustomButton';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import style from '../styles';
+import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder';
+import LinearGradient from 'react-native-linear-gradient';
+
+const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
 
 const NearestCentre = ({ showMyLocation, onPress }) => {
   const [location, setLocation] = useState(null);
@@ -24,7 +28,7 @@ const NearestCentre = ({ showMyLocation, onPress }) => {
             setLocation(position.coords);
           },
           (error) => setErrorMsg(error.message),
-          { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+          { enableHighAccuracy: false, timeout: 40000, maximumAge: 1800000 },
         );
       } else {
         setErrorMsg('Location permission not granted');
@@ -36,10 +40,21 @@ const NearestCentre = ({ showMyLocation, onPress }) => {
         // Permission already granted, get the location
         Geolocation.getCurrentPosition(
           (position) => {
-            setLocation(position.coords);
+            // Check if the cached location is expired (older than 30 minutes)
+            const lastCachedTime = new Date(position.timestamp).getTime();
+            const currentTime = Date.now();
+            const isLocationExpired = currentTime - lastCachedTime > 1800000; // 30 minutes in milliseconds
+
+            if (isLocationExpired) {
+              // Request a new location
+              requestLocationPermission();
+            } else {
+              // Use the cached location
+              setLocation(position.coords);
+            }
           },
           (error) => setErrorMsg(error.message),
-          { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+          { enableHighAccuracy: false, timeout: 40000, maximumAge: 1800000 },
         );
       } else {
         // Request permission
@@ -137,7 +152,6 @@ const NearestCentre = ({ showMyLocation, onPress }) => {
 
   return (
     <View style={styles.container}>
-      {errorMsg && <Text style={styles.errorText}>{errorMsg}</Text>}
       <View style={styles.section}>
         <FontAwesome5Icon
           name="store"
@@ -147,56 +161,66 @@ const NearestCentre = ({ showMyLocation, onPress }) => {
         />
         <View>
           <Text style={styles.sectionTitle}>Pusat Kosis Terdekat</Text>
-          {nearestCenter && (
-            <Text style={styles.nearestRecyclingCenterText}>
-              {nearestCenter.fasiliti}
-            </Text>
-          )}
+          <ShimmerPlaceholder visible={nearestCenter} style={{ width: '100%' }}>
+            {nearestCenter && (
+              <Text style={styles.nearestRecyclingCenterText}>
+                {nearestCenter.fasiliti}
+              </Text>
+            )}
+          </ShimmerPlaceholder>
         </View>
       </View>
-      {location && nearestCenter && (
-        <MapView
-          ref={mapViewRef}
-          style={styles.map}
-          initialRegion={{
-            latitude: nearestCenter.latitud,
-            longitude: nearestCenter.longitud,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        >
-          <Marker
-            coordinate={{
-              latitude: location.latitude,
-              longitude: location.longitude,
-            }}
-            title="Your Location"
-          />
-          <Marker
-            coordinate={{
+      <ShimmerPlaceholder
+        visible={location && nearestCenter}
+        style={{ width: '100%', height: 240 }}
+      >
+        {location && nearestCenter && (
+          <MapView
+            ref={mapViewRef}
+            style={styles.map}
+            initialRegion={{
               latitude: nearestCenter.latitud,
               longitude: nearestCenter.longitud,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
             }}
-            title={nearestCenter.fasiliti}
-            description={nearestCenter.alamat}
-          />
-        </MapView>
-      )}
-
-      <View style={{ flexDirection: 'row', flex: 1 }}>
-        <View style={{ flex: 1 }}>
-          <CustomButton
-            onPress={() => onPress(nearestCenter)}
-            title="Jualan"
-            icon={'recycle'}
-          />
-          <CustomButton
-            onPress={openNavigationApp}
-            title="Bawa saya ke sana"
-            icon={'location-arrow'}
-          />
+          >
+            <Marker
+              coordinate={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+              }}
+              title="Your Location"
+            />
+            <Marker
+              coordinate={{
+                latitude: nearestCenter.latitud,
+                longitude: nearestCenter.longitud,
+              }}
+              title={nearestCenter.fasiliti}
+              description={nearestCenter.alamat}
+            />
+          </MapView>
+        )}
+      </ShimmerPlaceholder>
+      {errorMsg && <Text style={styles.errorText}>{errorMsg}</Text>}
+      {nearestCenter && (
+        <View style={{ flexDirection: 'row', flex: 1 }}>
+          <View style={{ flex: 1 }}>
+            <CustomButton
+              onPress={() => onPress(nearestCenter)}
+              title="Jualan"
+              icon={'recycle'}
+              load
+            />
+            <CustomButton
+              onPress={openNavigationApp}
+              title="Bawa saya ke sana"
+              icon={'location-arrow'}
+            />
+          </View>
         </View>
-      </View>
+      )}
     </View>
   );
 };
@@ -211,9 +235,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
   },
   errorText: {
-    fontSize: 16,
+    fontSize: 9,
     color: 'red',
     marginBottom: 10,
+    alignSelf: 'center',
   },
   map: {
     padding: 12,

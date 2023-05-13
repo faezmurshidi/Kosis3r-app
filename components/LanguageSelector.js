@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import style from '../styles';
 import Icon from 'react-native-ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import i18n from '../i18n';
 
 const LanguageSelector = ({ selectedLanguage, onSelectLanguage }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -40,7 +41,9 @@ const LanguageSelector = ({ selectedLanguage, onSelectLanguage }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text>Select Language: </Text>
+            <Text style={{ color: style.colors.accent, marginBottom: 4 }}>
+              {i18n.t('selectLanguage')}
+            </Text>
             <TouchableOpacity
               style={styles.option}
               onPress={() => handleLanguageChange('en')}
@@ -103,7 +106,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   option: {
-    marginBottom: 16,
+    marginBottom: 10,
   },
   optionText: {
     fontSize: 18,

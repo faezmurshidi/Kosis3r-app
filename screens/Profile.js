@@ -45,9 +45,9 @@ const ProfileScreen = ({ navigation }) => {
     {
       title: 'User Details',
       data: [
-        { title: 'Name', value: 'Faez Murshidi' },
+        { title: 'Name', value: user.name },
         { title: 'Email', value: user.email },
-        { title: 'Phone', value: user.phone },
+        { title: 'Phone', value: user.phoneNumber },
         {
           title: 'Language',
           value: i18n.language === 'en' ? 'English' : 'Bahasa',

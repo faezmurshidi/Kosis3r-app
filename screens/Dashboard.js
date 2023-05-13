@@ -17,10 +17,12 @@ import i18n from '../i18n';
 import { AuthContext } from '../App';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Carousel from 'react-native-snap-carousel';
+import { fetchUserFromFirestore } from '../firebase/firebaseUtils';
 
 const Dashboard = ({ navigation }) => {
-  const { user, news } = useContext(AuthContext);
+  const { user, news, setUser } = useContext(AuthContext);
   console.log('user@AuthContext', user);
+
   console.log('news@AuthContext', news);
   const handlePress = (nearestCenter) => {
     navigation.navigate('Jualan', { nearestCenter: nearestCenter });
@@ -82,7 +84,7 @@ const Dashboard = ({ navigation }) => {
                   variant="headlineSmall"
                   style={{ color: style.colors.secondary }}
                 >
-                  RM {user.wallet}
+                  RM {user.wallet || 0}
                 </Text>
               </View>
             </TouchableOpacity>

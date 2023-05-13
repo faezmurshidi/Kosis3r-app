@@ -5,11 +5,19 @@ const resources = {
   en: {
     translation: {
       login: 'Login',
+      loginRegister: 'Login / Register',
+      selectLanguage: 'Select Language',
       phoneNo: 'Phone Number',
       Dashboard: {
         title: 'Dashboard',
         balance: 'Current Balance',
         news: 'News',
+      },
+      Payments: {
+        title: 'Payments',
+        balance: 'Current Balance',
+        transactionsHistory: 'Transactions History',
+        noTransactions: 'No transactions yet. Start recycling to earn points!',
       },
       recycleCategories: [
         { label: 'Paper', value: 'paper' },
@@ -37,11 +45,20 @@ const resources = {
   ms: {
     translation: {
       login: 'Log masuk',
+      loginRegister: 'Log masuk / Daftar',
+      selectLanguage: 'Pilih Bahasa',
       phoneNo: 'No Telefon',
       Dashboard: {
         title: 'Papan Pemuka',
         balance: 'Baki Semasa',
         news: 'Berita',
+      },
+      Payments: {
+        title: 'Pembayaran',
+        balance: 'Baki Semasa',
+        transactionsHistory: 'Sejarah Transaksi',
+        noTransactions:
+          'Tiada transaksi lagi. Mula mengitar semula untuk mendapatkan mata!',
       },
       recycleCategories: [
         { label: 'Paper', value: 'paper' },

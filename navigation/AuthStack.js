@@ -2,6 +2,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../screens/Login';
+import EditProfile from '../screens/Register';
 
 const Stack = createStackNavigator();
 
@@ -13,6 +14,7 @@ const AuthStack = () => {
         component={LoginScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
     </Stack.Navigator>
   );
 };

@@ -1,14 +1,23 @@
-import React, { useState, useContext } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ToastAndroid,
+} from 'react-native';
 import { TextInput, Button, Title, Text } from 'react-native-paper';
 import { addUserToFirestore } from '../firebase/firebaseUtils';
 import style from '../styles';
 import { AuthContext } from '../App';
+import { use } from 'i18next';
 
-const RegisterScreen = () => {
+const RegisterScreen = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
-  const [name, setName] = useState(user.displayName);
-  const [email, setEmail] = useState(user.email);
+  console.log('user@RegisterScreen', user);
+  const [name, setName] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState(null);
   const [address, setAddress] = useState({
     line1: '',
     line2: '',
@@ -17,23 +26,49 @@ const RegisterScreen = () => {
     state: '',
   });
 
+  useEffect(() => {
+    if (user?.phoneNumber) {
+      setPhoneNumber(user.phoneNumber);
+    }
+    if (user?.address) {
+      setAddress(user.address);
+    }
+    if (user?.email) {
+      setEmail(user.email);
+    }
+    if (user?.name) {
+      setName(user.name);
+    }
+  }, [user]);
+
   const updateUser = async () => {
     try {
       // await user.updateProfile({ displayName: name });
       const userData = {
-        uid: 'asdasdasdasd',
+        uid: user.uid,
         name,
         email,
+        phoneNumber,
         address,
       };
 
       console.log('User data:', userData);
-
       setUser(userData);
-
       await addUserToFirestore(userData);
     } catch (error) {
       console.log('Error registering user:', error);
+    } finally {
+      ToastAndroid.show('Profile updated!', ToastAndroid.LONG);
+      console.log('navigation', navigation);
+      const canGoBack = navigation.canGoBack();
+      if (canGoBack) {
+        // There is a screen to go back to
+        console.log('Can go back');
+        navigation.goBack();
+      } else {
+        // There is no screen to go back to (at the root of the stack)
+        console.log('Cannot go back');
+      }
     }
   };
 
@@ -68,6 +103,15 @@ const RegisterScreen = () => {
           mode="outlined"
           activeOutlineColor={style.colors.accent}
           outlineColor={style.colors.secondary}
+        />
+        <TextInput
+          label="Phone number"
+          value={phoneNumber}
+          style={styles.input}
+          mode="outlined"
+          activeOutlineColor={style.colors.accent}
+          outlineColor={style.colors.secondary}
+          disabled={true}
         />
         <View>
           <TextInput

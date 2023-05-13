@@ -10,7 +10,7 @@ const AppNavigation = () => {
 
   return (
     <NavigationContainer>
-      {user ? <MainTabs /> : <AuthStack />}
+      {user?.name ? <MainTabs /> : <AuthStack />}
     </NavigationContainer>
   );
 };

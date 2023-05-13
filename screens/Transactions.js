@@ -1,12 +1,15 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   Image,
   ScrollView,
+  ActivityIndicator,
+  Modal,
+  Button,
 } from 'react-native';
-import { TextInput, Text, Divider } from 'react-native-paper';
+import { TextInput, Text, Divider, Portal, Dialog } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { openPicker } from '@baronha/react-native-multiple-image-picker';
 import i18n from '../i18n';
@@ -15,15 +18,24 @@ import { generateTransactionId } from '../util';
 import {
   createTransactionFirestore,
   getCurrentRate,
+  saveImageToStorage,
 } from '../firebase/firebaseUtils';
 import { AuthContext } from '../App';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
-const TransactionsScreen = ({ route }) => {
+const TransactionsScreen = ({ route, navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [weight, setWeight] = useState('');
   const { user } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  useEffect(() => {
+    const defaultCategory =
+      i18n.t('recycleCategories', { returnObjects: true })[0]?.value || '';
+    setSelectedCategory(defaultCategory);
+  }, []);
 
   const todaysRates = {
     paper: 0.15,
@@ -54,7 +66,7 @@ const TransactionsScreen = ({ route }) => {
       const response = await openPicker({
         selectedAssets: photo,
         mediaType: 'image',
-        doneTitle: 'Xong',
+        doneTitle: 'Done',
         singleSelectedMode,
         isCrop: true,
       });
@@ -71,28 +83,42 @@ const TransactionsScreen = ({ route }) => {
     } catch (e) {}
   };
 
-  const submit = async () => {
+  const submit = async (currentRate, totalSale) => {
+    setLoading(true);
     const txId = generateTransactionId('test');
-    const mockItems = [
-      {
-        category: selectedCategory,
-        weight,
-        photo,
-        price: 0.5,
-        rate: 0.5,
-      },
-    ];
+    const imageUrl = await saveImageToStorage(txId, 'file://' + photo.path);
 
-    const mocktransaction = {
+    const transaction = {
       id: txId,
       timestamp: Date.now(),
       centerId: 'test',
+      imageUrl,
       status: 'pending',
-      items: mockItems,
-      user,
+      items: {
+        category: selectedCategory,
+        weight,
+        price: totalSale,
+        rate: currentRate,
+      },
+      userId: user.uid,
     };
 
-    await createTransactionFirestore(mocktransaction, 'test');
+    console.log('transaction', transaction);
+
+    try {
+      await createTransactionFirestore(transaction);
+      setLoading(false); // Set loading state to false when the submit process is complete
+    } catch (error) {
+      setLoading(false); // Set loading state to false if there is an error during the submit process
+      console.log('Error:', error);
+    } finally {
+      setIsModalVisible(true);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+    navigation.pop(2);
   };
 
   console.log('selectedCategory', selectedCategory);
@@ -138,11 +164,14 @@ const TransactionsScreen = ({ route }) => {
         >
           {i18n
             .t('recycleCategories', { returnObjects: true })
-            .map((category) => (
-              <Picker.Item label={category.label} value={category.value} />
+            .map((category, index) => (
+              <Picker.Item
+                key={index}
+                label={category.label}
+                value={category.value}
+              />
             ))}
         </Picker>
-
         <Text variant="labelLarge" style={{ marginBottom: 2 }}>
           Berat (KG)
         </Text>
@@ -182,12 +211,33 @@ const TransactionsScreen = ({ route }) => {
         </View>
         <Divider />
         <TouchableOpacity
-          onPress={submit}
-          style={styles.doneButton}
+          onPress={() => submit(currentRate, totalSale)}
+          style={[
+            weight && photo && selectedCategory
+              ? styles.doneButton
+              : styles.disabledButton,
+          ]}
           disabled={weight && photo && selectedCategory ? false : true}
         >
-          <Text style={styles.doneButtonText}>Selesai</Text>
+          {loading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Text style={styles.doneButtonText}>Selesai</Text>
+          )}
         </TouchableOpacity>
+
+        <Portal>
+          <Dialog visible={isModalVisible} onDismiss={closeModal}>
+            <Dialog.Title>Kitar Semula Berjaya</Dialog.Title>
+            <Dialog.Actions style={{ alignSelf: 'center' }}>
+              <Button
+                onPress={closeModal}
+                title="Okay"
+                color={style.colors.primary}
+              />
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </View>
     </View>
   );
@@ -287,6 +337,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     alignSelf: 'center',
+  },
+  disabledButton: {
+    opacity: 0.5,
+    backgroundColor: style.colors.background.light.lightGray,
+    width: '80%',
+    paddingVertical: 16,
+    margin: 14,
+    borderRadius: 12,
+    // additional styles for the disabled button
+  },
+  modalContainer: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  modalButton: {
+    backgroundColor: '#3498db',
+    padding: 10,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
