@@ -1,22 +1,27 @@
 // App.tsx
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useRef } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import AppNavigation from './navigation/AppNavigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Provider } from 'react-native-paper';
 import { getNews } from './firebase/firebaseUtils';
+import { LogBox } from 'react-native';
 
 export const AuthContext = createContext({});
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [news, setNews] = useState([]);
+  LogBox.ignoreAllLogs();
+  const userRef = useRef(null);
+
   useEffect(() => {
     const restoreUser = async () => {
       try {
         const userData = await AsyncStorage.getItem('user');
         if (userData) {
-          setUser(JSON.parse(userData));
+          userRef.current = JSON.parse(userData);
+          setUser(userRef.current);
         }
       } catch (error) {
         console.log('Error restoring user data:', error);

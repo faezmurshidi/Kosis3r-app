@@ -117,15 +117,19 @@ const LoginScreen = ({ navigation }) => {
         barStyle="dark-content" // Change the text/icons color (options: 'light-content', 'dark-content', or 'default')
       />
 
-      <Image
-        source={logo}
-        style={{ alignSelf: 'center', padding: paddingValue }}
-        resizeMode="contain"
-      />
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
+        <Image
+          source={logo}
+          style={{
+            alignSelf: 'center',
+            height: 100,
+            width: 300,
+          }}
+          resizeMode="contain"
+        />
         <Text variant="labelLarge" style={{ margin: 12, alignSelf: 'center' }}>
           {i18n.t('loginRegister')}
         </Text>

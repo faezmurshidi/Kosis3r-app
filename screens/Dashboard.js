@@ -8,6 +8,7 @@ import {
   StatusBar,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { Text, Card } from 'react-native-paper';
 import CustomButton from '../components/CustomButton';
@@ -18,6 +19,7 @@ import { AuthContext } from '../App';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Carousel from 'react-native-snap-carousel';
 import { fetchUserFromFirestore } from '../firebase/firebaseUtils';
+import logo from '../assets/header.png';
 
 const Dashboard = ({ navigation }) => {
   const { user, news, setUser } = useContext(AuthContext);
@@ -46,7 +48,7 @@ const Dashboard = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar
-        backgroundColor={style.colors.gray} // Change the background color of the status bar
+        backgroundColor={style.colors.background.light.offwhite} // Change the background color of the status bar
         barStyle="dark-content" // Change the text/icons color (options: 'light-content', 'dark-content', or 'default')
       />
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -57,6 +59,15 @@ const Dashboard = ({ navigation }) => {
           >
             KitaKitar
           </Text> */}
+          <Image
+            source={logo}
+            style={{
+              height: 60,
+              width: 180,
+              marginLeft: 6,
+            }}
+            resizeMode="contain"
+          />
           <View style={styles.welcomeCard}>
             {user?.name && (
               <Text variant="headlineSmall" style={{ alignSelf: 'center' }}>
@@ -79,13 +90,13 @@ const Dashboard = ({ navigation }) => {
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <FontAwesome5
                   name={'money-bill-wave'}
-                  color={style.colors.primary}
+                  color={style.colors.background.light.offwhite}
                   size={16}
                   paddingHorizontal={6}
                 />
                 <Text
                   variant="headlineSmall"
-                  style={{ color: style.colors.secondary }}
+                  style={{ color: style.colors.background.light.offwhite }}
                 >
                   RM {user?.wallet || 0}
                 </Text>
@@ -126,15 +137,14 @@ const Dashboard = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: style.colors.background.light.offwhite,
+    backgroundColor: style.colors.gray,
   },
   welcomeCard: {
     padding: 6,
-    marginTop: 4,
   },
   profileSection: {
     marginBottom: 4,
-    backgroundColor: style.colors.gray,
+    backgroundColor: style.colors.background.light.offwhite,
     paddingBottom: 8,
   },
   greetingText: {
