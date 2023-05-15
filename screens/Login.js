@@ -5,6 +5,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   StatusBar,
+  Image,
+  Dimensions,
 } from 'react-native';
 import {
   Button,
@@ -21,6 +23,7 @@ import i18n from '../i18n';
 import LanguageSelector from '../components/LanguageSelector';
 import style from '../styles';
 import { fetchUserFromFirestore } from '../firebase/firebaseUtils';
+import logo from '../assets/header.png';
 
 const theme = {
   ...DefaultTheme,
@@ -31,6 +34,9 @@ const theme = {
     accent: '#f1c40f',
   },
 };
+
+const windowWidth = Dimensions.get('window').width;
+const paddingValue = (windowWidth - 24) / 12; // Adjust the value as per your needs
 
 const LoginScreen = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState('+60');
@@ -107,15 +113,19 @@ const LoginScreen = ({ navigation }) => {
   return (
     <PaperProvider theme={theme}>
       <StatusBar
-        backgroundColor={style.colors.background.light.offwhite} // Change the background color of the status bar
+        backgroundColor={style.colors.paper.offwhite} // Change the background color of the status bar
         barStyle="dark-content" // Change the text/icons color (options: 'light-content', 'dark-content', or 'default')
+      />
+
+      <Image
+        source={logo}
+        style={{ alignSelf: 'center', padding: paddingValue }}
+        resizeMode="contain"
       />
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <Title style={styles.title}>KitaKitar</Title>
-
         <Text variant="labelLarge" style={{ margin: 12, alignSelf: 'center' }}>
           {i18n.t('loginRegister')}
         </Text>

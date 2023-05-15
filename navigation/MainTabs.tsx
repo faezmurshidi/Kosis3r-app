@@ -7,6 +7,7 @@ import TransactionsScreen from '../screens/Transactions';
 import PaymentScreen from '../screens/Payments';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import ProfileStack from './ProfileStack';
+import i18n from '../i18n';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -27,7 +28,6 @@ const DashboardStack = () => {
 const MainTabs = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Dashboard"
       screenOptions={{
         tabBarShowLabel: false,
         tabBarActiveTintColor: '#1e88e5',
@@ -62,6 +62,7 @@ const MainTabs = () => {
         name="Akaun"
         component={PaymentScreen}
         options={{
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="credit-card" color={color} size={size + 4} />
           ),
@@ -71,6 +72,7 @@ const MainTabs = () => {
         name="Profil"
         component={ProfileStack}
         options={{
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="user" color={color} size={size + 4} />
           ),

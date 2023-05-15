@@ -88,7 +88,6 @@ export const fetchUserFromFirestore = async (user, setUser) => {
 export const createTransactionFirestore = async (transaction) => {
   console.log('Creating tx:', transaction);
   const transactionsRef = firestore().collection('transactions');
-
   console.log('Transactions ref:', transactionsRef);
   try {
     await transactionsRef.doc(transaction.id).set(transaction);

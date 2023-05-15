@@ -104,20 +104,9 @@ const PaymentScreen = ({ navigation }) => {
 
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    { key: 'first', title: 'Transaksi' },
-    { key: 'second', title: 'Pendapatan' },
+    { key: 'first', title: i18n.t('Payments.transactionsHistory') },
+    { key: 'second', title: i18n.t('Payments.earnings') },
   ]);
-
-  const test = {
-    centerId: 'test',
-    id: 'test-1683966535632',
-    imageUrl:
-      'https://firebasestorage.googleapis.com/v0/b/kosis-dev.appspot.com/o/transactionImage%2Ftest-1683966535632?alt=media&token=27eb4dea-1c7e-4525-ad18-5b8416705f58',
-    items: { category: 'electronics', price: '25.00', rate: 1, weight: '25' },
-    status: 'pending',
-    timestamp: 1683966536482,
-    userId: 'Ums5axAq9cUErONIcmucUBSis7c2',
-  };
 
   const renderItem = ({ item, index }) => {
     console.log('test', item);
@@ -129,7 +118,8 @@ const PaymentScreen = ({ navigation }) => {
           <View style={styles.transactionInfoContainer}>
             <Text variant="titleSmall">{date}</Text>
             <Text variant="bodySmall">
-              {item.items.weight}g of {item.items.category} @ {item.items.rate}
+              {item.items.weight}g of {item.items.category} @ RM
+              {item.items.rate}
               /Kg
             </Text>
             <Text
@@ -199,7 +189,19 @@ const PaymentScreen = ({ navigation }) => {
 
   const SecondRoute = () => (
     <View style={{ flex: 1, margin: 12 }}>
-      <LineChart
+      <View
+        style={{ alignSelf: 'center', alignItems: 'center', marginTop: 40 }}
+      >
+        <FontAwesome5Icon
+          name="chart-line"
+          size={40}
+          color={style.colors.background.dark.offBlack}
+        />
+        <Text color={style.colors.background.light.offwhite}>
+          {i18n.t('Payments.noEarned')}
+        </Text>
+      </View>
+      {/* <LineChart
         data={{
           labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
           datasets: [{ data: [50, 100, 150, 200, 250] }],
@@ -214,7 +216,7 @@ const PaymentScreen = ({ navigation }) => {
           color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
         }}
         bezier
-      />
+      /> */}
     </View>
   );
 

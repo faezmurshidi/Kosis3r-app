@@ -17,13 +17,14 @@ import { AuthContext } from '../App';
 import style from '../styles';
 import { fetchUserFromFirestore } from '../firebase/firebaseUtils';
 import { Avatar } from 'react-native-paper';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import { CommonActions } from '@react-navigation/native';
 import i18n from '../i18n';
 
 const ProfileScreen = ({ navigation }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { user, setUser } = useContext(AuthContext);
   const [refreshing, setRefreshing] = useState(false);
+  const [language, setLanguage] = useState(i18n.language);
 
   console.log(i18n);
 
@@ -39,31 +40,38 @@ const ProfileScreen = ({ navigation }) => {
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'ms' : 'en');
+    setLanguage(i18n.language);
+    // Reset all screens to the initial screen
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'MainTabs' }], // Replace 'MainTabs' with the name of your main screen component
+      }),
+    );
   };
 
   const sections = [
     {
-      title: 'User Details',
+      title: i18n.t('Profile.userDetails'),
       data: [
-        { title: 'Name', value: user.name },
-        { title: 'Email', value: user.email },
-        { title: 'Phone', value: user.phoneNumber },
+        { title: i18n.t('Profile.name'), value: user?.name },
+        { title: i18n.t('Profile.email'), value: user?.email },
+        { title: i18n.t('Profile.phone'), value: user?.phoneNumber },
         {
-          title: 'Language',
-          value: i18n.language === 'en' ? 'English' : 'Bahasa',
+          title: i18n.t('Profile.language'),
+          value: language === 'en' ? 'English' : 'Bahasa',
           onPress: toggleLanguage,
         },
       ],
     },
     {
-      title: 'Account',
+      title: i18n.t('Profile.account'),
       data: [
         {
-          title: 'Edit Details',
+          title: i18n.t('Profile.editDetails'),
           icon: 'edit',
           onPress: () => navigation.navigate('EditProfile'),
         },
-        { title: 'Dark Mode', icon: 'gear' },
       ],
     },
   ];
@@ -126,7 +134,7 @@ const ProfileScreen = ({ navigation }) => {
       />
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
+        <Text style={styles.logoutText}>{i18n.t('Profile.logout')}</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

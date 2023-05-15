@@ -4,12 +4,22 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   en: {
     translation: {
+      screen: {
+        dashboard: 'Dashboard',
+        login: 'Login',
+        register: 'Register',
+        transaction: 'Transaction',
+        payment: 'Payment',
+        profile: 'Profile',
+        editProfile: 'Edit Profile',
+      },
       login: 'Login',
       loginRegister: 'Login / Register',
       selectLanguage: 'Select Language',
       phoneNo: 'Phone Number',
       Dashboard: {
         title: 'Dashboard',
+        greeting: 'Hello, ',
         balance: 'Current Balance',
         news: 'News',
       },
@@ -17,8 +27,23 @@ const resources = {
         title: 'Payments',
         balance: 'Current Balance',
         transactionsHistory: 'Transactions History',
+        earnings: 'Earnings',
         noTransactions: 'No transactions yet. Start recycling to earn points!',
+        noEarned: 'No earnings yet. Start recycling to get earning reports!',
       },
+      Profile: {
+        title: 'Profile',
+        userDetails: 'User Details',
+        name: 'Name',
+        email: 'Email',
+        phone: 'Phone Number',
+        language: 'Language',
+        account: 'Account',
+        editDetails: 'Edit Details',
+        darkMode: 'Dark Mode',
+        logout: 'Logout',
+      },
+
       recycleCategories: [
         { label: 'Paper', value: 'paper' },
         { label: 'Cardboard', value: 'cardboard' },
@@ -44,12 +69,22 @@ const resources = {
   },
   ms: {
     translation: {
+      screen: {
+        dashboard: 'Utama',
+        login: 'Log Masuk',
+        register: 'Daftar',
+        transaction: 'Jualan',
+        payment: 'Pembayaran',
+        profile: 'Profil',
+        editProfile: 'Edit Profil',
+      },
       login: 'Log masuk',
       loginRegister: 'Log masuk / Daftar',
       selectLanguage: 'Pilih Bahasa',
       phoneNo: 'No Telefon',
       Dashboard: {
         title: 'Papan Pemuka',
+        greeting: 'Selamat Datang, ',
         balance: 'Baki Semasa',
         news: 'Berita',
       },
@@ -57,8 +92,23 @@ const resources = {
         title: 'Pembayaran',
         balance: 'Baki Semasa',
         transactionsHistory: 'Sejarah Transaksi',
+        earnings: 'Pendapatan',
         noTransactions:
           'Tiada transaksi lagi. Mula mengitar semula untuk mendapatkan mata!',
+        noEarned:
+          'Tiada pendapatan lagi. Mula mengitar semula untuk mendapatkan laporan pendapatan!',
+      },
+      Profile: {
+        title: 'Profil',
+        userDetails: 'Maklumat Pengguna',
+        name: 'Nama',
+        email: 'Emel',
+        phone: 'No Telefon',
+        language: 'Bahasa',
+        account: 'Akaun',
+        editDetails: 'Edit Maklumat',
+        darkMode: 'Mod Gelap',
+        logout: 'Log Keluar',
       },
       recycleCategories: [
         { label: 'Paper', value: 'paper' },

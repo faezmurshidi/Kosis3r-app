@@ -7,6 +7,7 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
+    "restart-metro": "react-native start --reset-cache",
     "test": "jest",
     "build-android": "cd android && ./gradlew assembleRelease",
     "build-aab": "cd android && ./gradlew bundleRelease"
@@ -52,6 +53,7 @@
     "react-native-shimmer-placeholder": "^2.0.9",
     "react-native-snap-carousel": "^3.9.1",
     "react-native-svg": "^13.9.0",
+    "react-native-svg-transformer": "^1.0.0",
     "react-native-tab-view": "^3.5.1",
     "react-native-vector-icons": "^9.2.0"
   },

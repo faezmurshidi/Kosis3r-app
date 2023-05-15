@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   colors: {
     primary: '#4CAF50',
     secondary: '#8BC34A',
-    tertiary: '#FFFFFF',
+    tertiary: '#C3E4B7',
     gray: '#CDCDCD',
     paper: {
       ivory: '#FAF0E6',

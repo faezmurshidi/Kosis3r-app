@@ -58,9 +58,12 @@ const Dashboard = ({ navigation }) => {
             KitaKitar
           </Text> */}
           <View style={styles.welcomeCard}>
-            <Text variant="headlineSmall" style={{ alignSelf: 'center' }}>
-              Selamat Datang, {user.name}
-            </Text>
+            {user?.name && (
+              <Text variant="headlineSmall" style={{ alignSelf: 'center' }}>
+                {i18n.t('Dashboard.greeting')}
+                {user.name}
+              </Text>
+            )}
             <Text
               variant="bodySmall"
               style={{
@@ -84,7 +87,7 @@ const Dashboard = ({ navigation }) => {
                   variant="headlineSmall"
                   style={{ color: style.colors.secondary }}
                 >
-                  RM {user.wallet || 0}
+                  RM {user?.wallet || 0}
                 </Text>
               </View>
             </TouchableOpacity>
