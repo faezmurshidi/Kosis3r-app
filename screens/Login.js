@@ -7,6 +7,7 @@ import {
   StatusBar,
   Image,
   Dimensions,
+  ToastAndroid,
 } from 'react-native';
 import {
   Button,
@@ -86,9 +87,9 @@ const LoginScreen = ({ navigation }) => {
       const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
       console.log('confirmation', confirmation);
       setConfirm(confirmation);
-      codeInputRef.current.focus();
     } catch (error) {
       // Handle login errors
+      ToastAndroid.show(error.message, ToastAndroid.LONG);
     } finally {
       setLoading(false);
     }
@@ -98,7 +99,7 @@ const LoginScreen = ({ navigation }) => {
     try {
       await confirm.confirm(code);
     } catch (error) {
-      console.log('Invalid code.');
+      ToastAndroid.show('Invalid code.', ToastAndroid.LONG);
     }
   }
 
@@ -145,6 +146,7 @@ const LoginScreen = ({ navigation }) => {
           outlineColor={style.colors.secondary}
           returnKeyType="next"
           onSubmitEditing={loginUser}
+          disabled={confirm}
         />
         {!confirm && (
           <Button mode="contained" onPress={loginUser} style={styles.button}>

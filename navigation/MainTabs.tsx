@@ -39,7 +39,7 @@ const MainTabs = () => {
           paddingTop: 8,
           paddingBottom: 8,
           height: 60, // Add custom height
-          elevation: 10,
+          elevation: 14,
           shadowColor: '#000',
           shadowOpacity: 0.1,
           shadowOffset: { width: 0, height: -2 },

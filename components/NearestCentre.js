@@ -13,7 +13,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
 
-const NearestCentre = ({ showMyLocation, onPress }) => {
+const NearestCentre = ({ onPress }) => {
   const [location, setLocation] = useState(null);
   const [nearestCenter, setNearestCenter] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -28,7 +28,7 @@ const NearestCentre = ({ showMyLocation, onPress }) => {
             setLocation(position.coords);
           },
           (error) => setErrorMsg(error.message),
-          { enableHighAccuracy: false, timeout: 40000, maximumAge: 1800000 },
+          { enableHighAccuracy: true, timeout: 40000, maximumAge: 1800000 },
         );
       } else {
         setErrorMsg('Location permission not granted');
@@ -54,7 +54,7 @@ const NearestCentre = ({ showMyLocation, onPress }) => {
             }
           },
           (error) => setErrorMsg(error.message),
-          { enableHighAccuracy: false, timeout: 40000, maximumAge: 1800000 },
+          { enableHighAccuracy: true, timeout: 40000, maximumAge: 1800000 },
         );
       } else {
         // Request permission

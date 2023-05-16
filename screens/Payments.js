@@ -82,7 +82,7 @@ const PaymentScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const transactions = await getTransactions(user.uid);
+        const transactions = await getTransactions(user?.uid);
         console.log('transactions@Payments', transactions);
         // Do something with the transactions
         if (transactions) {
@@ -95,7 +95,7 @@ const PaymentScreen = ({ navigation }) => {
     };
 
     fetchTransactions();
-  }, [user.uid]);
+  }, [user?.uid]);
 
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
@@ -241,7 +241,9 @@ const PaymentScreen = ({ navigation }) => {
     >
       <View style={styles.balanceSection}>
         <Text style={styles.balanceText}>{i18n.t('Payments.balance')}</Text>
-        <Text style={{ fontSize: 31, fontWeight: '900' }}>RM{user.wallet}</Text>
+        <Text style={{ fontSize: 31, fontWeight: '900' }}>
+          RM{user?.wallet}
+        </Text>
         <CustomButton
           icon="wallet"
           title={i18n.t('Payments.title')}
