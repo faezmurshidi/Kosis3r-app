@@ -1,4 +1,10 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -25,6 +31,7 @@ import LanguageSelector from '../components/LanguageSelector';
 import style from '../styles';
 import { fetchUserFromFirestore } from '../firebase/firebaseUtils';
 import logo from '../assets/header.png';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const theme = {
   ...DefaultTheme,
@@ -46,35 +53,42 @@ const LoginScreen = ({ navigation }) => {
   const [language, setLanguage] = useState('en');
   const [code, setCode] = useState('');
   const [confirm, setConfirm] = useState(null);
+  const [loginMethod, setLoginMethod] = useState('phone');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const codeInputRef = useRef(null);
 
   // Handle login
-  function onAuthStateChanged(user) {
-    setLoading(true);
-    if (user) {
-      console.log('user@Firebase', user);
-      // Some Android devices can automatically process the verification code (OTP) message, and the user would NOT need to enter the code.
-      // Actually, if he/she tries to enter it, he/she will get an error message because the code was already used in the background.
-      // In this function, make sure you hide the component(s) for entering the code and/or navigate away from this screen.
-      // It is also recommended to display a message to the user informing him/her that he/she has successfully logged in.
-      // setUser({ uid: user.uid, phoneNumber: user.phoneNumber });
-      fetchUserFromFirestore(user, setUser).then((hasRegistered) => {
-        console.log('hasRegistered', hasRegistered);
-        setLoading(false);
-        if (hasRegistered) {
-          navigation.navigate('MainTabs', { screen: 'Dashboard' });
-        } else {
-          navigation.replace('EditProfile');
-        }
-      });
-    }
-  }
+  const onAuthStateChanged = useCallback(
+    (user) => {
+      setLoading(true);
+      if (user) {
+        console.log('user@Firebase', user);
+        // Some Android devices can automatically process the verification code (OTP) message, and the user would NOT need to enter the code.
+        // Actually, if he/she tries to enter it, he/she will get an error message because the code was already used in the background.
+        // In this function, make sure you hide the component(s) for entering the code and/or navigate away from this screen.
+        // It is also recommended to display a message to the user informing him/her that he/she has successfully logged in.
+        // setUser({ uid: user.uid, phoneNumber: user.phoneNumber });
+        fetchUserFromFirestore(user, setUser).then((hasRegistered) => {
+          console.log('hasRegistered', hasRegistered);
+          setLoading(false);
+          if (hasRegistered) {
+            navigation.navigate('MainTabs', { screen: 'Dashboard' });
+          } else {
+            navigation.replace('EditProfile');
+          }
+        });
+      }
+    },
+    [navigation, setUser],
+  );
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
-  }, []);
+    return () => subscriber(); // unsubscribe on unmount
+  }, [onAuthStateChanged]);
 
   const changeLanguage = (newLanguage) => {
     i18n.changeLanguage(newLanguage);
@@ -95,13 +109,47 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  async function confirmCode() {
+  const loginWithEmail = async () => {
+    console.log('loginWithEmail');
+    setLoading(true);
+    try {
+      await auth().signInWithEmailAndPassword(email, password);
+    } catch (error) {
+      // Handle login errors
+      ToastAndroid.show(error.message, ToastAndroid.LONG);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const registerWithEmail = async () => {
+    console.log('registerWithEmail');
+    setLoading(true);
+    try {
+      if (password !== confirmPassword) {
+        ToastAndroid.show(
+          'Password and confirm password do not match.',
+          ToastAndroid.LONG,
+        );
+        return;
+      }
+      await auth().createUserWithEmailAndPassword(email, password);
+      setLoginMethod('email');
+    } catch (error) {
+      // Handle login errors
+      ToastAndroid.show(error.message, ToastAndroid.LONG);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const confirmCode = async () => {
     try {
       await confirm.confirm(code);
     } catch (error) {
       ToastAndroid.show('Invalid code.', ToastAndroid.LONG);
     }
-  }
+  };
 
   const skipLogin = () => {
     const mockUser = {
@@ -111,11 +159,13 @@ const LoginScreen = ({ navigation }) => {
     setUser(mockUser);
   };
 
+  console.log('loginMethod', loginMethod);
+
   return (
     <PaperProvider theme={theme}>
       <StatusBar
-        backgroundColor={style.colors.paper.offwhite} // Change the background color of the status bar
-        barStyle="dark-content" // Change the text/icons color (options: 'light-content', 'dark-content', or 'default')
+        backgroundColor={style.colors.paper.offwhite}
+        barStyle="dark-content"
       />
 
       <KeyboardAvoidingView
@@ -132,25 +182,27 @@ const LoginScreen = ({ navigation }) => {
           resizeMode="contain"
         />
         <Text variant="labelLarge" style={{ margin: 12, alignSelf: 'center' }}>
-          {i18n.t('loginRegister')}
+          {loginMethod !== 'register' ? i18n.t('login') : i18n.t('register')}
         </Text>
 
-        <TextInput
-          label={i18n.t('phoneNo')}
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          mode="outlined"
-          keyboardType="phone-pad"
-          style={styles.input}
-          activeOutlineColor={style.colors.accent}
-          outlineColor={style.colors.secondary}
-          returnKeyType="next"
-          onSubmitEditing={loginUser}
-          disabled={confirm}
-        />
-        {!confirm && (
+        {loginMethod === 'phone' && (
+          <TextInput
+            label={i18n.t('phoneNo')}
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            mode="outlined"
+            keyboardType="phone-pad"
+            style={styles.input}
+            activeOutlineColor={style.colors.accent}
+            outlineColor={style.colors.secondary}
+            returnKeyType="next"
+            onSubmitEditing={loginUser}
+            disabled={confirm}
+          />
+        )}
+        {!confirm && loginMethod === 'phone' && (
           <Button mode="contained" onPress={loginUser} style={styles.button}>
-            {i18n.t('login')}
+            {i18n.t('requestOtP')}
           </Button>
         )}
         {confirm && (
@@ -176,6 +228,117 @@ const LoginScreen = ({ navigation }) => {
             </Button>
           </>
         )}
+
+        {loginMethod !== 'phone' && (
+          <TextInput
+            label={i18n.t('email')}
+            value={email}
+            onChangeText={setEmail}
+            mode="outlined"
+            keyboardType="email-address"
+            style={styles.input}
+            activeOutlineColor={style.colors.accent}
+            outlineColor={style.colors.secondary}
+            returnKeyType="next"
+            onSubmitEditing={loginUser}
+            disabled={confirm}
+          />
+        )}
+
+        {loginMethod !== 'phone' && (
+          <TextInput
+            label={i18n.t('password')}
+            value={password}
+            onChangeText={setPassword}
+            mode="outlined"
+            secureTextEntry
+            style={styles.input}
+            activeOutlineColor={style.colors.accent}
+            outlineColor={style.colors.secondary}
+            returnKeyType="done"
+            onSubmitEditing={
+              loginMethod === 'phone' ? setLoginMethod('email') : loginWithEmail
+            }
+          />
+        )}
+
+        {loginMethod === 'register' && (
+          <TextInput
+            label={i18n.t('confirmPassword')}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            mode="outlined"
+            secureTextEntry
+            style={styles.input}
+            activeOutlineColor={style.colors.accent}
+            outlineColor={style.colors.secondary}
+            returnKeyType="done"
+            onSubmitEditing={registerWithEmail}
+          />
+        )}
+
+        {confirm && loginMethod === 'phone' && (
+          <Button mode="contained" onPress={loginUser} style={styles.button}>
+            {'Login'}
+          </Button>
+        )}
+
+        {loginMethod === 'email' && (
+          <Button
+            mode="contained"
+            onPress={loginWithEmail}
+            style={styles.button}
+          >
+            Login
+          </Button>
+        )}
+
+        {loginMethod !== 'register' && (
+          <Text
+            variant="labelSmall"
+            style={{ margin: 12, alignSelf: 'center' }}
+          >
+            OR
+          </Text>
+        )}
+
+        {loginMethod === 'phone' && (
+          <Button
+            mode="contained"
+            onPress={() => setLoginMethod('email')}
+            style={styles.button}
+          >
+            Login with Email
+          </Button>
+        )}
+
+        {loginMethod !== 'phone' && (
+          <Button
+            mode="contained"
+            onPress={() =>
+              loginMethod !== 'register'
+                ? setLoginMethod('register')
+                : registerWithEmail()
+            }
+            style={styles.button}
+          >
+            Register
+          </Button>
+        )}
+
+        {loginMethod !== 'phone' && (
+          <TouchableOpacity
+            onPress={() => setLoginMethod('phone')}
+            style={{ alignSelf: 'center' }}
+          >
+            <Text variant="labelMedium" style={{ margin: 16 }}>
+              {loginMethod === 'email'
+                ? 'Use Phone Number Instead'
+                : 'Login Instead'}
+            </Text>
+          </TouchableOpacity>
+        )}
+
         {__DEV__ && (
           <Button mode="outlined" onPress={skipLogin} style={styles.skip}>
             Skip Login (Dev Only)

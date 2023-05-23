@@ -77,7 +77,11 @@ export const fetchUserFromFirestore = async (user, setUser) => {
       return true;
     } else {
       console.log('User not found in Firestore');
-      setUser({ uid: user.uid, phoneNumber: user.phoneNumber });
+      setUser({
+        uid: user.uid,
+        phoneNumber: user.phoneNumber,
+        email: user.email,
+      });
       return false;
     }
   } catch (error) {

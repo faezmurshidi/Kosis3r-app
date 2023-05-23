@@ -14,7 +14,9 @@ const resources = {
         editProfile: 'Edit Profile',
       },
       login: 'Login',
+      requestOtP: 'Request OTP',
       loginRegister: 'Login / Register',
+      confirmPassword: 'Confirm Password',
       selectLanguage: 'Select Language',
       phoneNo: 'Phone Number',
       Dashboard: {
@@ -79,7 +81,9 @@ const resources = {
         editProfile: 'Edit Profil',
       },
       login: 'Log masuk',
+      requestOtP: 'Minta OTP',
       loginRegister: 'Log masuk / Daftar',
+      confirmPassword: 'Sahkan Kata Laluan',
       selectLanguage: 'Pilih Bahasa',
       phoneNo: 'No Telefon',
       Dashboard: {

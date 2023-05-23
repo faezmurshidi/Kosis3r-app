@@ -103,6 +103,7 @@ const RegisterScreen = ({ navigation }) => {
           mode="outlined"
           activeOutlineColor={style.colors.accent}
           outlineColor={style.colors.secondary}
+          disabled={email ? true : false}
         />
         <TextInput
           label="Phone number"
@@ -111,7 +112,7 @@ const RegisterScreen = ({ navigation }) => {
           mode="outlined"
           activeOutlineColor={style.colors.accent}
           outlineColor={style.colors.secondary}
-          disabled={true}
+          disabled={phoneNumber ? true : false}
         />
         <View>
           <TextInput
