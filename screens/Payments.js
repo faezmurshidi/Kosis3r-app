@@ -32,6 +32,7 @@ const PaymentScreen = ({ navigation }) => {
   const [withdrawMethod, setWithdrawMethod] = useState('ewallet');
   const [txHistory, setTxHistory] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const category = i18n.t('recycleCategories', { returnObjects: true });
 
   const fetchTransactions = async () => {
     setRefreshing(true);
@@ -59,6 +60,8 @@ const PaymentScreen = ({ navigation }) => {
 
   const layout = useWindowDimensions();
 
+  console.log('category', category);
+
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: 'first', title: i18n.t('Payments.transactionsHistory') },
@@ -68,6 +71,8 @@ const PaymentScreen = ({ navigation }) => {
   const renderItem = ({ item, index }) => {
     console.log('test', item);
     const date = moment(item.timestamp).format('DD MMMM YYYY');
+    const cat =
+      (category && category.find((x) => x.id === item.items.category)) || null;
 
     return (
       <View>
@@ -75,7 +80,7 @@ const PaymentScreen = ({ navigation }) => {
           <View style={styles.transactionInfoContainer}>
             <Text variant="titleSmall">{date}</Text>
             <Text variant="bodySmall">
-              {item.items.weight}g of {item.items.category} @ RM
+              {item.items.weight}KG of {cat && cat.label} @ RM
               {item.items.rate}
               /Kg
             </Text>
