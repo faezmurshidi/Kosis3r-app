@@ -35,7 +35,7 @@ const CustomButton = ({ onPress, title, icon }) => {
         <Text
           style={[styles.typography.primaryButton, buttonStyles.buttonText]}
         >
-          {title}
+          {title.toUpperCase()}
         </Text>
       </View>
     </LinearGradient>

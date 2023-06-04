@@ -37,6 +37,7 @@
     "lottie-react-native": "^5.1.5",
     "moment": "^2.29.4",
     "react": "18.2.0",
+    "react-hook-form": "^7.44.3",
     "react-i18next": "^12.2.2",
     "react-native": "0.71.6",
     "react-native-chart-kit": "^6.12.0",

@@ -22,42 +22,30 @@ import {
 } from '../firebase/firebaseUtils';
 import { AuthContext } from '../App';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import { use } from 'i18next';
+import CustomButton from '../components/CustomButton';
 
 const TransactionsScreen = ({ route, navigation }) => {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const nearestCenter = route.params?.nearestCenter;
+  const category = i18n.t('recycleCategories', { returnObjects: true });
+  const [selectedCategory, setSelectedCategory] = useState(0);
   const [photo, setPhoto] = useState(null);
   const [weight, setWeight] = useState('');
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [rate, setRate] = useState(0);
+  const [txId, setTxId] = useState(null);
 
   useEffect(() => {
-    const defaultCategory =
-      i18n.t('recycleCategories', { returnObjects: true })[0]?.value || '';
-    setSelectedCategory(defaultCategory);
-  }, []);
+    const getRate = async () => {
+      const latestRate = await getCurrentRate('default');
+      console.log('latestRate', latestRate);
+      setRate(latestRate);
+    };
 
-  const todaysRates = {
-    paper: 0.15,
-    cardboard: 0.1,
-    'plastic bottles': 0.2,
-    'plastic containers': 0.1,
-    'glass bottles': 0.25,
-    'glass jars': 0.15,
-    'aluminum cans': 0.3,
-    'steel cans': 0.2,
-    'tin cans': 0.1,
-    electronics: 1,
-    batteries: 0.5,
-    textiles: 0.2,
-    furniture: 5,
-    'yard waste': 0.1,
-    'food waste': 0.05,
-    'metal scrap': 0.1,
-    'ink cartridges': 0.5,
-    'fluorescent bulbs': 0.75,
-    appliances: 10,
-  };
+    getRate();
+  }, []);
 
   const onPicker = async () => {
     try {
@@ -85,22 +73,26 @@ const TransactionsScreen = ({ route, navigation }) => {
 
   const submit = async (currentRate, totalSale) => {
     setLoading(true);
-    const txId = generateTransactionId('test');
-    const imageUrl = await saveImageToStorage(txId, 'file://' + photo.path);
+    const transactionId = generateTransactionId(nearestCenter.id);
+
+    const imageUrl = await saveImageToStorage(
+      transactionId,
+      'file://' + photo.path,
+    );
 
     const transaction = {
-      id: txId,
+      id: transactionId,
       timestamp: Date.now(),
-      centerId: 'test',
+      center: nearestCenter,
       imageUrl,
-      status: 'pending',
+      status: 'created', // created, approved, pending, paid
       items: {
-        category: selectedCategory,
+        category: category[selectedCategory].id,
         weight,
         price: totalSale,
         rate: currentRate,
       },
-      userId: user.uid,
+      user: user,
     };
 
     console.log('transaction', transaction);
@@ -112,6 +104,7 @@ const TransactionsScreen = ({ route, navigation }) => {
       setLoading(false); // Set loading state to false if there is an error during the submit process
       console.log('Error:', error);
     } finally {
+      setTxId(transactionId);
       setIsModalVisible(true);
     }
   };
@@ -121,15 +114,13 @@ const TransactionsScreen = ({ route, navigation }) => {
     navigation.pop(2);
   };
 
-  console.log('selectedCategory', selectedCategory);
-  const currentRate = todaysRates[selectedCategory] || 0;
-  console.log('currentRate', currentRate);
+  const currentRate = category[selectedCategory].id
+    ? rate[category[selectedCategory].id]
+    : null;
 
   const totalSale = (currentRate * weight).toFixed(2);
 
-  const nearestCenter = route.params?.nearestCenter;
-
-  console.log('photo', photo);
+  // console.log('photo', photo);
 
   return (
     <View style={styles.container}>
@@ -158,19 +149,17 @@ const TransactionsScreen = ({ route, navigation }) => {
           Jenis Barang Kitar Semula
         </Text>
         <Picker
-          selectedValue={selectedCategory}
-          onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+          selectedValue={category[selectedCategory].id}
+          onValueChange={(value, index) => {
+            setSelectedCategory(index);
+          }}
           style={styles.picker}
         >
-          {i18n
-            .t('recycleCategories', { returnObjects: true })
-            .map((category, index) => (
-              <Picker.Item
-                key={index}
-                label={category.label}
-                value={category.value}
-              />
-            ))}
+          {category.map((list, index) => {
+            return (
+              <Picker.Item key={index} label={list.label} value={list.id} />
+            );
+          })}
         </Picker>
         <Text variant="labelLarge" style={{ marginBottom: 2 }}>
           Berat (KG)
@@ -187,10 +176,10 @@ const TransactionsScreen = ({ route, navigation }) => {
           outlineColor={style.colors.secondary}
         />
 
-        {selectedCategory && (
+        {category[selectedCategory] && (
           <View style={styles.todaysPrice}>
-            <Text>Harga Hari Ini:</Text>
-            <Text style={{ fontWeight: 'bold' }}>{currentRate}/g</Text>
+            <Text>Kadar Hari Ini:</Text>
+            <Text style={{ fontWeight: 'bold' }}>{currentRate}/KG</Text>
           </View>
         )}
         <TouchableOpacity onPress={onPicker} style={styles.photoButton}>
@@ -212,12 +201,8 @@ const TransactionsScreen = ({ route, navigation }) => {
         <Divider />
         <TouchableOpacity
           onPress={() => submit(currentRate, totalSale)}
-          style={[
-            weight && photo && selectedCategory
-              ? styles.doneButton
-              : styles.disabledButton,
-          ]}
-          disabled={weight && photo && selectedCategory ? false : true}
+          style={[weight && photo ? styles.doneButton : styles.disabledButton]}
+          disabled={weight && photo ? false : true}
         >
           {loading ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
@@ -228,12 +213,31 @@ const TransactionsScreen = ({ route, navigation }) => {
 
         <Portal>
           <Dialog visible={isModalVisible} onDismiss={closeModal}>
-            <Dialog.Title>Kitar Semula Berjaya</Dialog.Title>
+            <Dialog.Title style={{ alignItems: 'center' }}>
+              Kitar Semula Berjaya
+            </Dialog.Title>
+            <Dialog.Content>
+              <Text>Anda telah berjaya menjual barang kitar semula</Text>
+              <Text>kepada {nearestCenter.fasiliti}</Text>
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: 'gray',
+                  marginVertical: 10,
+                }}
+              />
+              <Text>Transaksi Id: {txId}</Text>
+              <Text>Kategori: {category[selectedCategory].id}</Text>
+              <Text>Berat: {weight}</Text>
+              <Text>Kadar Hari Ini: {currentRate}</Text>
+              <Text>Jumlah: RM{totalSale}</Text>
+            </Dialog.Content>
             <Dialog.Actions style={{ alignSelf: 'center' }}>
-              <Button
+              <CustomButton
                 onPress={closeModal}
                 title="Okay"
                 color={style.colors.primary}
+                style={{ borderRadius: 8 }}
               />
             </Dialog.Actions>
           </Dialog>

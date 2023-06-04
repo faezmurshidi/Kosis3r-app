@@ -9,6 +9,7 @@ import {
   useWindowDimensions,
   Dimensions,
   Image,
+  RefreshControl,
 } from 'react-native';
 import { Dialog, Divider, Portal, RadioButton, Text } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
@@ -25,75 +26,31 @@ import { getTransactions } from '../firebase/firebaseUtils';
 
 const screenWidth = Dimensions.get('window').width;
 
-const mockData = [
-  {
-    id: '1',
-    type: 'Paper',
-    status: 'pending',
-    amount: 100,
-    weight: 10,
-    rate: 0.15,
-    date: '2023-05-01',
-  },
-  {
-    id: '2',
-    type: 'Can',
-    status: 'pending',
-    amount: 50,
-    weight: 10,
-    rate: 0.15,
-    date: '2023-05-02',
-  },
-  {
-    id: '3',
-    type: 'UCO',
-    status: 'pending',
-    amount: 150,
-    weight: 10,
-    rate: 0.15,
-    date: '2023-05-03',
-  },
-  {
-    id: '4',
-    type: 'deposit',
-    status: 'pending',
-    amount: 200,
-    weight: 10,
-    rate: 0.15,
-    date: '2023-05-04',
-  },
-  {
-    id: '5',
-    type: 'withdraw',
-    status: 'pending',
-    amount: 75,
-    weight: 10,
-    rate: 0.15,
-    date: '2023-05-05',
-  },
-];
-
 const PaymentScreen = ({ navigation }) => {
   const { user } = useContext(AuthContext);
   const [visible, setVisible] = useState(false);
   const [withdrawMethod, setWithdrawMethod] = useState('ewallet');
   const [txHistory, setTxHistory] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchTransactions = async () => {
+    setRefreshing(true);
+    try {
+      const transactions = await getTransactions(user?.uid);
+      console.log('transactions@Payments', transactions);
+      // Do something with the transactions
+      if (transactions) {
+        setTxHistory(transactions);
+      }
+    } catch (error) {
+      // Handle error
+      console.error(error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const transactions = await getTransactions(user?.uid);
-        console.log('transactions@Payments', transactions);
-        // Do something with the transactions
-        if (transactions) {
-          setTxHistory(transactions);
-        }
-      } catch (error) {
-        // Handle error
-        console.error(error);
-      }
-    };
-
     fetchTransactions();
   }, [user?.uid]);
 
@@ -180,6 +137,12 @@ const PaymentScreen = ({ navigation }) => {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={renderEmptyComponent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={fetchTransactions}
+          />
+        }
       />
       {/* <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
         <Text style={styles.viewAll}>View All</Text>

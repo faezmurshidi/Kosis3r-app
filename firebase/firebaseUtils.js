@@ -1,3 +1,4 @@
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import firebase from './firebaseConfig';
 import firestore from '@react-native-firebase/firestore';
 
@@ -101,13 +102,13 @@ export const createTransactionFirestore = async (transaction) => {
   }
 };
 
-export const getCurrentRate = async (category) => {
-  const ratesRef = firestore().collection('rate').doc(category);
+export const getCurrentRate = async (kosisId) => {
+  const ratesRef = firestore().collection('rate').doc(kosisId);
   const ratesSnapshot = await ratesRef.get();
   if (ratesSnapshot.exists) {
     return ratesSnapshot.data();
   } else {
-    throw new Error(`Rates for ${category} not found`);
+    throw new Error(`Rates for ${kosisId} not found. Using default`);
   }
 };
 
@@ -115,7 +116,7 @@ export const getTransactions = async (uid) => {
   console.log('Fetching transactions for:', uid);
   const transactionsRef = firestore()
     .collection('transactions')
-    .where('userId', '==', uid);
+    .where('user.uid', '==', uid);
   const transactionsSnapshot = await transactionsRef.get();
   const transactions = transactionsSnapshot.docs.map((doc) => doc.data());
   console.log('Transactions snapshot:', transactionsSnapshot);
