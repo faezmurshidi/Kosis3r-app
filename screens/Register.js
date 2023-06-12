@@ -10,13 +10,13 @@ import { TextInput, Button, Title, Text } from 'react-native-paper';
 import { addUserToFirestore } from '../firebase/firebaseUtils';
 import style from '../styles';
 import { AuthContext } from '../App';
-import { use } from 'i18next';
 
 const RegisterScreen = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
   console.log('user@RegisterScreen', user);
   const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
+  const [dob, setDob] = useState('');
   const [phoneNumber, setPhoneNumber] = useState(null);
   const [address, setAddress] = useState({
     line1: '',
@@ -109,10 +109,20 @@ const RegisterScreen = ({ navigation }) => {
           label="Phone number"
           value={phoneNumber}
           style={styles.input}
+          onChangeText={setPhoneNumber}
           mode="outlined"
           activeOutlineColor={style.colors.accent}
           outlineColor={style.colors.secondary}
           disabled={phoneNumber ? true : false}
+        />
+        <TextInput
+          label="Date of birth"
+          value={dob}
+          style={styles.input}
+          onChangeText={setDob}
+          mode="outlined"
+          activeOutlineColor={style.colors.accent}
+          outlineColor={style.colors.secondary}
         />
         <View>
           <TextInput

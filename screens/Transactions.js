@@ -24,6 +24,7 @@ import { AuthContext } from '../App';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { use } from 'i18next';
 import CustomButton from '../components/CustomButton';
+import ImageResizer from '@bam.tech/react-native-image-resizer';
 
 const TransactionsScreen = ({ route, navigation }) => {
   const nearestCenter = route.params?.nearestCenter;
@@ -75,37 +76,47 @@ const TransactionsScreen = ({ route, navigation }) => {
     setLoading(true);
     const transactionId = generateTransactionId(nearestCenter.id);
 
-    const imageUrl = await saveImageToStorage(
-      transactionId,
-      'file://' + photo.path,
-    );
-
-    const transaction = {
-      id: transactionId,
-      timestamp: Date.now(),
-      center: nearestCenter,
-      imageUrl,
-      status: 'created', // created, approved, pending, paid
-      items: {
-        category: category[selectedCategory].id,
-        weight,
-        price: totalSale,
-        rate: currentRate,
-      },
-      user: user,
-    };
-
-    console.log('transaction', transaction);
-
     try {
-      await createTransactionFirestore(transaction);
-      setLoading(false); // Set loading state to false when the submit process is complete
+      let resized = await ImageResizer.createResizedImage(
+        photo.path,
+        photo.width / 2,
+        photo.height / 2,
+        'JPEG',
+        100,
+        0,
+        undefined,
+      );
+
+      console.log('resized:', resized);
+
+      const imageUrl = await saveImageToStorage(transactionId, resized.uri);
+      const transaction = {
+        id: transactionId,
+        timestamp: Date.now(),
+        center: nearestCenter,
+        imageUrl,
+        status: 'created', // created, approved, pending, paid
+        items: {
+          category: category[selectedCategory].id,
+          weight,
+          price: totalSale,
+          rate: currentRate,
+        },
+        user: user,
+      };
+
+      try {
+        await createTransactionFirestore(transaction);
+        setLoading(false); // Set loading state to false when the submit process is complete
+      } catch (error) {
+        setLoading(false); // Set loading state to false if there is an error during the submit process
+        console.log('Error:', error);
+      } finally {
+        setTxId(transactionId);
+        setIsModalVisible(true);
+      }
     } catch (error) {
-      setLoading(false); // Set loading state to false if there is an error during the submit process
-      console.log('Error:', error);
-    } finally {
-      setTxId(transactionId);
-      setIsModalVisible(true);
+      console.log('Unable to resize the photo', error);
     }
   };
 
