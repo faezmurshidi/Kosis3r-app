@@ -11,7 +11,14 @@ import {
   Image,
   RefreshControl,
 } from 'react-native';
-import { Dialog, Divider, Portal, RadioButton, Text } from 'react-native-paper';
+import {
+  Dialog,
+  Divider,
+  Portal,
+  RadioButton,
+  Text,
+  TextInput,
+} from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
 import moment from 'moment';
 import PagerView from 'react-native-pager-view';
@@ -22,16 +29,25 @@ import style from '../styles';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import CustomButton from '../components/CustomButton';
 import { AuthContext } from '../App';
-import { getTransactions } from '../firebase/firebaseUtils';
+import {
+  createWithdrawalRequest,
+  fetchUserFromFirestore,
+  getTransactions,
+  getWithdrawals,
+} from '../firebase/firebaseUtils';
 
 const screenWidth = Dimensions.get('window').width;
 
 const PaymentScreen = ({ navigation }) => {
-  const { user } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   const [visible, setVisible] = useState(false);
   const [withdrawMethod, setWithdrawMethod] = useState('ewallet');
+  const [withdrawAmount, setWithdrawAmount] = useState(0);
   const [txHistory, setTxHistory] = useState([]);
+  const [withdrawalHistory, setWithdrawalHistory] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [withdrawError, setWithdrawError] = useState(null);
+
   const category = i18n.t('recycleCategories', { returnObjects: true });
 
   const fetchTransactions = async () => {
@@ -51,12 +67,34 @@ const PaymentScreen = ({ navigation }) => {
     }
   };
 
+  const fetchWihdrawal = async () => {
+    setRefreshing(true);
+    try {
+      const transactions = await getWithdrawals(user?.uid);
+      console.log('transactions@Payments', transactions);
+      // Do something with the transactions
+      if (transactions) {
+        setWithdrawalHistory(transactions);
+      }
+    } catch (error) {
+      // Handle error
+      console.error(error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   useEffect(() => {
     fetchTransactions();
+    fetchWihdrawal();
   }, [user?.uid]);
 
   const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
+  const hideDialog = () => {
+    setWithdrawAmount(0);
+    setWithdrawError(null);
+    setVisible(false);
+  };
 
   const layout = useWindowDimensions();
 
@@ -68,8 +106,37 @@ const PaymentScreen = ({ navigation }) => {
     { key: 'second', title: i18n.t('Payments.earnings') },
   ]);
 
+  const requestWithdrawal = async () => {
+    console.log('requestWithdrawal');
+    if (withdrawAmount <= 0) {
+      setWithdrawError('Please enter a valid amount');
+      return;
+    }
+    if (withdrawAmount > user?.wallet) {
+      setWithdrawError('Insufficient balance');
+      return;
+    }
+
+    const withdrawal = {
+      amount: withdrawAmount,
+      method: withdrawMethod,
+      timestamp: Date.now(),
+      user,
+      status: 'pending',
+    };
+
+    try {
+      await createWithdrawalRequest(withdrawal);
+      await fetchUserFromFirestore(user?.uid, setUser);
+    } catch (error) {
+      // Handle error
+      console.error(error);
+    } finally {
+      hideDialog();
+    }
+  };
+
   const renderItem = ({ item, index }) => {
-    console.log('test', item);
     const date = moment(item.timestamp).format('DD MMMM YYYY');
     const cat =
       (category && category.find((x) => x.id === item.items.category)) || null;
@@ -99,6 +166,35 @@ const PaymentScreen = ({ navigation }) => {
               }}
               source={{ uri: item.imageUrl }}
             />
+          </View>
+          <View style={styles.statusContainer}>
+            <View style={styles.indicator(item.status)} />
+            <Text style={styles.transactionStatus(item.status)}>
+              {item.status.toUpperCase()}
+            </Text>
+          </View>
+        </View>
+
+        <Divider />
+      </View>
+    );
+  };
+
+  const renderWithdrawal = ({ item, index }) => {
+    const date = moment(item.timestamp).format('DD MMMM YYYY');
+
+    return (
+      <View>
+        <View style={styles.transaction}>
+          <View style={styles.transactionInfoContainer}>
+            <Text variant="titleSmall">{date}</Text>
+
+            <Text
+              variant="bodyMedium"
+              style={{ color: style.colors.accent, fontSize: 16 }}
+            >
+              RM{item.amount}
+            </Text>
           </View>
           <View style={styles.statusContainer}>
             <View style={styles.indicator(item.status)} />
@@ -157,7 +253,7 @@ const PaymentScreen = ({ navigation }) => {
 
   const SecondRoute = () => (
     <View style={{ flex: 1, margin: 12 }}>
-      <View
+      {/* <View
         style={{ alignSelf: 'center', alignItems: 'center', marginTop: 40 }}
       >
         <FontAwesome5Icon
@@ -168,7 +264,17 @@ const PaymentScreen = ({ navigation }) => {
         <Text color={style.colors.background.light.offwhite}>
           {i18n.t('Payments.noEarned')}
         </Text>
-      </View>
+      </View> */}
+      <FlatList
+        style={styles.transactionsList}
+        data={withdrawalHistory}
+        renderItem={renderWithdrawal}
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={renderEmptyComponent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={fetchWihdrawal} />
+        }
+      />
       {/* <LineChart
         data={{
           labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
@@ -222,9 +328,9 @@ const PaymentScreen = ({ navigation }) => {
 
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Title>Choose Withdraw Method</Dialog.Title>
+          <Dialog.Title>Pengeluaran</Dialog.Title>
           <Dialog.Content>
-            <RadioButton.Group
+            {/* <RadioButton.Group
               onValueChange={(value) => setWithdrawMethod(value)}
               value={withdrawMethod}
             >
@@ -236,16 +342,29 @@ const PaymentScreen = ({ navigation }) => {
                 <Text>Voucher Redemption</Text>
                 <RadioButton value="voucher" />
               </View>
-            </RadioButton.Group>
+            </RadioButton.Group> */}
+            <Text style={{ marginBottom: 10 }}>
+              Pengeluaran maksimum: RM{user?.wallet}
+            </Text>
+            <TextInput
+              label="Jumlah Pengeluaran"
+              value={withdrawAmount}
+              onChangeText={setWithdrawAmount}
+              mode="outlined"
+              style={styles.input}
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+              returnKeyType="done"
+            />
+            {withdrawError && (
+              <Text style={{ color: 'red', marginBottom: 10 }}>
+                {withdrawError}
+              </Text>
+            )}
           </Dialog.Content>
           <Dialog.Actions>
             <Button
-              onPress={hideDialog}
-              title="Cancel"
-              color={style.colors.secondary}
-            />
-            <Button
-              onPress={hideDialog}
+              onPress={() => requestWithdrawal()}
               title="Confirm"
               color={style.colors.primary}
             />

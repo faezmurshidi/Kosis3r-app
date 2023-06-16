@@ -143,6 +143,10 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+  const forgotPassword = () => {
+    navigation.navigate('ForgotPassword');
+  };
+
   const confirmCode = async () => {
     try {
       await confirm.confirm(code);
@@ -331,10 +335,21 @@ const LoginScreen = ({ navigation }) => {
             onPress={() => setLoginMethod('phone')}
             style={{ alignSelf: 'center' }}
           >
-            <Text variant="labelMedium" style={{ margin: 16 }}>
+            <Text variant="labelMedium" style={{ margin: 4 }}>
               {loginMethod === 'email'
-                ? 'Use Phone Number Instead'
-                : 'Login Instead'}
+                ? 'Log Masuk Dengan Nombor Telefon'
+                : 'Log Masuk'}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {loginMethod !== 'phone' && (
+          <TouchableOpacity
+            onPress={() => forgotPassword()}
+            style={{ alignSelf: 'center' }}
+          >
+            <Text variant="labelMedium" style={{ margin: 4 }}>
+              Lupa Kata Laluan
             </Text>
           </TouchableOpacity>
         )}

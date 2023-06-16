@@ -27,8 +27,8 @@ const NearestCentre = ({ onPress }) => {
     no_telefon: ['011-10010780'],
     pegawai: ['Pn Hayati Shaffini@Ariffin'],
     jenis_fasiliti: 'Pusat Komuniti Sifar Sisa (KOSIS)',
-    latitud: 5.3129,
-    longitud: 103.126501,
+    latitud: 5.31174,
+    longitud: 103.12595,
   };
 
   // useEffect(() => {
@@ -99,7 +99,7 @@ const NearestCentre = ({ onPress }) => {
   // };
 
   const openNavigationApp = () => {
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${nearestCenter.latitude},${nearestCenter.longitude}`;
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${nearestCenter.latitud},${nearestCenter.longitud}`;
     Linking.canOpenURL(url)
       .then((supported) => {
         if (supported) {

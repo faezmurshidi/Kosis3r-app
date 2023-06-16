@@ -26,7 +26,7 @@ const resources = {
         news: 'News',
       },
       Payments: {
-        title: 'Payments',
+        title: 'Withdraw',
         balance: 'Current Balance',
         transactionsHistory: 'Transactions History',
         earnings: 'Earnings',
@@ -88,7 +88,7 @@ const resources = {
         news: 'Berita',
       },
       Payments: {
-        title: 'Pembayaran',
+        title: 'Pengeluaran',
         balance: 'Baki Semasa',
         transactionsHistory: 'Sejarah Transaksi',
         earnings: 'Pendapatan',

@@ -102,6 +102,37 @@ export const createTransactionFirestore = async (transaction) => {
   }
 };
 
+export const updateWalletFirestore = async (uid, wallet) => {
+  console.log('Updating wallet:', wallet);
+  const userRef = firestore().collection('users').doc(uid);
+  console.log('User ref:', userRef);
+  try {
+    await userRef.update({ wallet: wallet });
+    console.log('Wallet updated in Firestore');
+  } catch (error) {
+    console.log('Error updating wallet in Firestore:', error);
+  }
+};
+
+export const createWithdrawalRequest = async (withdrawalRequest) => {
+  console.log('Creating withdrawal request:', withdrawalRequest);
+  const withdrawalRequestsRef = firestore().collection('withdrawal');
+  console.log('Withdrawal requests ref:', withdrawalRequestsRef);
+  try {
+    await withdrawalRequestsRef
+      .doc(withdrawalRequest.id)
+      .set(withdrawalRequest);
+    console.log('Adding withdrawal request to Firestore');
+
+    updateWalletFirestore(
+      withdrawalRequest.user.uid,
+      withdrawalRequest.user.wallet - withdrawalRequest.amount,
+    );
+  } catch (error) {
+    console.log('Error adding withdrawal request to Firestore:', error);
+  }
+};
+
 export const getCurrentRate = async (kosisId) => {
   const ratesRef = firestore().collection('rate').doc(kosisId);
   const ratesSnapshot = await ratesRef.get();
@@ -120,6 +151,17 @@ export const getTransactions = async (uid) => {
   const transactionsSnapshot = await transactionsRef.get();
   const transactions = transactionsSnapshot.docs.map((doc) => doc.data());
   console.log('Transactions snapshot:', transactionsSnapshot);
+  return transactions;
+};
+
+export const getWithdrawals = async (uid) => {
+  console.log('Fetching withdrawal for:', uid);
+  const transactionsRef = firestore()
+    .collection('withdrawal')
+    .where('user.uid', '==', uid);
+  const transactionsSnapshot = await transactionsRef.get();
+  const transactions = transactionsSnapshot.docs.map((doc) => doc.data());
+  console.log('withdrawal snapshot:', transactionsSnapshot);
   return transactions;
 };
 
