@@ -23,7 +23,7 @@ import {
   DefaultTheme,
   Text,
 } from 'react-native-paper';
-import { AuthContext } from '../App';
+import { AuthContext } from '../context/AuthContext';
 import auth from '@react-native-firebase/auth';
 import { Picker } from '@react-native-picker/picker';
 import i18n from '../i18n';
@@ -74,9 +74,7 @@ const LoginScreen = ({ navigation }) => {
         fetchUserFromFirestore(user, setUser).then((hasRegistered) => {
           console.log('hasRegistered', hasRegistered);
           setLoading(false);
-          if (hasRegistered) {
-            navigation.navigate('MainTabs', { screen: 'Dashboard' });
-          } else {
+          if (!hasRegistered) {
             navigation.replace('EditProfile');
           }
         });

@@ -10,7 +10,11 @@
     "restart-metro": "react-native start --reset-cache",
     "test": "jest",
     "build-android": "cd android && ./gradlew assembleRelease",
-    "build-aab": "cd android && ./gradlew bundleRelease"
+    "build-aab": "cd android && ./gradlew bundleRelease",
+    "android:staging:debug": "ENVFILE=.env.staging react-native run-android",
+    "android:staging:release": "cd android && ENVFILE=.env.staging ./gradlew bundleRelease",
+    "android:production:debug": "ENVFILE=.env.production react-native run-android",
+    "android:production:release": "cd android && ENVFILE=.env.production ./gradlew bundleRelease"
   },
   "dependencies": {
     "@bam.tech/react-native-image-resizer": "^3.0.5",
@@ -42,6 +46,7 @@
     "react-i18next": "^12.2.2",
     "react-native": "0.71.6",
     "react-native-chart-kit": "^6.12.0",
+    "react-native-config": "^1.5.1",
     "react-native-gesture-handler": "^2.9.0",
     "react-native-ionicons": "^4.6.5",
     "react-native-linear-gradient": "^2.6.2",

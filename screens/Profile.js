@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { AuthContext } from '../App';
+import { AuthContext } from '../context/AuthContext';
 import style from '../styles';
 import { fetchUserFromFirestore } from '../firebase/firebaseUtils';
 import { Avatar } from 'react-native-paper';
@@ -30,7 +30,7 @@ const ProfileScreen = ({ navigation }) => {
 
   const fetchUserDetails = async () => {
     setRefreshing(true);
-    fetchUserFromFirestore(user.uid, setUser);
+    fetchUserFromFirestore(user, setUser);
     setRefreshing(false);
   };
 

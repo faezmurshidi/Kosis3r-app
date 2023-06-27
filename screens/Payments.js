@@ -28,7 +28,7 @@ import i18n from '../i18n';
 import style from '../styles';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import CustomButton from '../components/CustomButton';
-import { AuthContext } from '../App';
+import { AuthContext } from '../context/AuthContext';
 import {
   createWithdrawalRequest,
   fetchUserFromFirestore,
@@ -87,7 +87,7 @@ const PaymentScreen = ({ navigation }) => {
   useEffect(() => {
     fetchTransactions();
     fetchWihdrawal();
-  }, [user?.uid]);
+  }, []);
 
   const showDialog = () => setVisible(true);
   const hideDialog = () => {
@@ -127,7 +127,7 @@ const PaymentScreen = ({ navigation }) => {
 
     try {
       await createWithdrawalRequest(withdrawal);
-      await fetchUserFromFirestore(user?.uid, setUser);
+      await fetchUserFromFirestore(user, setUser);
     } catch (error) {
       // Handle error
       console.error(error);
@@ -348,6 +348,7 @@ const PaymentScreen = ({ navigation }) => {
             </Text>
             <TextInput
               label="Jumlah Pengeluaran"
+              keyboardType="numeric"
               value={withdrawAmount}
               onChangeText={setWithdrawAmount}
               mode="outlined"

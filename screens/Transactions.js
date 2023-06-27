@@ -20,7 +20,7 @@ import {
   getCurrentRate,
   saveImageToStorage,
 } from '../firebase/firebaseUtils';
-import { AuthContext } from '../App';
+import { AuthContext } from '../context/AuthContext';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { use } from 'i18next';
 import CustomButton from '../components/CustomButton';

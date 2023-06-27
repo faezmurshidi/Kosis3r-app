@@ -9,7 +9,7 @@ import {
 import { TextInput, Button, Title, Text } from 'react-native-paper';
 import { addUserToFirestore } from '../firebase/firebaseUtils';
 import style from '../styles';
-import { AuthContext } from '../App';
+import { AuthContext } from '../context/AuthContext';
 
 const RegisterScreen = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
@@ -68,6 +68,17 @@ const RegisterScreen = ({ navigation }) => {
       } else {
         // There is no screen to go back to (at the root of the stack)
         console.log('Cannot go back');
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'MainTabs',
+              state: {
+                routes: [{ name: 'Dashboard' }],
+              },
+            },
+          ],
+        });
       }
     }
   };

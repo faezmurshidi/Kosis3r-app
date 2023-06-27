@@ -70,7 +70,7 @@ const buttonStyles = StyleSheet.create({
     elevation: 5,
   },
   buttonText: {
-    color: styles.colors.tertiary,
+    color: '#FFFFFF',
   },
   androidWrapper: {
     borderRadius: 10,

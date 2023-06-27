@@ -100,8 +100,8 @@ android {
         applicationId "com.kosis3r"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "1.0.3"
+        versionCode 5
+        versionName "1.0.5"
     }
 
     splits {
@@ -118,6 +118,15 @@ android {
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
+        }
+
+         release {
+            if (project.hasProperty('kosis')) {
+                storeFile file(MYAPP_UPLOAD_STORE_FILE)
+                storePassword pasarkita
+                keyAlias kosis
+                keyPassword pasarkita
+            }
         }
     }
     buildTypes {

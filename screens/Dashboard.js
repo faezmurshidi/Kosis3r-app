@@ -1,5 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import messaging from '@react-native-firebase/messaging';
 import {
   View,
   StyleSheet,
@@ -9,21 +10,80 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  RefreshControl,
 } from 'react-native';
 import { Text, Card } from 'react-native-paper';
 import CustomButton from '../components/CustomButton';
 import style from '../styles';
 import NearestCentre from '../components/NearestCentre';
 import i18n from '../i18n';
-import { AuthContext } from '../App';
+import { AuthContext } from '../context/AuthContext';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Carousel from 'react-native-snap-carousel';
-import { fetchUserFromFirestore } from '../firebase/firebaseUtils';
+import {
+  updateFCMToken,
+  getNews,
+  fetchUserFromFirestore,
+} from '../firebase/firebaseUtils';
 import logo from '../assets/header.png';
 
 const Dashboard = ({ navigation }) => {
-  const { user, news, setUser } = useContext(AuthContext);
-  console.log('user@AuthContext', user);
+  const { user, setUser } = useContext(AuthContext);
+  const [news, setNews] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchNews = async () => {
+    const newsData = await getNews();
+    setNews(newsData);
+  };
+
+  useEffect(() => {
+    fetchNews();
+  }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    fetchNews();
+    await fetchUserFromFirestore(user, setUser);
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    const requestUserPermission = async () => {
+      const authStatus = await messaging().requestPermission();
+      console.log('Auth status:', authStatus);
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+      if (enabled) {
+        console.log('Authorization status:', authStatus);
+      }
+    };
+
+    requestUserPermission();
+  }, []);
+
+  useEffect(() => {
+    const onTokenRefreshListener = messaging().onTokenRefresh(async (token) => {
+      console.log('New FCM token:', token);
+      updateFCMToken(user.uid, token);
+    });
+
+    return () => {
+      onTokenRefreshListener();
+    };
+  }, [user]);
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      console.log('Foreground message:', remoteMessage);
+      // Show a local notification or update the UI
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   console.log('news@AuthContext', news);
   const handlePress = (nearestCenter) => {
@@ -51,14 +111,13 @@ const Dashboard = ({ navigation }) => {
         backgroundColor={style.colors.background.light.offwhite} // Change the background color of the status bar
         barStyle="dark-content" // Change the text/icons color (options: 'light-content', 'dark-content', or 'default')
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.profileSection}>
-          {/* <Text
-            variant="headlineLarge"
-            style={{ margin: 4, color: style.colors.primary }}
-          >
-            KitaKitar
-          </Text> */}
           <Image
             source={logo}
             style={{
@@ -118,9 +177,35 @@ const Dashboard = ({ navigation }) => {
               paddingTop: 8,
             }}
           >
-            <Text variant="titleMedium" style={styles.sectionTitle}>
-              {i18n.t('Dashboard.news')}
-            </Text>
+            <View
+              style={[
+                { flexDirection: 'row', alignItems: 'center' },
+                styles.sectionTitle,
+              ]}
+            >
+              <FontAwesome5
+                name={'newspaper'}
+                color={style.colors.background.light.offwhite}
+                size={20}
+                paddingHorizontal={6}
+              />
+              <Text
+                variant="titleMedium"
+                style={{ color: style.colors.background.light.offwhite }}
+              >
+                {i18n.t('Dashboard.news')}
+              </Text>
+              {/* create line */}
+              <View
+                style={{
+                  flex: 1,
+                  height: 1,
+                  backgroundColor: style.colors.background.light.offwhite,
+                  marginLeft: 12,
+                }}
+              />
+            </View>
+
             <Carousel
               data={news}
               sliderWidth={Dimensions.get('window').width}
@@ -137,7 +222,7 @@ const Dashboard = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: style.colors.gray,
+    backgroundColor: '#6B9080',
   },
   welcomeCard: {
     padding: 6,
