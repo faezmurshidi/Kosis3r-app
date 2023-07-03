@@ -6,25 +6,44 @@ import {
   ScrollView,
   ToastAndroid,
 } from 'react-native';
-import { TextInput, Button, Title, Text } from 'react-native-paper';
+import {
+  TextInput,
+  Button,
+  Title,
+  Text,
+  RadioButton,
+} from 'react-native-paper';
 import { addUserToFirestore } from '../firebase/firebaseUtils';
 import style from '../styles';
 import { AuthContext } from '../context/AuthContext';
+import DatePicker from 'react-native-date-picker';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const RegisterScreen = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
   console.log('user@RegisterScreen', user);
   const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
-  const [dob, setDob] = useState('');
+  const [dob, setDob] = useState(new Date());
   const [phoneNumber, setPhoneNumber] = useState(null);
+  const [isPPR, setIsPPR] = useState(false);
+  const [ppr, setPpr] = useState(null);
+  const [open, setOpen] = useState(false);
   const [address, setAddress] = useState({
+    unitNo: '',
+    blockNo: '',
     line1: '',
     line2: '',
     postcode: '',
     city: '',
     state: '',
   });
+
+  const pprList = [
+    { label: 'PPR Hiliran', value: 'PPR Hiliran' },
+    { label: 'PPR Kempas', value: 'PPR Kempas' },
+    { label: 'Lain-lain', value: 'others' },
+  ];
 
   useEffect(() => {
     if (user?.phoneNumber) {
@@ -41,6 +60,14 @@ const RegisterScreen = ({ navigation }) => {
     }
   }, [user]);
 
+  const handleRadioPress = (value) => {
+    setIsPPR(value);
+  };
+
+  const handleOptionSelect = (option) => {
+    setPpr(option.value);
+  };
+
   const updateUser = async () => {
     try {
       // await user.updateProfile({ displayName: name });
@@ -49,6 +76,9 @@ const RegisterScreen = ({ navigation }) => {
         name,
         email,
         phoneNumber,
+        dob,
+        isPPR,
+        ppr,
         address,
       };
 
@@ -126,7 +156,19 @@ const RegisterScreen = ({ navigation }) => {
           outlineColor={style.colors.secondary}
           disabled={phoneNumber ? true : false}
         />
-        <TextInput
+
+        <Text style={{ color: style.colors.text.secondary, padding: 2 }}>
+          Date of birth
+        </Text>
+        <View style={{ alignItems: 'center' }}>
+          <DatePicker
+            date={dob}
+            onDateChange={setDob}
+            mode={'date'}
+            maximumDate={new Date()}
+          />
+        </View>
+        {/* <TextInput
           label="Date of birth"
           value={dob}
           style={styles.input}
@@ -134,54 +176,110 @@ const RegisterScreen = ({ navigation }) => {
           mode="outlined"
           activeOutlineColor={style.colors.accent}
           outlineColor={style.colors.secondary}
-        />
+          disabled={true}
+        /> */}
+
         <View>
-          <TextInput
-            label="Address Line 1"
-            value={address.line1}
-            onChangeText={(text) => setAddress({ ...address, line1: text })}
-            style={styles.input}
-            mode="outlined"
-            activeOutlineColor={style.colors.accent}
-            outlineColor={style.colors.secondary}
-          />
-          <TextInput
-            label="Address Line 2"
-            value={address.line2}
-            onChangeText={(text) => setAddress({ ...address, line2: text })}
-            style={styles.input}
-            mode="outlined"
-            activeOutlineColor={style.colors.accent}
-            outlineColor={style.colors.secondary}
-          />
-          <TextInput
-            label="Postcode"
-            value={address.postcode}
-            onChangeText={(text) => setAddress({ ...address, postcode: text })}
-            style={styles.input}
-            mode="outlined"
-            activeOutlineColor={style.colors.accent}
-            outlineColor={style.colors.secondary}
-          />
-          <TextInput
-            label="City"
-            value={address.city}
-            onChangeText={(text) => setAddress({ ...address, city: text })}
-            style={styles.input}
-            mode="outlined"
-            activeOutlineColor={style.colors.accent}
-            outlineColor={style.colors.secondary}
-          />
-          <TextInput
-            label="State"
-            value={address.state}
-            onChangeText={(text) => setAddress({ ...address, state: text })}
-            style={styles.input}
-            mode="outlined"
-            activeOutlineColor={style.colors.accent}
-            outlineColor={style.colors.secondary}
-          />
+          <Text style={{ color: style.colors.text.secondary, padding: 2 }}>
+            Adakah anda penghuni PPR?
+          </Text>
+          <RadioButton.Group onValueChange={handleRadioPress} value={isPPR}>
+            <View style={{ flexDirection: 'row' }}>
+              <RadioButton.Item label="Yes" value={true} />
+              <RadioButton.Item label="No" value={false} />
+            </View>
+          </RadioButton.Group>
         </View>
+
+        {isPPR ? (
+          <View>
+            <View style={{ paddingVertical: 8 }}>
+              <Text style={{ color: style.colors.text.secondary, padding: 2 }}>
+                PPR
+              </Text>
+              {/* <DropDownPicker
+                items={pprList}
+                defaultValue={ppr}
+                open={open}
+                setOpen={setOpen}
+                placeholder="Pilih PPR"
+                containerStyle={{ height: 40 }}
+                style={{ backgroundColor: '#fafafa' }}
+                itemStyle={{ justifyContent: 'flex-start' }}
+                dropDownStyle={{ backgroundColor: 'black' }}
+                onChangeItem={handleOptionSelect}
+              /> */}
+            </View>
+            <TextInput
+              label="No. Rumah"
+              value={address.unitNo}
+              onChangeText={(text) => setAddress({ ...address, unitNo: text })}
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+            />
+            <TextInput
+              label="Blok"
+              value={address.blockNo}
+              onChangeText={(text) => setAddress({ ...address, blockNo: text })}
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+            />
+          </View>
+        ) : (
+          <View>
+            <TextInput
+              label="Address Line 1"
+              value={address.line1}
+              onChangeText={(text) => setAddress({ ...address, line1: text })}
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+            />
+            <TextInput
+              label="Address Line 2"
+              value={address.line2}
+              onChangeText={(text) => setAddress({ ...address, line2: text })}
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+            />
+            <TextInput
+              label="Postcode"
+              value={address.postcode}
+              onChangeText={(text) =>
+                setAddress({ ...address, postcode: text })
+              }
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+            />
+            <TextInput
+              label="City"
+              value={address.city}
+              onChangeText={(text) => setAddress({ ...address, city: text })}
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+            />
+            <TextInput
+              label="State"
+              value={address.state}
+              onChangeText={(text) => setAddress({ ...address, state: text })}
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+            />
+          </View>
+        )}
       </ScrollView>
       <TouchableOpacity onPress={updateUser} style={styles.button}>
         <Text style={styles.buttonText}>Save Profile</Text>
