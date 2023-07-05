@@ -31,7 +31,7 @@ const TransactionsScreen = ({ route, navigation }) => {
   const category = i18n.t('recycleCategories', { returnObjects: true });
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [photo, setPhoto] = useState(null);
-  const [weight, setWeight] = useState('');
+  const [weight, setWeight] = useState(0);
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -178,8 +178,8 @@ const TransactionsScreen = ({ route, navigation }) => {
 
         <TextInput
           placeholder="Weight (KG)"
-          value={weight}
-          onChangeText={setWeight}
+          value={weight.toString()}
+          onChangeText={(value) => setWeight(parseFloat(value))}
           style={styles.input}
           keyboardType="numeric"
           mode="outlined"

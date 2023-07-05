@@ -32,9 +32,7 @@ const CustomButton = ({ onPress, title, icon }) => {
             paddingHorizontal={6}
           />
         )}
-        <Text
-          style={[styles.typography.primaryButton, buttonStyles.buttonText]}
-        >
+        <Text style={[styles.typography.label, buttonStyles.buttonText]}>
           {title.toUpperCase()}
         </Text>
       </View>
@@ -56,7 +54,7 @@ const buttonStyles = StyleSheet.create({
   button: {
     borderRadius: 10,
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 8,
     margin: 8,
     alignItems: 'center',
     justifyContent: 'center',

@@ -102,6 +102,13 @@ export const createTransactionFirestore = async (transaction) => {
   console.log('Transactions ref:', transactionsRef);
   try {
     await transactionsRef.doc(transaction.id).set(transaction);
+    // Increment the user's totalWeight stat
+    const userRef = firestore().collection('users').doc(transaction.user.uid);
+    await userRef.update({
+      'stat.totalWeight': firestore.FieldValue.increment(
+        transaction.items.weight,
+      ),
+    });
     console.log('Adding tx to Firestore');
   } catch (error) {
     console.log('Error adding tx to Firestore:', error);

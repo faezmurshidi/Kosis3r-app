@@ -25,7 +25,7 @@ import {
   getNews,
   fetchUserFromFirestore,
 } from '../firebase/firebaseUtils';
-import logo from '../assets/header.png';
+import logo from '../assets/logo.png';
 
 const Dashboard = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
@@ -85,7 +85,6 @@ const Dashboard = ({ navigation }) => {
     };
   }, []);
 
-  console.log('news@AuthContext', news);
   const handlePress = (nearestCenter) => {
     navigation.navigate('Jualan', { nearestCenter: nearestCenter });
   };
@@ -105,6 +104,85 @@ const Dashboard = ({ navigation }) => {
     );
   };
 
+  const userStatistic = () => {
+    if (user?.stat?.totalWeight) {
+      const totalWeight = user?.stat?.totalWeight;
+      const co2saved = totalWeight * 0.5;
+      return (
+        <View style={styles.section}>
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <TouchableOpacity
+              style={{ alignItems: 'center', paddingHorizontal: 6 }}
+              onPress={goToAccount}
+            >
+              <FontAwesome5
+                name={'money-bill-wave'}
+                color={style.colors.background.light.offwhite}
+                size={14}
+                paddingHorizontal={6}
+              />
+              <Text
+                style={{
+                  color: style.colors.background.light.offwhite,
+                  fontWeight: 'bold',
+                }}
+              >
+                RM {user?.wallet || 0}
+              </Text>
+              <Text variant="labelSmall">Wallet</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <TouchableOpacity
+              style={{ alignItems: 'center', paddingHorizontal: 6 }}
+              onPress={goToAccount}
+            >
+              <FontAwesome5
+                name={'recycle'}
+                color={style.colors.background.light.offwhite}
+                size={16}
+                paddingHorizontal={6}
+              />
+              <Text
+                style={{
+                  color: style.colors.background.light.offwhite,
+                  fontWeight: 'bold',
+                }}
+              >
+                {totalWeight}kg
+              </Text>
+              <Text variant="labelSmall">Dikitar Semula</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <TouchableOpacity
+              style={{ alignItems: 'center', paddingHorizontal: 6 }}
+              onPress={goToAccount}
+            >
+              <FontAwesome5
+                name={'tree'}
+                color={style.colors.background.light.offwhite}
+                size={16}
+                paddingHorizontal={6}
+              />
+              <Text
+                style={{
+                  color: style.colors.background.light.offwhite,
+                  fontWeight: 'bold',
+                }}
+              >
+                {co2saved}g
+              </Text>
+              <Text variant="labelSmall">CO2 Jimat</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    } else {
+      return null;
+    }
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar
@@ -118,50 +196,27 @@ const Dashboard = ({ navigation }) => {
         }
       >
         <View style={styles.profileSection}>
-          <Image
-            source={logo}
-            style={{
-              height: 60,
-              width: 180,
-              marginLeft: 6,
-            }}
-            resizeMode="contain"
-          />
           <View style={styles.welcomeCard}>
+            <Image
+              source={logo}
+              style={{
+                height: 50,
+                width: 50,
+                marginLeft: 6,
+              }}
+              resizeMode="contain"
+            />
             {user?.name && (
-              <Text variant="headlineSmall" style={{ alignSelf: 'center' }}>
+              <Text
+                variant="titleLarge"
+                style={{ alignItems: 'center', fontWeight: 'bold' }}
+              >
                 {i18n.t('Dashboard.greeting')}
                 {user.name}
               </Text>
             )}
-            <Text
-              variant="bodySmall"
-              style={{
-                alignSelf: 'center',
-                fontWeight: 'bold',
-                color: style.colors.text.secondary,
-              }}
-            >
-              Level 1 | 65.8KG Dikitar Semula | 1.3 tan CO2 Dijimatkan{' '}
-            </Text>
-            <TouchableOpacity style={styles.section} onPress={goToAccount}>
-              <Text variant="titleMedium">{i18n.t('Dashboard.balance')}</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <FontAwesome5
-                  name={'money-bill-wave'}
-                  color={style.colors.background.light.offwhite}
-                  size={16}
-                  paddingHorizontal={6}
-                />
-                <Text
-                  variant="headlineSmall"
-                  style={{ color: style.colors.background.light.offwhite }}
-                >
-                  RM {user?.wallet || 0}
-                </Text>
-              </View>
-            </TouchableOpacity>
           </View>
+          {userStatistic()}
         </View>
 
         {/* nearest recycling centre */}
@@ -185,13 +240,13 @@ const Dashboard = ({ navigation }) => {
             >
               <FontAwesome5
                 name={'newspaper'}
-                color={style.colors.background.light.offwhite}
+                color={style.colors.tertiary}
                 size={20}
                 paddingHorizontal={6}
               />
               <Text
                 variant="titleMedium"
-                style={{ color: style.colors.background.light.offwhite }}
+                style={{ color: style.colors.tertiary }}
               >
                 {i18n.t('Dashboard.news')}
               </Text>
@@ -222,10 +277,12 @@ const Dashboard = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#6B9080',
+    backgroundColor: style.colors.background.light.offwhite,
   },
   welcomeCard: {
     padding: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   profileSection: {
     marginBottom: 4,
@@ -260,13 +317,14 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   section: {
-    marginTop: 8,
     margin: 2,
-    marginHorizontal: 30,
+    marginHorizontal: 16,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: style.colors.tertiary,
     borderRadius: 8,
+    flexDirection: 'row',
+    padding: 8,
   },
   carouselContainer: {
     marginTop: 16,

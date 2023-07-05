@@ -21,7 +21,7 @@ const resources = {
       phoneNo: 'Phone Number',
       Dashboard: {
         title: 'Dashboard',
-        greeting: 'Hello, ',
+        greeting: 'Hi, ',
         balance: 'Current Balance',
         news: 'News',
       },

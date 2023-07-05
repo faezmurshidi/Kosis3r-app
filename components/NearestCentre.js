@@ -47,30 +47,26 @@ const NearestCentre = ({ onPress }) => {
       <View style={styles.section}>
         <FontAwesome5Icon
           name="store"
-          size={18}
+          size={12}
           color={style.colors.text.primary}
           style={{ marginRight: 8, marginTop: 2 }}
         />
         <View>
           <Text style={styles.sectionTitle}>Pusat Kosis Terdekat</Text>
-          {/* {errorMsg && <Text style={styles.errorText}>{errorMsg}</Text>} */}
-          <ShimmerPlaceholder visible={nearestCenter} style={{ width: '100%' }}>
-            {nearestCenter && (
-              <Text style={styles.nearestRecyclingCenterText}>
-                {nearestCenter.fasiliti}
-              </Text>
-            )}
-          </ShimmerPlaceholder>
         </View>
       </View>
-      <ShimmerPlaceholder
-        visible={nearestCenter}
-        style={{ width: '100%', height: 240 }}
+
+      <View
+        style={{
+          flexDirection: 'row',
+          backgroundColor: '#E9F1FB',
+          borderRadius: 8,
+        }}
       >
         {nearestCenter && (
           <MapView
             ref={mapViewRef}
-            style={styles.map}
+            style={{ ...styles.map, width: '40%' }}
             initialRegion={{
               latitude: nearestCenter.latitud,
               longitude: nearestCenter.longitud,
@@ -89,25 +85,32 @@ const NearestCentre = ({ onPress }) => {
             />
           </MapView>
         )}
-      </ShimmerPlaceholder>
 
-      {nearestCenter && (
-        <View style={{ flexDirection: 'row', flex: 1 }}>
+        {nearestCenter && (
           <View style={{ flex: 1 }}>
-            <CustomButton
-              onPress={() => onPress(nearestCenter)}
-              title="Jualan"
-              icon={'recycle'}
-              load
-            />
-            {/* <CustomButton
-              onPress={openNavigationApp}
-              title="Bawa saya ke sana"
-              icon={'location-arrow'}
-            /> */}
+            <View style={{ padding: 12 }}>
+              {nearestCenter && (
+                <>
+                  <Text style={styles.nearestRecyclingCenterText}>
+                    {nearestCenter.fasiliti}
+                  </Text>
+                  <Text>{nearestCenter.alamat}</Text>
+                </>
+              )}
+              <CustomButton
+                onPress={() => onPress(nearestCenter)}
+                title="Jualan"
+                icon={'recycle'}
+              />
+              {/* <CustomButton
+                onPress={openNavigationApp}
+                title="Bawa saya ke sana"
+                icon={'location-arrow'}
+              /> */}
+            </View>
           </View>
-        </View>
-      )}
+        )}
+      </View>
     </View>
   );
 };
@@ -116,9 +119,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#F6FFF8',
+
     marginTop: 6,
-    borderRadius: 18,
+    // borderRadius: 18,
     marginHorizontal: 12,
   },
   errorText: {
@@ -128,12 +131,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   map: {
-    padding: 12,
-    height: 240,
-    borderRadius: 8,
+    margin: 8,
+    height: 140,
   },
   section: {
-    padding: 12,
+    paddingHorizontal: 12,
     flexDirection: 'row',
   },
   sectionTitle: {
@@ -143,9 +145,8 @@ const styles = StyleSheet.create({
     color: style.colors.text.primary,
   },
   nearestRecyclingCenterText: {
-    fontSize: 16,
-
-    color: style.colors.accent,
+    fontSize: 14,
+    color: '#1C8E65',
     fontWeight: 'bold',
   },
 });
