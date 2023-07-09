@@ -5,9 +5,11 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  StyleSheet,
   ToastAndroid,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import style from '../styles';
 
 export default function ForgotPassword({ navigation }) {
   const [email, setEmail] = useState('');
@@ -31,27 +33,48 @@ export default function ForgotPassword({ navigation }) {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 20, marginBottom: 20 }}>Forgot Password</Text>
-      <TextInput
-        style={{
-          height: 40,
-          borderColor: 'gray',
-          borderWidth: 1,
-          marginBottom: 20,
-        }}
-        onChangeText={(text) => setEmail(text)}
-        value={email}
-        placeholder="Enter your email"
-      />
-      <TouchableOpacity
-        style={{ backgroundColor: '#007BFF', padding: 10, borderRadius: 5 }}
-        onPress={handleForgotPassword}
-      >
-        <Text style={{ color: '#fff', textAlign: 'center' }}>
-          Reset Password
+    <View style={styles.container}>
+      <View style={styles.card}>
+        <Text style={{}}>
+          Kami akan hantarkan email untuk reset kata laluan
         </Text>
-      </TouchableOpacity>
+        <TextInput
+          style={{
+            borderColor: 'gray',
+            borderWidth: 1,
+            marginBottom: 20,
+            width: '100%',
+          }}
+          onChangeText={(text) => setEmail(text)}
+          value={email}
+          placeholder="Enter your email"
+        />
+        <TouchableOpacity
+          style={{ backgroundColor: '#007BFF', padding: 10, borderRadius: 5 }}
+          onPress={handleForgotPassword}
+        >
+          <Text style={{ color: '#fff', textAlign: 'center' }}>
+            Reset Password
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: style.colors.tertiary,
+    justifyContent: 'center',
+    // alignItems: 'center',
+  },
+  card: {
+    backgroundColor: style.colors.background.light.offwhite,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    marginHorizontal: 20,
+  },
+});

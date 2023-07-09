@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {
   useState,
   useContext,
@@ -30,7 +31,7 @@ import i18n from '../i18n';
 import LanguageSelector from '../components/LanguageSelector';
 import style from '../styles';
 import { fetchUserFromFirestore } from '../firebase/firebaseUtils';
-import logo from '../assets/header.png';
+import logo from '../assets/logo.png';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const theme = {
@@ -163,10 +164,21 @@ const LoginScreen = ({ navigation }) => {
 
   console.log('loginMethod', loginMethod);
 
+  const mainTitle = () => {
+    switch (loginMethod) {
+      case 'phone':
+        return 'Masukkan nombor telefon anda';
+      case 'email':
+        return 'Masukkan emel dan kata laluan anda';
+      default:
+        return i18n.t('register');
+    }
+  };
+
   return (
     <PaperProvider theme={theme}>
       <StatusBar
-        backgroundColor={style.colors.paper.offwhite}
+        backgroundColor={style.colors.tertiary}
         barStyle="dark-content"
       />
 
@@ -174,189 +186,241 @@ const LoginScreen = ({ navigation }) => {
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <Image
-          source={logo}
-          style={{
-            alignSelf: 'center',
-            height: 100,
-            width: 300,
-          }}
-          resizeMode="contain"
-        />
-        <Text variant="labelLarge" style={{ margin: 12, alignSelf: 'center' }}>
-          {loginMethod !== 'register' ? i18n.t('login') : i18n.t('register')}
-        </Text>
-
-        {loginMethod === 'phone' && (
-          <TextInput
-            label={i18n.t('phoneNo')}
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            mode="outlined"
-            keyboardType="phone-pad"
-            style={styles.input}
-            activeOutlineColor={style.colors.accent}
-            outlineColor={style.colors.secondary}
-            returnKeyType="next"
-            onSubmitEditing={loginUser}
-            disabled={confirm}
+        <View style={{ padding: 12, marginLeft: 14 }}>
+          <Image
+            source={logo}
+            style={{
+              alignSelf: 'flex-start',
+              height: 70,
+              width: 70,
+            }}
+            resizeMode="contain"
           />
-        )}
-        {!confirm && loginMethod === 'phone' && (
-          <Button mode="contained" onPress={loginUser} style={styles.button}>
-            {i18n.t('requestOtP')}
-          </Button>
-        )}
-        {confirm && (
-          <>
+          <View style={{ alignItems: 'flex-start' }}>
+            <Text
+              style={{
+                fontSize: 25,
+                fontWeight: 'bold',
+                color: style.colors.text.light,
+              }}
+            >
+              Selamat Datang
+            </Text>
+            <Text
+              style={{
+                fontSize: 25,
+                fontWeight: 'bold',
+                color: style.colors.text.light,
+              }}
+            >
+              3R PasarKita
+            </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: '100',
+                color: style.colors.text.gray,
+              }}
+            >
+              Rakan kitar semula anda
+            </Text>
+          </View>
+        </View>
+
+        <View
+          style={{
+            backgroundColor: 'white',
+            borderRadius: 20,
+            padding: 18,
+            elevation: 1,
+            margin: 10,
+          }}
+        >
+          <Text
+            variant="labelLarge"
+            style={{
+              margin: 12,
+              alignSelf: 'center',
+              fontWeight: '700',
+              marginBottom: 16,
+            }}
+          >
+            {mainTitle()}
+          </Text>
+          {loginMethod === 'phone' && (
             <TextInput
-              ref={codeInputRef}
-              label="Confirmation Code"
-              value={code}
-              onChangeText={setCode}
+              label={i18n.t('phoneNo')}
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
               mode="outlined"
-              keyboardType="number-pad"
+              keyboardType="phone-pad"
               style={styles.input}
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
+              returnKeyType="next"
+              onSubmitEditing={loginUser}
+              disabled={confirm}
             />
+          )}
+          {!confirm && loginMethod === 'phone' && (
+            <Button mode="contained" onPress={loginUser} style={styles.button}>
+              {i18n.t('requestOtP')}
+            </Button>
+          )}
+
+          {confirm && (
+            <>
+              <TextInput
+                ref={codeInputRef}
+                label="Confirmation Code"
+                value={code}
+                onChangeText={setCode}
+                mode="outlined"
+                keyboardType="number-pad"
+                style={styles.input}
+                activeOutlineColor={style.colors.accent}
+                outlineColor={style.colors.secondary}
+              />
+              <Button
+                mode="contained"
+                onPress={confirmCode}
+                style={styles.button}
+                loading={loading}
+              >
+                Confirm Code
+              </Button>
+            </>
+          )}
+
+          {loginMethod !== 'phone' && (
+            <TextInput
+              label={i18n.t('email')}
+              value={email}
+              onChangeText={setEmail}
+              mode="outlined"
+              keyboardType="email-address"
+              style={styles.input}
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+              returnKeyType="next"
+              onSubmitEditing={loginUser}
+              disabled={confirm}
+            />
+          )}
+
+          {loginMethod !== 'phone' && (
+            <TextInput
+              label={i18n.t('password')}
+              value={password}
+              onChangeText={setPassword}
+              mode="outlined"
+              secureTextEntry
+              style={styles.input}
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+              returnKeyType="done"
+              onSubmitEditing={
+                loginMethod === 'phone'
+                  ? setLoginMethod('email')
+                  : loginWithEmail
+              }
+            />
+          )}
+
+          {loginMethod === 'register' && (
+            <TextInput
+              label={i18n.t('confirmPassword')}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              mode="outlined"
+              secureTextEntry
+              style={styles.input}
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+              returnKeyType="done"
+              onSubmitEditing={registerWithEmail}
+            />
+          )}
+
+          {confirm && loginMethod === 'phone' && (
+            <Button mode="contained" onPress={loginUser} style={styles.button}>
+              {'Login'}
+            </Button>
+          )}
+
+          {loginMethod === 'email' && (
             <Button
               mode="contained"
-              onPress={confirmCode}
+              onPress={loginWithEmail}
               style={styles.button}
-              loading={loading}
             >
-              Confirm Code
+              Login
             </Button>
-          </>
-        )}
+          )}
 
-        {loginMethod !== 'phone' && (
-          <TextInput
-            label={i18n.t('email')}
-            value={email}
-            onChangeText={setEmail}
-            mode="outlined"
-            keyboardType="email-address"
-            style={styles.input}
-            activeOutlineColor={style.colors.accent}
-            outlineColor={style.colors.secondary}
-            returnKeyType="next"
-            onSubmitEditing={loginUser}
-            disabled={confirm}
-          />
-        )}
-
-        {loginMethod !== 'phone' && (
-          <TextInput
-            label={i18n.t('password')}
-            value={password}
-            onChangeText={setPassword}
-            mode="outlined"
-            secureTextEntry
-            style={styles.input}
-            activeOutlineColor={style.colors.accent}
-            outlineColor={style.colors.secondary}
-            returnKeyType="done"
-            onSubmitEditing={
-              loginMethod === 'phone' ? setLoginMethod('email') : loginWithEmail
-            }
-          />
-        )}
-
-        {loginMethod === 'register' && (
-          <TextInput
-            label={i18n.t('confirmPassword')}
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            mode="outlined"
-            secureTextEntry
-            style={styles.input}
-            activeOutlineColor={style.colors.accent}
-            outlineColor={style.colors.secondary}
-            returnKeyType="done"
-            onSubmitEditing={registerWithEmail}
-          />
-        )}
-
-        {confirm && loginMethod === 'phone' && (
-          <Button mode="contained" onPress={loginUser} style={styles.button}>
-            {'Login'}
-          </Button>
-        )}
-
-        {loginMethod === 'email' && (
-          <Button
-            mode="contained"
-            onPress={loginWithEmail}
-            style={styles.button}
-          >
-            Login
-          </Button>
-        )}
-
-        {loginMethod !== 'register' && (
-          <Text
-            variant="labelSmall"
-            style={{ margin: 12, alignSelf: 'center' }}
-          >
-            OR
-          </Text>
-        )}
-
-        {loginMethod === 'phone' && (
-          <Button
-            mode="contained"
-            onPress={() => setLoginMethod('email')}
-            style={styles.button}
-          >
-            Login with Email
-          </Button>
-        )}
-
-        {loginMethod !== 'phone' && (
-          <Button
-            mode="contained"
-            onPress={() =>
-              loginMethod !== 'register'
-                ? setLoginMethod('register')
-                : registerWithEmail()
-            }
-            style={styles.button}
-          >
-            Register
-          </Button>
-        )}
-
-        {loginMethod !== 'phone' && (
-          <TouchableOpacity
-            onPress={() => setLoginMethod('phone')}
-            style={{ alignSelf: 'center' }}
-          >
-            <Text variant="labelMedium" style={{ margin: 4 }}>
-              {loginMethod === 'email'
-                ? 'Log Masuk Dengan Nombor Telefon'
-                : 'Log Masuk'}
+          {loginMethod !== 'register' && (
+            <Text
+              variant="labelSmall"
+              style={{ margin: 12, alignSelf: 'center' }}
+            >
+              atau
             </Text>
-          </TouchableOpacity>
-        )}
+          )}
 
-        {loginMethod !== 'phone' && (
-          <TouchableOpacity
-            onPress={() => forgotPassword()}
-            style={{ alignSelf: 'center' }}
-          >
-            <Text variant="labelMedium" style={{ margin: 4 }}>
-              Lupa Kata Laluan
-            </Text>
-          </TouchableOpacity>
-        )}
+          {loginMethod === 'phone' && (
+            <Button
+              mode="contained"
+              onPress={() => setLoginMethod('email')}
+              style={styles.button}
+            >
+              Login with Email
+            </Button>
+          )}
 
-        {__DEV__ && (
-          <Button mode="outlined" onPress={skipLogin} style={styles.skip}>
-            Skip Login (Dev Only)
-          </Button>
-        )}
+          {loginMethod !== 'phone' && (
+            <Button
+              mode="contained"
+              onPress={() =>
+                loginMethod !== 'register'
+                  ? setLoginMethod('register')
+                  : registerWithEmail()
+              }
+              style={styles.button}
+            >
+              Register
+            </Button>
+          )}
+
+          {loginMethod !== 'phone' && (
+            <TouchableOpacity
+              onPress={() => setLoginMethod('phone')}
+              style={{ alignSelf: 'center' }}
+            >
+              <Text variant="labelMedium" style={{ margin: 4 }}>
+                {loginMethod === 'email'
+                  ? 'Log Masuk Dengan Nombor Telefon'
+                  : 'Log Masuk'}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {loginMethod !== 'phone' && (
+            <TouchableOpacity
+              onPress={() => forgotPassword()}
+              style={{ alignSelf: 'center' }}
+            >
+              <Text variant="labelMedium" style={{ margin: 4 }}>
+                Lupa Kata Laluan
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {/* {__DEV__ && (
+            <Button mode="outlined" onPress={skipLogin} style={styles.skip}>
+              Skip Login (Dev Only)
+            </Button>
+          )} */}
+        </View>
         <LanguageSelector
           selectedLanguage={language}
           onSelectLanguage={changeLanguage}
@@ -371,7 +435,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 16,
-    backgroundColor: style.colors.paper.offwhite,
+    backgroundColor: style.colors.tertiary,
   },
   title: {
     fontSize: 30,
@@ -382,6 +446,7 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 16,
     outlineStyle: '#FFC0CB',
+    borderRadius: 10,
   },
   button: {
     marginBottom: 8,

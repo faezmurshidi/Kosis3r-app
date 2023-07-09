@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
       primary: '#333333',
       secondary: '#5C5C5C',
       light: '#FFFFFF',
+      gray: '#CDCDCD',
     },
     accent: '#FFC107',
     background: {

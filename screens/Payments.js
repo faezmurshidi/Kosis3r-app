@@ -1,5 +1,12 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import {
   View,
   Button,
@@ -22,7 +29,7 @@ import {
 import { LineChart } from 'react-native-chart-kit';
 import moment from 'moment';
 import PagerView from 'react-native-pager-view';
-import { TabView, SceneMap } from 'react-native-tab-view';
+import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import i18n from '../i18n';
 
 import style from '../styles';
@@ -35,6 +42,10 @@ import {
   getTransactions,
   getWithdrawals,
 } from '../firebase/firebaseUtils';
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -47,6 +58,20 @@ const PaymentScreen = ({ navigation }) => {
   const [withdrawalHistory, setWithdrawalHistory] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [withdrawError, setWithdrawError] = useState(null);
+
+  // ref
+  const bottomSheetModalRef = useRef(null);
+
+  // variables
+  const snapPoints = useMemo(() => ['25%', '30%'], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+  const handleSheetChanges = useCallback((index) => {
+    console.log('handleSheetChanges', index);
+  }, []);
 
   const category = i18n.t('recycleCategories', { returnObjects: true });
 
@@ -306,80 +331,81 @@ const PaymentScreen = ({ navigation }) => {
   };
 
   return (
-    <View
-      // eslint-disable-next-line react-native/no-inline-styles
-      style={{
-        flex: 1,
-        backgroundColor: style.colors.background.light.offwhite,
-      }}
-    >
-      <View style={styles.balanceSection}>
-        <Text style={styles.balanceText}>{i18n.t('Payments.balance')}</Text>
-        <Text style={{ fontSize: 31, fontWeight: '900' }}>
-          RM{user?.wallet}
-        </Text>
-        <CustomButton
-          icon="wallet"
-          title={i18n.t('Payments.title')}
-          onPress={showDialog}
-          color={style.colors.primary}
+    <BottomSheetModalProvider>
+      <View
+        // eslint-disable-next-line react-native/no-inline-styles
+        style={{
+          flex: 1,
+          backgroundColor: style.colors.background.light.offwhite,
+        }}
+      >
+        <View style={styles.balanceSection}>
+          <Text style={styles.balanceText}>{i18n.t('Payments.balance')}</Text>
+          <Text style={{ fontSize: 31, fontWeight: '900' }}>
+            RM{user?.wallet}
+          </Text>
+          <CustomButton
+            icon="wallet"
+            title={i18n.t('Payments.title')}
+            onPress={handlePresentModalPress}
+            color={style.colors.primary}
+          />
+        </View>
+
+        <TabView
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{ width: layout.width }}
+          renderTabBar={(props) => (
+            <TabBar
+              {...props}
+              indicatorStyle={{ backgroundColor: style.colors.primary }}
+              style={{
+                backgroundColor: style.colors.background.light.offwhite,
+              }}
+              labelStyle={{ color: style.colors.text.primary }}
+            />
+          )}
         />
-      </View>
-
-      <Portal>
-        <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Title>Pengeluaran</Dialog.Title>
-          <Dialog.Content>
-            {/* <RadioButton.Group
-              onValueChange={(value) => setWithdrawMethod(value)}
-              value={withdrawMethod}
-            >
-              <View style={styles.radioButton}>
-                <Text>eWallet</Text>
-                <RadioButton value="ewallet" />
-              </View>
-              <View style={styles.radioButton}>
-                <Text>Voucher Redemption</Text>
-                <RadioButton value="voucher" />
-              </View>
-            </RadioButton.Group> */}
-            <Text style={{ marginBottom: 10 }}>
-              Pengeluaran maksimum: RM{user?.wallet}
-            </Text>
-            <TextInput
-              label="Jumlah Pengeluaran"
-              keyboardType="numeric"
-              value={withdrawAmount}
-              onChangeText={setWithdrawAmount}
-              mode="outlined"
-              style={styles.input}
-              activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
-              returnKeyType="done"
-            />
-            {withdrawError && (
-              <Text style={{ color: 'red', marginBottom: 10 }}>
-                {withdrawError}
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          index={1}
+          snapPoints={snapPoints}
+          onChange={handleSheetChanges}
+        >
+          <View style={{}}>
+            <View style={{ padding: 12 }}>
+              <Text style={{ marginBottom: 10 }}>
+                Pengeluaran maksimum: RM{user?.wallet}
               </Text>
-            )}
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              onPress={() => requestWithdrawal()}
-              title="Confirm"
-              color={style.colors.primary}
-            />
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
-
-      <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={{ width: layout.width }}
-      />
-    </View>
+              <TextInput
+                label="Jumlah Pengeluaran"
+                keyboardType="numeric"
+                value={withdrawAmount}
+                onChangeText={setWithdrawAmount}
+                mode="outlined"
+                style={{ marginBottom: 10 }}
+                activeOutlineColor={style.colors.accent}
+                outlineColor={style.colors.secondary}
+                returnKeyType="done"
+              />
+              {withdrawError && (
+                <Text style={{ color: 'red', marginBottom: 10 }}>
+                  {withdrawError}
+                </Text>
+              )}
+              <Button
+                onPress={() => requestWithdrawal()}
+                title="Confirm"
+                color={style.colors.primary}
+                style={{ borderRadius: 10 }}
+              />
+            </View>
+          </View>
+        </BottomSheetModal>
+      </View>
+    </BottomSheetModalProvider>
   );
 };
 

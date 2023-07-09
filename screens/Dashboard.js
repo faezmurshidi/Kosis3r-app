@@ -118,20 +118,29 @@ const Dashboard = ({ navigation }) => {
               <FontAwesome5
                 name={'money-bill-wave'}
                 color={style.colors.background.light.offwhite}
-                size={14}
-                paddingHorizontal={6}
+                size={18}
+                padding={6}
               />
               <Text
                 style={{
                   color: style.colors.background.light.offwhite,
                   fontWeight: 'bold',
+                  fontSize: 16,
                 }}
               >
                 RM {user?.wallet || 0}
               </Text>
-              <Text variant="labelSmall">Wallet</Text>
+              <Text variant="labelMedium">Wallet</Text>
             </TouchableOpacity>
           </View>
+          {/* add seperator */}
+          <View
+            style={{
+              height: '100%',
+              width: 1,
+              backgroundColor: style.colors.background.light.offwhite,
+            }}
+          />
           <View style={{ flex: 1, justifyContent: 'center' }}>
             <TouchableOpacity
               style={{ alignItems: 'center', paddingHorizontal: 6 }}
@@ -140,20 +149,28 @@ const Dashboard = ({ navigation }) => {
               <FontAwesome5
                 name={'recycle'}
                 color={style.colors.background.light.offwhite}
-                size={16}
-                paddingHorizontal={6}
+                size={18}
+                padding={6}
               />
               <Text
                 style={{
                   color: style.colors.background.light.offwhite,
                   fontWeight: 'bold',
+                  fontSize: 16,
                 }}
               >
                 {totalWeight}kg
               </Text>
-              <Text variant="labelSmall">Dikitar Semula</Text>
+              <Text variant="labelMedium">Dikitar Semula</Text>
             </TouchableOpacity>
           </View>
+          <View
+            style={{
+              height: '100%',
+              width: 1,
+              backgroundColor: style.colors.background.light.offwhite,
+            }}
+          />
           <View style={{ flex: 1, justifyContent: 'center' }}>
             <TouchableOpacity
               style={{ alignItems: 'center', paddingHorizontal: 6 }}
@@ -162,18 +179,19 @@ const Dashboard = ({ navigation }) => {
               <FontAwesome5
                 name={'tree'}
                 color={style.colors.background.light.offwhite}
-                size={16}
-                paddingHorizontal={6}
+                size={18}
+                padding={6}
               />
               <Text
                 style={{
                   color: style.colors.background.light.offwhite,
                   fontWeight: 'bold',
+                  fontSize: 16,
                 }}
               >
                 {co2saved}g
               </Text>
-              <Text variant="labelSmall">CO2 Jimat</Text>
+              <Text variant="labelMedium">CO2 Jimat</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -241,12 +259,15 @@ const Dashboard = ({ navigation }) => {
               <FontAwesome5
                 name={'newspaper'}
                 color={style.colors.tertiary}
-                size={20}
+                size={15}
                 paddingHorizontal={6}
               />
               <Text
-                variant="titleMedium"
-                style={{ color: style.colors.tertiary }}
+                style={{
+                  color: style.colors.tertiary,
+                  fontWeight: 'bold',
+                  fontSize: 15,
+                }}
               >
                 {i18n.t('Dashboard.news')}
               </Text>
@@ -278,6 +299,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: style.colors.background.light.offwhite,
+    padding: 12,
   },
   welcomeCard: {
     padding: 6,

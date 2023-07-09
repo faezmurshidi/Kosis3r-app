@@ -47,7 +47,7 @@ const NearestCentre = ({ onPress }) => {
       <View style={styles.section}>
         <FontAwesome5Icon
           name="store"
-          size={12}
+          size={14}
           color={style.colors.text.primary}
           style={{ marginRight: 8, marginTop: 2 }}
         />
@@ -136,12 +136,13 @@ const styles = StyleSheet.create({
   },
   section: {
     paddingHorizontal: 12,
+    paddingBottom: 8,
     flexDirection: 'row',
+    alignItems: 'center',
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 'bold',
-    marginBottom: 8,
     color: style.colors.text.primary,
   },
   nearestRecyclingCenterText: {

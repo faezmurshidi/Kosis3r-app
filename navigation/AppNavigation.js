@@ -2,7 +2,10 @@
 // src/navigation/AppNavigation.tsx
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  HeaderBackButton,
+} from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext } from '../context/AuthContext';
 import LoginScreen from '../screens/Login';
@@ -13,6 +16,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import DashboardScreen from '../screens/Dashboard';
 import TransactionsScreen from '../screens/Transactions';
 import PaymentScreen from '../screens/Payments';
+import RNBootSplash from 'react-native-bootsplash';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,7 +29,14 @@ const AuthStack = () => {
     >
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="EditProfile" component={EditProfile} />
-      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPassword}
+        options={{
+          headerShown: true,
+          headerTitle: 'Lupa Kata Laluan',
+        }}
+      />
     </Stack.Navigator>
   );
 };
@@ -114,7 +125,7 @@ const AppNavigation = () => {
   console.log('loggedIn', loggedIn);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer onReady={() => RNBootSplash.hide()}>
       {loggedIn ? <MainTabs /> : <AuthStack />}
     </NavigationContainer>
   );
