@@ -62,6 +62,13 @@ const resources = {
         { label: 'Commingled Waste', id: 79 },
         { label: 'Other', id: 82 },
       ],
+      status: {
+        success: 'Berjaya',
+        failed: 'Gagal',
+        pending: 'Dalam Proses',
+        approved: 'Diluluskan',
+        rejected: 'Ditolak',
+      },
     },
   },
   ms: {
@@ -125,14 +132,21 @@ const resources = {
         { label: 'Comningle', id: 79 },
         { label: 'Lain-Lain', id: 82 },
       ],
+      status: {
+        success: 'Berjaya',
+        failed: 'Gagal',
+        pending: 'Dalam Proses',
+        approved: 'Diluluskan',
+        rejected: 'Ditolak',
+      },
     },
   },
 };
 
 i18n.use(initReactI18next).init({
   resources,
-  lng: 'en',
-  fallbackLng: 'en',
+  lng: 'ms',
+  fallbackLng: 'ms',
   interpolation: {
     escapeValue: false,
   },

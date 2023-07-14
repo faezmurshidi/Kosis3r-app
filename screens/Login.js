@@ -64,6 +64,7 @@ const LoginScreen = ({ navigation }) => {
   // Handle login
   const onAuthStateChanged = useCallback(
     (user) => {
+      console.log('onAuthStateChanged', user);
       setLoading(true);
       if (user) {
         console.log('user@Firebase', user);
@@ -127,7 +128,7 @@ const LoginScreen = ({ navigation }) => {
     try {
       if (password !== confirmPassword) {
         ToastAndroid.show(
-          'Password and confirm password do not match.',
+          'Kata laluan dan pengesahan kata laluan tidak sama.',
           ToastAndroid.LONG,
         );
         return;
@@ -150,19 +151,9 @@ const LoginScreen = ({ navigation }) => {
     try {
       await confirm.confirm(code);
     } catch (error) {
-      ToastAndroid.show('Invalid code.', ToastAndroid.LONG);
+      ToastAndroid.show('Kod tidak sah', ToastAndroid.LONG);
     }
   };
-
-  const skipLogin = () => {
-    const mockUser = {
-      uid: '123456',
-      displayName: 'Faez',
-    };
-    setUser(mockUser);
-  };
-
-  console.log('loginMethod', loginMethod);
 
   const mainTitle = () => {
     switch (loginMethod) {
@@ -171,7 +162,7 @@ const LoginScreen = ({ navigation }) => {
       case 'email':
         return 'Masukkan emel dan kata laluan anda';
       default:
-        return i18n.t('register');
+        return 'Pendaftaran Pengguna Baru';
     }
   };
 
@@ -249,14 +240,14 @@ const LoginScreen = ({ navigation }) => {
           </Text>
           {loginMethod === 'phone' && (
             <TextInput
-              label={i18n.t('phoneNo')}
+              label={'No Telefon'}
               value={phoneNumber}
               onChangeText={setPhoneNumber}
               mode="outlined"
               keyboardType="phone-pad"
               style={styles.input}
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.primaryDark}
               returnKeyType="next"
               onSubmitEditing={loginUser}
               disabled={confirm}
@@ -264,7 +255,7 @@ const LoginScreen = ({ navigation }) => {
           )}
           {!confirm && loginMethod === 'phone' && (
             <Button mode="contained" onPress={loginUser} style={styles.button}>
-              {i18n.t('requestOtP')}
+              Log Masuk
             </Button>
           )}
 
@@ -272,14 +263,14 @@ const LoginScreen = ({ navigation }) => {
             <>
               <TextInput
                 ref={codeInputRef}
-                label="Confirmation Code"
+                label="Masukkan kod pengesahan"
                 value={code}
                 onChangeText={setCode}
                 mode="outlined"
                 keyboardType="number-pad"
                 style={styles.input}
                 activeOutlineColor={style.colors.accent}
-                outlineColor={style.colors.secondary}
+                outlineColor={style.colors.primaryDark}
               />
               <Button
                 mode="contained"
@@ -287,7 +278,7 @@ const LoginScreen = ({ navigation }) => {
                 style={styles.button}
                 loading={loading}
               >
-                Confirm Code
+                Sahkan
               </Button>
             </>
           )}
@@ -301,7 +292,7 @@ const LoginScreen = ({ navigation }) => {
               keyboardType="email-address"
               style={styles.input}
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.primaryDark}
               returnKeyType="next"
               onSubmitEditing={loginUser}
               disabled={confirm}
@@ -310,14 +301,14 @@ const LoginScreen = ({ navigation }) => {
 
           {loginMethod !== 'phone' && (
             <TextInput
-              label={i18n.t('password')}
+              label={'Kata Laluan'}
               value={password}
               onChangeText={setPassword}
               mode="outlined"
               secureTextEntry
               style={styles.input}
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.primaryDark}
               returnKeyType="done"
               onSubmitEditing={
                 loginMethod === 'phone'
@@ -329,14 +320,14 @@ const LoginScreen = ({ navigation }) => {
 
           {loginMethod === 'register' && (
             <TextInput
-              label={i18n.t('confirmPassword')}
+              label={'Pastikan Kata Laluan'}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               mode="outlined"
               secureTextEntry
               style={styles.input}
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.primaryDark}
               returnKeyType="done"
               onSubmitEditing={registerWithEmail}
             />
@@ -344,7 +335,7 @@ const LoginScreen = ({ navigation }) => {
 
           {confirm && loginMethod === 'phone' && (
             <Button mode="contained" onPress={loginUser} style={styles.button}>
-              {'Login'}
+              Log Masuk
             </Button>
           )}
 
@@ -354,7 +345,7 @@ const LoginScreen = ({ navigation }) => {
               onPress={loginWithEmail}
               style={styles.button}
             >
-              Login
+              Log Masuk
             </Button>
           )}
 
@@ -373,7 +364,7 @@ const LoginScreen = ({ navigation }) => {
               onPress={() => setLoginMethod('email')}
               style={styles.button}
             >
-              Login with Email
+              Log masuk dengan email
             </Button>
           )}
 
@@ -387,7 +378,7 @@ const LoginScreen = ({ navigation }) => {
               }
               style={styles.button}
             >
-              Register
+              Daftar
             </Button>
           )}
 
@@ -409,8 +400,11 @@ const LoginScreen = ({ navigation }) => {
               onPress={() => forgotPassword()}
               style={{ alignSelf: 'center' }}
             >
-              <Text variant="labelMedium" style={{ margin: 4 }}>
-                Lupa Kata Laluan
+              <Text
+                variant="labelMedium"
+                style={{ margin: 4, color: style.colors.accent }}
+              >
+                Lupa Kata Laluan?
               </Text>
             </TouchableOpacity>
           )}
@@ -421,10 +415,10 @@ const LoginScreen = ({ navigation }) => {
             </Button>
           )} */}
         </View>
-        <LanguageSelector
+        {/* <LanguageSelector
           selectedLanguage={language}
           onSelectLanguage={changeLanguage}
-        />
+        /> */}
       </KeyboardAvoidingView>
     </PaperProvider>
   );
@@ -445,12 +439,12 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 16,
-    outlineStyle: '#FFC0CB',
+    outlineStyle: style.colors.primaryDark,
     borderRadius: 10,
   },
   button: {
     marginBottom: 8,
-    backgroundColor: style.colors.primary,
+    backgroundColor: style.colors.tertiary,
   },
   skip: {
     backgroundColor: style.colors.accent,

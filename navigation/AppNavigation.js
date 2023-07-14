@@ -17,6 +17,7 @@ import DashboardScreen from '../screens/Dashboard';
 import TransactionsScreen from '../screens/Transactions';
 import PaymentScreen from '../screens/Payments';
 import RNBootSplash from 'react-native-bootsplash';
+import styles from '../styles';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -35,6 +36,13 @@ const AuthStack = () => {
         options={{
           headerShown: true,
           headerTitle: 'Lupa Kata Laluan',
+          headerTitleStyle: {
+            color: styles.colors.primary,
+          },
+          headerStyle: {
+            backgroundColor: styles.colors.tertiary,
+          },
+          headerTintColor: styles.colors.primary,
         }}
       />
     </Stack.Navigator>
@@ -67,26 +75,21 @@ const MainTabs = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: '#1e88e5',
-        tabBarActiveBackgroundColor: '#F5F5F5',
+        tabBarShowLabel: true,
+        tabBarActiveTintColor: styles.colors.primaryDark,
+        tabBarInactiveTintColor: styles.colors.gray,
         tabBarStyle: {
-          backgroundColor: '#F5F5F5',
-          borderTopWidth: 0,
+          backgroundColor: styles.colors.primary,
           paddingHorizontal: 16,
           paddingTop: 8,
           paddingBottom: 8,
-          height: 60, // Add custom height
+          height: 55, // Add custom height
           elevation: 14,
-          shadowColor: '#000',
-          shadowOpacity: 0.1,
-          shadowOffset: { width: 0, height: -2 },
-          shadowRadius: 10,
         },
       }}
     >
       <Tab.Screen
-        name="Dashboard"
+        name="Utama"
         component={DashboardStack}
         options={{
           headerShown: false,

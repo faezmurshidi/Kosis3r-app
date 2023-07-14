@@ -104,7 +104,7 @@ const RegisterScreen = ({ navigation }) => {
             {
               name: 'MainTabs',
               state: {
-                routes: [{ name: 'Dashboard' }],
+                routes: [{ name: 'Utama' }],
               },
             },
           ],
@@ -185,8 +185,8 @@ const RegisterScreen = ({ navigation }) => {
           </Text>
           <RadioButton.Group onValueChange={handleRadioPress} value={isPPR}>
             <View style={{ flexDirection: 'row' }}>
-              <RadioButton.Item label="Yes" value={true} />
-              <RadioButton.Item label="No" value={false} />
+              <RadioButton.Item label="Ya" value={true} />
+              <RadioButton.Item label="Tidak" value={false} />
             </View>
           </RadioButton.Group>
         </View>
@@ -195,7 +195,7 @@ const RegisterScreen = ({ navigation }) => {
           <View>
             <View style={{ paddingVertical: 8 }}>
               <Text style={{ color: style.colors.text.secondary, padding: 2 }}>
-                PPR
+                PPR Padang Hiliran
               </Text>
               {/* <DropDownPicker
                 items={pprList}
@@ -219,7 +219,26 @@ const RegisterScreen = ({ navigation }) => {
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
             />
-            <TextInput
+            {/* select blok: A, B or C */}
+            <View style={{ paddingVertical: 8 }}>
+              <Text style={{ color: style.colors.text.secondary, padding: 2 }}>
+                Blok
+              </Text>
+              <RadioButton.Group
+                onValueChange={(value) =>
+                  setAddress({ ...address, blockNo: value })
+                }
+                value={address.blockNo}
+              >
+                <View style={{ flexDirection: 'row' }}>
+                  <RadioButton.Item label="A" value="A" />
+                  <RadioButton.Item label="B" value="B" />
+                  <RadioButton.Item label="C" value="C" />
+                </View>
+              </RadioButton.Group>
+            </View>
+
+            {/* <TextInput
               label="Blok"
               value={address.blockNo}
               onChangeText={(text) => setAddress({ ...address, blockNo: text })}
@@ -227,7 +246,7 @@ const RegisterScreen = ({ navigation }) => {
               mode="outlined"
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
-            />
+            /> */}
           </View>
         ) : (
           <View>
@@ -282,7 +301,7 @@ const RegisterScreen = ({ navigation }) => {
         )}
       </ScrollView>
       <TouchableOpacity onPress={updateUser} style={styles.button}>
-        <Text style={styles.buttonText}>Save Profile</Text>
+        <Text style={styles.buttonText}>Simpan Profil</Text>
       </TouchableOpacity>
     </View>
   );
@@ -308,7 +327,7 @@ const styles = StyleSheet.create({
     outlineStyle: '#FFC0CB',
   },
   button: {
-    backgroundColor: style.colors.primary,
+    backgroundColor: style.colors.tertiary,
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 48,

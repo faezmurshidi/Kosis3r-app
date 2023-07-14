@@ -23,8 +23,9 @@ const styles = StyleSheet.create({
   // },
 
   colors: {
-    primary: '#4CAF50',
-    secondary: '#8BC34A',
+    primary: '#FFFBE6',
+    primaryDark: '#FFD54F',
+    secondary: '#FEFEFE',
     tertiary: '#1D9469',
     gray: '#CDCDCD',
     paper: {

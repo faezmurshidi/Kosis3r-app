@@ -19,7 +19,7 @@ import NearestCentre from '../components/NearestCentre';
 import i18n from '../i18n';
 import { AuthContext } from '../context/AuthContext';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import Carousel from 'react-native-snap-carousel';
+import Carousel, { Pagination } from 'react-native-snap-carousel';
 import {
   updateFCMToken,
   getNews,
@@ -31,6 +31,7 @@ const Dashboard = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
   const [news, setNews] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   const fetchNews = async () => {
     const newsData = await getNews();
@@ -95,12 +96,64 @@ const Dashboard = ({ navigation }) => {
 
   const renderItem = ({ item, index }) => {
     return (
-      <Card>
-        <Card.Cover source={{ uri: item.img }} />
-        <Card.Content>
-          <Text>{item.body}</Text>
-        </Card.Content>
-      </Card>
+      <View
+        style={{
+          backgroundColor: style.colors.secondary,
+          elevation: 2,
+          borderRadius: 10,
+          marginHorizontal: 10,
+        }}
+      >
+        <Image
+          source={{ uri: item.img }}
+          style={{
+            height: 300,
+            borderRadius: 10,
+            margin: 10,
+            resizeMode: 'contain',
+          }}
+        />
+        <Text
+          style={{
+            color: style.colors.text.primary,
+            fontWeight: 'bold',
+            fontSize: 16,
+            margin: 10,
+          }}
+        >
+          {item.title}
+        </Text>
+        <Text
+          style={{
+            color: style.colors.text.secondary,
+            fontSize: 14,
+            padding: 10,
+          }}
+        >
+          {item.body}
+        </Text>
+      </View>
+    );
+  };
+
+  const pagination = () => {
+    return (
+      <Pagination
+        dotsLength={news.length}
+        activeDotIndex={activeSlide}
+        containerStyle={{ backgroundColor: 'transparent' }}
+        dotStyle={{
+          width: 10,
+          height: 10,
+          borderRadius: 5,
+          backgroundColor: style.colors.tertiary,
+        }}
+        inactiveDotStyle={{
+          backgroundColor: style.colors.gray,
+        }}
+        inactiveDotOpacity={0.4}
+        inactiveDotScale={0.6}
+      />
     );
   };
 
@@ -227,10 +280,14 @@ const Dashboard = ({ navigation }) => {
             {user?.name && (
               <Text
                 variant="titleLarge"
-                style={{ alignItems: 'center', fontWeight: 'bold' }}
+                style={{
+                  alignItems: 'center',
+                  fontWeight: 'bold',
+                  paddingLeft: 2,
+                }}
               >
                 {i18n.t('Dashboard.greeting')}
-                {user.name}
+                {user.name} {'\u{1F44B}'}
               </Text>
             )}
           </View>
@@ -247,7 +304,6 @@ const Dashboard = ({ navigation }) => {
           <SafeAreaView
             style={{
               flex: 1,
-              paddingTop: 8,
             }}
           >
             <View
@@ -258,25 +314,25 @@ const Dashboard = ({ navigation }) => {
             >
               <FontAwesome5
                 name={'newspaper'}
-                color={style.colors.tertiary}
-                size={15}
+                color={style.colors.text.primary}
+                size={20}
                 paddingHorizontal={6}
               />
               <Text
                 style={{
-                  color: style.colors.tertiary,
+                  color: style.colors.text.primary,
                   fontWeight: 'bold',
-                  fontSize: 15,
+                  fontSize: 16,
                 }}
               >
-                {i18n.t('Dashboard.news')}
+                Berita KOSIS
               </Text>
               {/* create line */}
               <View
                 style={{
                   flex: 1,
                   height: 1,
-                  backgroundColor: style.colors.background.light.offwhite,
+                  backgroundColor: style.colors.primaryDark,
                   marginLeft: 12,
                 }}
               />
@@ -285,9 +341,11 @@ const Dashboard = ({ navigation }) => {
             <Carousel
               data={news}
               sliderWidth={Dimensions.get('window').width}
-              itemWidth={Dimensions.get('window').width * 0.8}
+              itemWidth={Dimensions.get('window').width - 10}
               renderItem={renderItem}
+              onSnapToItem={(index) => setActiveSlide(index)}
             />
+            {pagination()}
           </SafeAreaView>
         )}
       </ScrollView>
@@ -299,7 +357,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: style.colors.background.light.offwhite,
-    padding: 12,
   },
   welcomeCard: {
     padding: 6,
@@ -320,11 +377,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontWeight: 'bold',
     padding: 16,
-
     color: style.colors.text.primary,
   },
   carouselItem: {
-    backgroundColor: style.colors.primary,
+    backgroundColor: style.colors.primaryDark,
     borderRadius: 10,
     padding: 24,
     justifyContent: 'center',
@@ -347,6 +403,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     flexDirection: 'row',
     padding: 8,
+    elevation: 12,
   },
   carouselContainer: {
     marginTop: 16,

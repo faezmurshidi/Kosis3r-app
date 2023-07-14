@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
-  TextInput,
   TouchableOpacity,
   Alert,
   StyleSheet,
   ToastAndroid,
 } from 'react-native';
+import { TextInput, Text } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import style from '../styles';
 
@@ -20,7 +19,7 @@ export default function ForgotPassword({ navigation }) {
     try {
       await auth().sendPasswordResetEmail(email);
       ToastAndroid.show(
-        'Password reset email sent. Please check your email.',
+        'Kami telah hantarkan email untuk reset kata laluan',
         ToastAndroid.LONG,
       );
     } catch (error) {
@@ -35,26 +34,32 @@ export default function ForgotPassword({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={{}}>
+        <Text variant="labelLarge" style={{ paddingBottom: 12 }}>
           Kami akan hantarkan email untuk reset kata laluan
         </Text>
         <TextInput
-          style={{
-            borderColor: 'gray',
-            borderWidth: 1,
-            marginBottom: 20,
-            width: '100%',
-          }}
-          onChangeText={(text) => setEmail(text)}
+          label={'Email'}
           value={email}
-          placeholder="Enter your email"
+          onChangeText={setEmail}
+          mode="outlined"
+          keyboardType="email-address"
+          style={styles.input}
+          activeOutlineColor={style.colors.accent}
+          outlineColor={style.colors.primaryDark}
+          returnKeyType="next"
+          onSubmitEditing={handleForgotPassword}
         />
+
         <TouchableOpacity
-          style={{ backgroundColor: '#007BFF', padding: 10, borderRadius: 5 }}
+          style={{
+            backgroundColor: style.colors.tertiary,
+            padding: 10,
+            borderRadius: 5,
+          }}
           onPress={handleForgotPassword}
         >
           <Text style={{ color: '#fff', textAlign: 'center' }}>
-            Reset Password
+            Reset Kata Laluan
           </Text>
         </TouchableOpacity>
       </View>
@@ -76,5 +81,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     marginHorizontal: 20,
+  },
+  input: {
+    marginBottom: 16,
+    outlineStyle: style.colors.primaryDark,
+    borderRadius: 10,
+    width: '100%',
   },
 });

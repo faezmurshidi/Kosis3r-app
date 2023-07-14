@@ -12,16 +12,16 @@ import LinearGradient from 'react-native-linear-gradient';
 import styles from '../styles';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-const CustomButton = ({ onPress, title, icon }) => {
+const CustomButton = ({ onPress, title, icon, style }) => {
   const TouchableComponent =
     Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
 
   const buttonContent = (
     <LinearGradient
-      colors={[styles.colors.primary, styles.colors.secondary]}
+      colors={[styles.colors.tertiary, styles.colors.tertiary]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
-      style={buttonStyles.button}
+      style={[buttonStyles.button, style]}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {icon && (
@@ -64,8 +64,8 @@ const buttonStyles = StyleSheet.create({
       height: 2,
     },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowRadius: 1,
+    elevation: 2,
   },
   buttonText: {
     color: '#FFFFFF',

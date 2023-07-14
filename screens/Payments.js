@@ -45,7 +45,9 @@ import {
 import {
   BottomSheetModal,
   BottomSheetModalProvider,
+  BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
+import Voucher from '../components/Voucher';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -61,14 +63,21 @@ const PaymentScreen = ({ navigation }) => {
 
   // ref
   const bottomSheetModalRef = useRef(null);
+  const redeemVoucherRef = useRef(null);
 
   // variables
   const snapPoints = useMemo(() => ['25%', '30%'], []);
+  const snapPointsVoucher = useMemo(() => ['50%', '50%'], []);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
+
+  const handleVoucherModalPress = useCallback(() => {
+    redeemVoucherRef.current?.present();
+  }, []);
+
   const handleSheetChanges = useCallback((index) => {
     console.log('handleSheetChanges', index);
   }, []);
@@ -127,8 +136,8 @@ const PaymentScreen = ({ navigation }) => {
 
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    { key: 'first', title: i18n.t('Payments.transactionsHistory') },
-    { key: 'second', title: i18n.t('Payments.earnings') },
+    { key: 'first', title: 'Sejarah Transaksi' },
+    { key: 'second', title: 'Pengeluaran' },
   ]);
 
   const requestWithdrawal = async () => {
@@ -161,8 +170,20 @@ const PaymentScreen = ({ navigation }) => {
     }
   };
 
+  const renderBackdrop = useCallback(
+    (props) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={1}
+        opacity={0.7}
+      />
+    ),
+    [],
+  );
+
   const renderItem = ({ item, index }) => {
-    const date = moment(item.timestamp).format('DD MMMM YYYY');
+    const date = moment(item.timestamp).format('D MMMM YYYY hh:mm a');
     const cat =
       (category && category.find((x) => x.id === item.items.category)) || null;
 
@@ -170,34 +191,40 @@ const PaymentScreen = ({ navigation }) => {
       <View>
         <View style={styles.transaction}>
           <View style={styles.transactionInfoContainer}>
-            <Text variant="titleSmall">{date}</Text>
-            <Text variant="bodySmall">
-              {item.items.weight}KG of {cat && cat.label} @ RM
-              {item.items.rate}
-              /Kg
+            <Text variant="titleMedium">
+              {cat && cat.label} {item.items.weight}Kg
             </Text>
+            <Text variant="titleSmall">
+              Kadar harga: RM{item.items.rate}/Kg
+            </Text>
+            <Text variant="labelSmall">{date}</Text>
+
             <Text
               variant="bodyMedium"
-              style={{ color: style.colors.accent, fontSize: 16 }}
+              style={{
+                color: style.colors.tertiary,
+                fontSize: 16,
+                marginTop: 5,
+              }}
             >
               RM{item.items.price}
             </Text>
-            <Image
-              style={{
-                width: 120,
-                height: 120,
-                borderRadius: 10,
-                marginRight: 14,
-              }}
-              source={{ uri: item.imageUrl }}
-            />
+            <View style={styles.statusContainer}>
+              <View style={styles.indicator(item.status)} />
+              <Text style={styles.transactionStatus(item.status)}>
+                {i18n.t(`status.${item.status}`).toUpperCase()}
+              </Text>
+            </View>
           </View>
-          <View style={styles.statusContainer}>
-            <View style={styles.indicator(item.status)} />
-            <Text style={styles.transactionStatus(item.status)}>
-              {item.status.toUpperCase()}
-            </Text>
-          </View>
+          <Image
+            style={{
+              width: 120,
+              height: 140,
+              borderRadius: 10,
+              marginLeft: 10,
+            }}
+            source={{ uri: item.imageUrl }}
+          />
         </View>
 
         <Divider />
@@ -206,31 +233,46 @@ const PaymentScreen = ({ navigation }) => {
   };
 
   const renderWithdrawal = ({ item, index }) => {
-    const date = moment(item.timestamp).format('DD MMMM YYYY');
+    const date = moment(item.timestamp).format('DD MMMM YYYY hh:mm a');
 
     return (
-      <View>
+      <>
         <View style={styles.transaction}>
           <View style={styles.transactionInfoContainer}>
-            <Text variant="titleSmall">{date}</Text>
-
+            <Text variant="labelMedium">{date}</Text>
             <Text
               variant="bodyMedium"
-              style={{ color: style.colors.accent, fontSize: 16 }}
+              style={{
+                color: style.colors.tertiary,
+                fontSize: 16,
+                fontWeight: 'bold',
+              }}
             >
               RM{item.amount}
             </Text>
           </View>
-          <View style={styles.statusContainer}>
-            <View style={styles.indicator(item.status)} />
+          <View
+            style={{
+              borderRadius: 12,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor:
+                item.status === 'pending'
+                  ? 'yellow'
+                  : item.status === 'cancelled'
+                  ? 'red'
+                  : 'green',
+              flex: 1,
+            }}
+          >
             <Text style={styles.transactionStatus(item.status)}>
-              {item.status.toUpperCase()}
+              {i18n.t(`status.${item.status}`).toUpperCase()}
             </Text>
           </View>
         </View>
-
         <Divider />
-      </View>
+      </>
     );
   };
 
@@ -330,6 +372,25 @@ const PaymentScreen = ({ navigation }) => {
     }
   };
 
+  const vouchers = [
+    {
+      id: '1',
+      title: 'RM 50 Voucher',
+      description: 'RM 5 OFF on your next purchase',
+      imageUrl:
+        'https://firebasestorage.googleapis.com/v0/b/kosis-dev.appspot.com/o/images%2Fkfc_logo.png?alt=media&token=0fde565d-cde5-43a2-8ae7-e7d1102a3a3a',
+      expiry: '31/12/2021',
+    },
+    {
+      id: '2',
+      title: 'RM 100 Voucher',
+      description: 'RM 10 OFF on your next purchase',
+      imageUrl:
+        'https://firebasestorage.googleapis.com/v0/b/kosis-dev.appspot.com/o/images%2Fkfc_logo.png?alt=media&token=0fde565d-cde5-43a2-8ae7-e7d1102a3a3a',
+      expiry: '31/12/2021',
+    },
+  ];
+
   return (
     <BottomSheetModalProvider>
       <View
@@ -340,16 +401,26 @@ const PaymentScreen = ({ navigation }) => {
         }}
       >
         <View style={styles.balanceSection}>
-          <Text style={styles.balanceText}>{i18n.t('Payments.balance')}</Text>
+          <Text style={styles.balanceText}>Wallet</Text>
           <Text style={{ fontSize: 31, fontWeight: '900' }}>
             RM{user?.wallet}
           </Text>
-          <CustomButton
-            icon="wallet"
-            title={i18n.t('Payments.title')}
-            onPress={handlePresentModalPress}
-            color={style.colors.primary}
-          />
+          <View style={styles.balanceButtonContainer}>
+            <CustomButton
+              icon="wallet"
+              title={i18n.t('Payments.title')}
+              onPress={handlePresentModalPress}
+              color={style.colors.primary}
+              style={{ width: 150, height: 40 }}
+            />
+            <CustomButton
+              icon="gift"
+              title={'Baucar'}
+              onPress={handleVoucherModalPress}
+              color={style.colors.primary}
+              style={{ width: 150, height: 40, marginLeft: 10 }}
+            />
+          </View>
         </View>
 
         <TabView
@@ -360,7 +431,7 @@ const PaymentScreen = ({ navigation }) => {
           renderTabBar={(props) => (
             <TabBar
               {...props}
-              indicatorStyle={{ backgroundColor: style.colors.primary }}
+              indicatorStyle={{ backgroundColor: style.colors.tertiary }}
               style={{
                 backgroundColor: style.colors.background.light.offwhite,
               }}
@@ -373,6 +444,7 @@ const PaymentScreen = ({ navigation }) => {
           index={1}
           snapPoints={snapPoints}
           onChange={handleSheetChanges}
+          backdropComponent={renderBackdrop}
         >
           <View style={{}}>
             <View style={{ padding: 12 }}>
@@ -403,6 +475,15 @@ const PaymentScreen = ({ navigation }) => {
               />
             </View>
           </View>
+        </BottomSheetModal>
+        <BottomSheetModal
+          ref={redeemVoucherRef}
+          index={1}
+          snapPoints={snapPointsVoucher}
+          onChange={handleSheetChanges}
+          backdropComponent={renderBackdrop}
+        >
+          <Voucher vouchers={vouchers} />
         </BottomSheetModal>
       </View>
     </BottomSheetModalProvider>
@@ -451,29 +532,39 @@ const styles = StyleSheet.create({
   },
   transactionsList: {
     width: '100%',
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
   },
   transaction: {
     marginTop: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     paddingVertical: 10,
     backgroundColor: style.colors.background.light.lightGray,
     borderRadius: 8,
     marginBottom: 10,
     justifyContent: 'space-between',
     flexDirection: 'row',
+    width: '100%',
   },
   transactionInfoContainer: {
     flex: 1,
   },
   statusContainer: {
+    backgroundColor: style.colors.secondary,
+    borderRadius: 5,
+    alignSelf: 'center',
+    padding: 12,
+    marginTop: 10,
+    justifyContent: 'center',
+    elevation: 2,
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
   },
   transactionStatus: (status) => ({
     marginLeft: 5,
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: 'bold',
+    color: style.colors.text.primary,
   }),
   indicator: (status) => ({
     width: 12,
@@ -499,6 +590,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 20,
     color: style.colors.text.primary,
+  },
+  balanceButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    width: '100%',
   },
 });
 

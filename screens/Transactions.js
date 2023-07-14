@@ -1,4 +1,12 @@
-import React, { useState, useContext, useEffect } from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -22,9 +30,14 @@ import {
 } from '../firebase/firebaseUtils';
 import { AuthContext } from '../context/AuthContext';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import { use } from 'i18next';
 import CustomButton from '../components/CustomButton';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetBackdrop,
+} from '@gorhom/bottom-sheet';
+import ConfettiCannon from 'react-native-confetti-cannon';
 
 const TransactionsScreen = ({ route, navigation }) => {
   const nearestCenter = route.params?.nearestCenter;
@@ -37,6 +50,20 @@ const TransactionsScreen = ({ route, navigation }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [rate, setRate] = useState(0);
   const [txId, setTxId] = useState(null);
+
+  // ref
+  const bottomSheetModalRef = useRef(null);
+
+  // variables
+  const snapPoints = useMemo(() => ['43%', '55%'], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+  const handleSheetChanges = useCallback((index) => {
+    console.log('handleSheetChanges', index);
+  }, []);
 
   useEffect(() => {
     const getRate = async () => {
@@ -95,7 +122,7 @@ const TransactionsScreen = ({ route, navigation }) => {
         timestamp: Date.now(),
         center: nearestCenter,
         imageUrl,
-        status: 'created', // created, approved, pending, paid
+        status: 'pending', // approved, pending, rejected
         items: {
           category: category[selectedCategory].id,
           weight,
@@ -113,7 +140,8 @@ const TransactionsScreen = ({ route, navigation }) => {
         console.log('Error:', error);
       } finally {
         setTxId(transactionId);
-        setIsModalVisible(true);
+        // setIsModalVisible(true);
+        handlePresentModalPress();
       }
     } catch (error) {
       console.log('Unable to resize the photo', error);
@@ -131,130 +159,246 @@ const TransactionsScreen = ({ route, navigation }) => {
 
   const totalSale = (currentRate * weight).toFixed(2);
 
+  const transactionToBank = () => {
+    //closeBottomSheet
+    bottomSheetModalRef.current?.close();
+  };
+
+  const transactionToWallet = () => {
+    bottomSheetModalRef.current?.close();
+  };
+
   // console.log('photo', photo);
 
-  return (
-    <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={false}
+  const renderBackdrop = useCallback(
+    (props) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={1}
+        opacity={0.7}
       >
-        {nearestCenter && (
-          <View style={styles.header}>
-            <View style={{ alignItems: 'center' }}>
+        <ConfettiCannon
+          count={300}
+          origin={{ x: -10, y: 0 }}
+          autoStart={true}
+          fadeOut={true}
+          fallSpeed={2000}
+          colors={[
+            style.colors.error,
+            style.colors.secondary,
+            style.colors.tertiary,
+          ]}
+        />
+      </BottomSheetBackdrop>
+    ),
+    [],
+  );
+
+  return (
+    <BottomSheetModalProvider>
+      <View style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.scrollViewContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {nearestCenter && (
+            <View style={styles.header}>
+              <View style={{ alignItems: 'center' }}>
+                <FontAwesome5Icon
+                  name="warehouse"
+                  size={18}
+                  color={style.colors.accent}
+                  style={{ margin: 5, marginTop: 20 }}
+                />
+              </View>
+              <View style={{ padding: 2 }}>
+                <Text variant="labelLarge">Anda kini berada di</Text>
+                <Text variant="titleMedium">{nearestCenter.fasiliti}</Text>
+                <Text>{nearestCenter.alamat}</Text>
+              </View>
+            </View>
+          )}
+          <Text variant="labelLarge" style={{ marginBottom: 4 }}>
+            Jenis Barang Kitar Semula
+          </Text>
+          <Picker
+            selectedValue={category[selectedCategory].id}
+            onValueChange={(value, index) => {
+              setSelectedCategory(index);
+            }}
+            style={styles.picker}
+          >
+            {category.map((list, index) => {
+              return (
+                <Picker.Item key={index} label={list.label} value={list.id} />
+              );
+            })}
+          </Picker>
+          <Text variant="labelLarge" style={{ marginBottom: 2 }}>
+            Berat (KG)
+          </Text>
+
+          <TextInput
+            placeholder="Weight (KG)"
+            value={weight.toString()}
+            onChangeText={(value) => setWeight(parseFloat(value))}
+            style={styles.input}
+            keyboardType="numeric"
+            mode="outlined"
+            activeOutlineColor={style.colors.accent}
+            outlineColor={style.colors.secondary}
+          />
+
+          {category[selectedCategory] && (
+            <View style={styles.todaysPrice}>
+              <Text>Kadar Hari Ini:</Text>
+              <Text style={{ fontWeight: 'bold' }}>RM{currentRate} per KG</Text>
+            </View>
+          )}
+          <TouchableOpacity onPress={onPicker} style={styles.photoButton}>
+            <Text style={styles.photoButtonText}>Tambah Gambar</Text>
+          </TouchableOpacity>
+          {photo && (
+            <Image
+              source={{ uri: 'file://' + photo.path }}
+              style={styles.image}
+            />
+          )}
+          {/* image info */}
+          <View style={styles.imageInfo}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <FontAwesome5Icon
-                name="warehouse"
+                name="info-circle"
                 size={18}
                 color={style.colors.accent}
-                style={{ margin: 5, marginTop: 20 }}
+                style={{ margin: 5 }}
               />
-            </View>
-            <View style={{ padding: 2 }}>
-              <Text variant="labelLarge">Anda kini berada di</Text>
-              <Text variant="titleMedium">{nearestCenter.fasiliti}</Text>
-              <Text>{nearestCenter.alamat}</Text>
+              <Text variant="labelSmall" style={{ color: style.colors.accent }}>
+                Sila pastikan bacaan penimbang serta barang kitar semula masuk
+                di dalam gambar
+              </Text>
             </View>
           </View>
-        )}
-        <Text variant="labelLarge" style={{ marginBottom: 2 }}>
-          Jenis Barang Kitar Semula
-        </Text>
-        <Picker
-          selectedValue={category[selectedCategory].id}
-          onValueChange={(value, index) => {
-            setSelectedCategory(index);
-          }}
-          style={styles.picker}
-        >
-          {category.map((list, index) => {
-            return (
-              <Picker.Item key={index} label={list.label} value={list.id} />
-            );
-          })}
-        </Picker>
-        <Text variant="labelLarge" style={{ marginBottom: 2 }}>
-          Berat (KG)
-        </Text>
+        </ScrollView>
 
-        <TextInput
-          placeholder="Weight (KG)"
-          value={weight.toString()}
-          onChangeText={(value) => setWeight(parseFloat(value))}
-          style={styles.input}
-          keyboardType="numeric"
-          mode="outlined"
-          activeOutlineColor={style.colors.accent}
-          outlineColor={style.colors.secondary}
-        />
-
-        {category[selectedCategory] && (
-          <View style={styles.todaysPrice}>
-            <Text>Kadar Hari Ini:</Text>
-            <Text style={{ fontWeight: 'bold' }}>{currentRate}/KG</Text>
+        <View style={styles.footer}>
+          <View style={styles.totalSale}>
+            <Text>Jumlah Jualan</Text>
+            <Text style={{ fontWeight: 'bold' }}>RM {totalSale}</Text>
           </View>
-        )}
-        <TouchableOpacity onPress={onPicker} style={styles.photoButton}>
-          <Text style={styles.photoButtonText}>Tambah Gambar</Text>
-        </TouchableOpacity>
-        {photo && (
-          <Image
-            source={{ uri: 'file://' + photo.path }}
-            style={styles.image}
-          />
-        )}
-      </ScrollView>
-
-      <View style={styles.footer}>
-        <View style={styles.totalSale}>
-          <Text>Jumlah Jualan</Text>
-          <Text style={{ fontWeight: 'bold' }}>RM {totalSale}</Text>
+          <Divider />
+          <TouchableOpacity
+            // onPress={() => submit(currentRate, totalSale)}
+            onPress={handlePresentModalPress}
+            style={[
+              weight && photo ? styles.doneButton : styles.disabledButton,
+            ]}
+            // disabled={weight && photo ? false : true}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.doneButtonText}>Selesai</Text>
+            )}
+          </TouchableOpacity>
         </View>
-        <Divider />
-        <TouchableOpacity
-          onPress={() => submit(currentRate, totalSale)}
-          style={[weight && photo ? styles.doneButton : styles.disabledButton]}
-          disabled={weight && photo ? false : true}
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          index={1}
+          snapPoints={snapPoints}
+          onChange={handleSheetChanges}
+          backdropComponent={renderBackdrop}
         >
-          {loading ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : (
-            <Text style={styles.doneButtonText}>Selesai</Text>
-          )}
-        </TouchableOpacity>
+          <View style={{ margin: 12 }}>
+            <View
+              style={{
+                padding: 8,
+                backgroundColor: style.colors.tertiary,
+                borderRadius: 8,
+              }}
+            >
+              <Text
+                style={{
+                  marginBottom: 10,
+                  alignSelf: 'center',
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                }}
+              >
+                Kitar Semula Berjaya 🎉
+              </Text>
+              <Text style={{ color: 'white', marginHorizontal: 6 }}>
+                Anda telah berjaya menjual barang kitar semula kepada{' '}
+                {nearestCenter.fasiliti}. Berikut merupakan ringkasan transaksi:
+              </Text>
 
-        <Portal>
-          <Dialog visible={isModalVisible} onDismiss={closeModal}>
-            <Dialog.Title style={{ alignItems: 'center' }}>
-              Kitar Semula Berjaya
-            </Dialog.Title>
-            <Dialog.Content>
-              <Text>Anda telah berjaya menjual barang kitar semula</Text>
-              <Text>kepada {nearestCenter.fasiliti}</Text>
               <View
                 style={{
-                  height: 1,
-                  backgroundColor: 'gray',
-                  marginVertical: 10,
+                  margin: 4,
+                  padding: 8,
+                  backgroundColor: style.colors.primary,
+                  elevation: 2,
+                  borderRadius: 8,
+                  marginVertical: 12,
                 }}
-              />
-              <Text>Transaksi Id: {txId}</Text>
-              <Text>Kategori: {category[selectedCategory].id}</Text>
-              <Text>Berat: {weight}</Text>
-              <Text>Kadar Hari Ini: {currentRate}</Text>
-              <Text>Jumlah: RM{totalSale}</Text>
-            </Dialog.Content>
-            <Dialog.Actions style={{ alignSelf: 'center' }}>
-              <CustomButton
-                onPress={closeModal}
-                title="Okay"
-                color={style.colors.primary}
-                style={{ borderRadius: 8 }}
-              />
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
+              >
+                <Text>Transaksi Id: {txId}</Text>
+                <Text>Kategori: {category[selectedCategory].id}</Text>
+                <Text>Berat: {weight}</Text>
+                <Text>Kadar Hari Ini: {currentRate}</Text>
+                <Text>Jumlah: RM{totalSale}</Text>
+              </View>
+              <Text
+                variant="labelSmall"
+                style={{ color: 'white', marginHorizontal: 6 }}
+              >
+                Transaksi anda sedang menunggu pengesahan. Anda boleh lihat
+                status transaksi anda di tab "Akaun".
+              </Text>
+            </View>
+            <Text style={{ alignSelf: 'center', marginVertical: 12 }}>
+              Pilih cara untuk menerima wang anda
+            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-evenly',
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => transactionToBank()}
+                style={{
+                  backgroundColor: style.colors.tertiary,
+                  borderRadius: 10,
+                  paddingVertical: 12,
+                  paddingHorizontal: 20,
+                  width: '46%',
+                }}
+              >
+                <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                  🏦 Masuk ke akaun
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => transactionToWallet()}
+                style={{
+                  backgroundColor: style.colors.accent,
+                  borderRadius: 10,
+                  paddingVertical: 12,
+                  paddingHorizontal: 20,
+                  width: '46%',
+                }}
+              >
+                <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                  Simpan ke wallet 💰
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </BottomSheetModal>
       </View>
-    </View>
+    </BottomSheetModalProvider>
   );
 };
 
@@ -295,7 +439,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   photoButton: {
-    backgroundColor: style.colors.primary,
+    backgroundColor: style.colors.tertiary,
     width: '80%',
     paddingVertical: 14,
     borderRadius: 12,
@@ -341,7 +485,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
   doneButton: {
-    backgroundColor: style.colors.primary,
+    backgroundColor: style.colors.tertiary,
     width: '80%',
     paddingVertical: 16,
     margin: 14,
@@ -382,6 +526,13 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  imageInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '80%',
+    padding: 8,
   },
 });
 

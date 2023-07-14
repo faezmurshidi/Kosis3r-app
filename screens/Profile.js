@@ -57,11 +57,11 @@ const ProfileScreen = ({ navigation }) => {
         { title: i18n.t('Profile.name'), value: user?.name },
         { title: i18n.t('Profile.email'), value: user?.email },
         { title: i18n.t('Profile.phone'), value: user?.phoneNumber },
-        {
-          title: i18n.t('Profile.language'),
-          value: language === 'en' ? 'English' : 'Bahasa',
-          onPress: toggleLanguage,
-        },
+        // {
+        //   title: i18n.t('Profile.language'),
+        //   value: language === 'en' ? 'English' : 'Bahasa',
+        //   onPress: toggleLanguage,
+        // },
       ],
     },
     {
@@ -72,6 +72,11 @@ const ProfileScreen = ({ navigation }) => {
           icon: 'edit',
           onPress: () => navigation.navigate('EditProfile'),
         },
+        // {
+        //   title: 'Bank Account Details',
+        //   icon: 'bank',
+        //   onPress: () => navigation.navigate('EditProfile'),
+        // },
       ],
     },
   ];
