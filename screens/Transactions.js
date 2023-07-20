@@ -14,7 +14,6 @@ import {
   Image,
   ScrollView,
   ActivityIndicator,
-  Modal,
   Button,
 } from 'react-native';
 import { TextInput, Text, Divider, Portal, Dialog } from 'react-native-paper';
@@ -27,6 +26,7 @@ import {
   createTransactionFirestore,
   getCurrentRate,
   saveImageToStorage,
+  updateTransactionPaymentMethodFirestore,
 } from '../firebase/firebaseUtils';
 import { AuthContext } from '../context/AuthContext';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -38,6 +38,7 @@ import {
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import Modal from 'react-native-modal';
 
 const TransactionsScreen = ({ route, navigation }) => {
   const nearestCenter = route.params?.nearestCenter;
@@ -55,7 +56,7 @@ const TransactionsScreen = ({ route, navigation }) => {
   const bottomSheetModalRef = useRef(null);
 
   // variables
-  const snapPoints = useMemo(() => ['43%', '55%'], []);
+  const snapPoints = useMemo(() => ['65%', '75%'], []);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -99,6 +100,77 @@ const TransactionsScreen = ({ route, navigation }) => {
     } catch (e) {}
   };
 
+  const renderSuccessModal = () => (
+    <Modal
+      isVisible={isModalVisible}
+      onBackdropPress={() => setIsModalVisible(false)}
+      onBackButtonPress={() => setIsModalVisible(false)}
+      animationIn="zoomIn"
+      animationOut="zoomOut"
+      animationInTiming={500}
+      animationOutTiming={500}
+      backdropTransitionInTiming={500}
+      backdropTransitionOutTiming={500}
+    >
+      <View
+        style={{
+          backgroundColor: 'white',
+          borderRadius: 10,
+          padding: 20,
+          alignItems: 'center',
+        }}
+      >
+        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+          Transaksi berjaya!
+        </Text>
+        <View
+          style={{
+            flexDirection: 'column',
+            justifyContent: 'center',
+            padding: 12,
+            width: '100%',
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => goToPayment()}
+            style={{
+              backgroundColor: style.colors.accent,
+              borderRadius: 10,
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+              justifyItem: 'center',
+              alignItems: 'center',
+              marginBottom: 12,
+            }}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>
+              Lihat transaksi
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => backToHome()}
+            style={{
+              backgroundColor: style.colors.tertiaryDark,
+              borderRadius: 10,
+              paddingVertical: 12,
+              justifyItem: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Text
+              style={{
+                color: 'white',
+                fontWeight: 'bold',
+              }}
+            >
+              Kembali ke laman utama
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
   const submit = async (currentRate, totalSale) => {
     setLoading(true);
     const transactionId = generateTransactionId(nearestCenter.id);
@@ -123,9 +195,10 @@ const TransactionsScreen = ({ route, navigation }) => {
         center: nearestCenter,
         imageUrl,
         status: 'pending', // approved, pending, rejected
+        paymentMethod: 'wallet', //default
         items: {
           category: category[selectedCategory].id,
-          weight,
+          weight: Number(weight),
           price: totalSale,
           rate: currentRate,
         },
@@ -140,7 +213,6 @@ const TransactionsScreen = ({ route, navigation }) => {
         console.log('Error:', error);
       } finally {
         setTxId(transactionId);
-        // setIsModalVisible(true);
         handlePresentModalPress();
       }
     } catch (error) {
@@ -159,13 +231,31 @@ const TransactionsScreen = ({ route, navigation }) => {
 
   const totalSale = (currentRate * weight).toFixed(2);
 
-  const transactionToBank = () => {
-    //closeBottomSheet
-    bottomSheetModalRef.current?.close();
+  const transactionToBank = async () => {
+    try {
+      //await updateTransactionPaymentMethodFirestore(txId, 'bank');
+    } catch (error) {
+      console.log('Error:', error);
+    } finally {
+      //closeBottomSheet
+      bottomSheetModalRef.current?.close();
+      setIsModalVisible(true);
+    }
   };
 
   const transactionToWallet = () => {
     bottomSheetModalRef.current?.close();
+    setIsModalVisible(true);
+  };
+
+  const backToHome = () => {
+    bottomSheetModalRef.current?.close();
+    navigation.pop(2);
+  };
+
+  const goToPayment = () => {
+    bottomSheetModalRef.current?.close();
+    navigation.navigate('Akaun');
   };
 
   // console.log('photo', photo);
@@ -178,8 +268,8 @@ const TransactionsScreen = ({ route, navigation }) => {
         appearsOnIndex={1}
         opacity={0.7}
       >
-        <ConfettiCannon
-          count={300}
+        {/* <ConfettiCannon
+          count={100}
           origin={{ x: -10, y: 0 }}
           autoStart={true}
           fadeOut={true}
@@ -189,7 +279,7 @@ const TransactionsScreen = ({ route, navigation }) => {
             style.colors.secondary,
             style.colors.tertiary,
           ]}
-        />
+        /> */}
       </BottomSheetBackdrop>
     ),
     [],
@@ -241,8 +331,8 @@ const TransactionsScreen = ({ route, navigation }) => {
 
           <TextInput
             placeholder="Weight (KG)"
-            value={weight.toString()}
-            onChangeText={(value) => setWeight(parseFloat(value))}
+            value={weight}
+            onChangeText={(value) => setWeight(value)}
             style={styles.input}
             keyboardType="numeric"
             mode="outlined"
@@ -343,8 +433,8 @@ const TransactionsScreen = ({ route, navigation }) => {
                   marginVertical: 12,
                 }}
               >
-                <Text>Transaksi Id: {txId}</Text>
-                <Text>Kategori: {category[selectedCategory].id}</Text>
+                <Text style={{ color: 'gray' }}>{txId}</Text>
+                <Text>Kategori: {category[selectedCategory].label}</Text>
                 <Text>Berat: {weight}</Text>
                 <Text>Kadar Hari Ini: {currentRate}</Text>
                 <Text>Jumlah: RM{totalSale}</Text>
@@ -369,10 +459,12 @@ const TransactionsScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => transactionToBank()}
                 style={{
-                  backgroundColor: style.colors.tertiary,
+                  backgroundColor: style.colors.accent,
                   borderRadius: 10,
                   paddingVertical: 12,
                   paddingHorizontal: 20,
+                  justifyItem: 'center',
+                  alignItems: 'center',
                   width: '46%',
                 }}
               >
@@ -383,20 +475,27 @@ const TransactionsScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => transactionToWallet()}
                 style={{
-                  backgroundColor: style.colors.accent,
+                  backgroundColor: style.colors.tertiaryDark,
                   borderRadius: 10,
                   paddingVertical: 12,
-                  paddingHorizontal: 20,
+                  justifyItem: 'center',
+                  alignItems: 'center',
                   width: '46%',
                 }}
               >
-                <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                <Text
+                  style={{
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Simpan ke wallet 💰
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
         </BottomSheetModal>
+        {renderSuccessModal()}
       </View>
     </BottomSheetModalProvider>
   );

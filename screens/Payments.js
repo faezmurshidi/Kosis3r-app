@@ -31,6 +31,7 @@ import moment from 'moment';
 import PagerView from 'react-native-pager-view';
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import i18n from '../i18n';
+import Modal from 'react-native-modal';
 
 import style from '../styles';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -66,7 +67,7 @@ const PaymentScreen = ({ navigation }) => {
   const redeemVoucherRef = useRef(null);
 
   // variables
-  const snapPoints = useMemo(() => ['25%', '30%'], []);
+  const snapPoints = useMemo(() => ['50%'], []);
   const snapPointsVoucher = useMemo(() => ['50%', '50%'], []);
 
   // callbacks
@@ -142,6 +143,9 @@ const PaymentScreen = ({ navigation }) => {
 
   const requestWithdrawal = async () => {
     console.log('requestWithdrawal');
+    const timestamp = Date.now();
+    const randomNum = Math.floor(Math.random() * 1000); // This will generate a random number between 0 and 999
+
     if (withdrawAmount <= 0) {
       setWithdrawError('Please enter a valid amount');
       return;
@@ -154,8 +158,9 @@ const PaymentScreen = ({ navigation }) => {
     const withdrawal = {
       amount: withdrawAmount,
       method: withdrawMethod,
-      timestamp: Date.now(),
+      timestamp,
       user,
+      id: `W${timestamp}${randomNum}`,
       status: 'pending',
     };
 
@@ -166,7 +171,8 @@ const PaymentScreen = ({ navigation }) => {
       // Handle error
       console.error(error);
     } finally {
-      hideDialog();
+      bottomSheetModalRef.current?.close();
+      setVisible(true);
     }
   };
 
@@ -191,13 +197,24 @@ const PaymentScreen = ({ navigation }) => {
       <View>
         <View style={styles.transaction}>
           <View style={styles.transactionInfoContainer}>
+            <Text
+              variant="labelSmall"
+              style={{ color: style.colors.lightGray }}
+            >
+              #{item.id}
+            </Text>
             <Text variant="titleMedium">
               {cat && cat.label} {item.items.weight}Kg
             </Text>
             <Text variant="titleSmall">
               Kadar harga: RM{item.items.rate}/Kg
             </Text>
-            <Text variant="labelSmall">{date}</Text>
+            <Text
+              variant="labelSmall"
+              style={{ color: style.colors.lightGray }}
+            >
+              {date}
+            </Text>
 
             <Text
               variant="bodyMedium"
@@ -209,9 +226,8 @@ const PaymentScreen = ({ navigation }) => {
             >
               RM{item.items.price}
             </Text>
-            <View style={styles.statusContainer}>
-              <View style={styles.indicator(item.status)} />
-              <Text style={styles.transactionStatus(item.status)}>
+            <View style={styles.transactionStatusBackground(item.status)}>
+              <Text style={styles.transactionStatusTitle(item.status)}>
                 {i18n.t(`status.${item.status}`).toUpperCase()}
               </Text>
             </View>
@@ -239,6 +255,12 @@ const PaymentScreen = ({ navigation }) => {
       <>
         <View style={styles.transaction}>
           <View style={styles.transactionInfoContainer}>
+            <Text
+              variant="labelSmall"
+              style={{ color: style.colors.lightGray }}
+            >
+              #{item.id}
+            </Text>
             <Text variant="labelMedium">{date}</Text>
             <Text
               variant="bodyMedium"
@@ -251,22 +273,8 @@ const PaymentScreen = ({ navigation }) => {
               RM{item.amount}
             </Text>
           </View>
-          <View
-            style={{
-              borderRadius: 12,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                item.status === 'pending'
-                  ? 'yellow'
-                  : item.status === 'cancelled'
-                  ? 'red'
-                  : 'green',
-              flex: 1,
-            }}
-          >
-            <Text style={styles.transactionStatus(item.status)}>
+          <View style={styles.transactionStatusBackground(item.status)}>
+            <Text style={styles.transactionStatusTitle(item.status)}>
               {i18n.t(`status.${item.status}`).toUpperCase()}
             </Text>
           </View>
@@ -319,7 +327,7 @@ const PaymentScreen = ({ navigation }) => {
   );
 
   const SecondRoute = () => (
-    <View style={{ flex: 1, margin: 12 }}>
+    <View style={{ flex: 1 }}>
       {/* <View
         style={{ alignSelf: 'center', alignItems: 'center', marginTop: 40 }}
       >
@@ -441,10 +449,11 @@ const PaymentScreen = ({ navigation }) => {
         />
         <BottomSheetModal
           ref={bottomSheetModalRef}
-          index={1}
+          index={0}
           snapPoints={snapPoints}
           onChange={handleSheetChanges}
           backdropComponent={renderBackdrop}
+          keyboardDismissMode="none"
         >
           <View style={{}}>
             <View style={{ padding: 12 }}>
@@ -470,7 +479,7 @@ const PaymentScreen = ({ navigation }) => {
               <Button
                 onPress={() => requestWithdrawal()}
                 title="Confirm"
-                color={style.colors.primary}
+                color={style.colors.tertiary}
                 style={{ borderRadius: 10 }}
               />
             </View>
@@ -485,6 +494,27 @@ const PaymentScreen = ({ navigation }) => {
         >
           <Voucher vouchers={vouchers} />
         </BottomSheetModal>
+        <Modal isVisible={visible} onBackdropPress={() => setVisible(false)}>
+          <View
+            style={{
+              alignSelf: 'center',
+              justifyContent: 'center',
+              backgroundColor: style.colors.secondary,
+              borderRadius: 14,
+              alignItems: 'center',
+              width: 300,
+              height: 200,
+            }}
+          >
+            <Text>Permintaan pengeluaran telah dihantar </Text>
+            <CustomButton
+              title="Okay"
+              onPress={() => {
+                setVisible(false);
+              }}
+            />
+          </View>
+        </Modal>
       </View>
     </BottomSheetModalProvider>
   );
@@ -560,25 +590,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  transactionStatus: (status) => ({
+  transactionStatusTitle: (status) => ({
     marginLeft: 5,
     fontSize: 12,
     fontWeight: 'bold',
-    color: style.colors.text.primary,
+    color:
+      status === 'pending'
+        ? '#FFAA00'
+        : status === 'rejected'
+        ? '#AA0000'
+        : '#006600',
   }),
-  indicator: (status) => ({
-    width: 12,
-    height: 12,
+  transactionStatusBackground: (status) => ({
     borderRadius: 5,
-    borderColor: style.colors.background.light.lightGray,
-    borderWidth: 2,
+    marginVertical: 5,
+    padding: 5,
+    elevation: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor:
       status === 'pending'
-        ? 'yellow'
-        : status === 'cancelled'
-        ? 'red'
-        : 'green',
+        ? '#FFF6D3'
+        : status === 'rejected'
+        ? '#FFE2E2'
+        : '#E6FFE6',
+    flex: 1,
   }),
+
   viewAll: {
     fontSize: 16,
     color: style.colors.primary,

@@ -62,6 +62,7 @@ const NearestCentre = ({ onPress }) => {
           backgroundColor: '#E9F1FB',
           borderRadius: 8,
           marginHorizontal: 14,
+          marginVertical: 8,
         }}
       >
         {nearestCenter && (
@@ -88,27 +89,25 @@ const NearestCentre = ({ onPress }) => {
         )}
 
         {nearestCenter && (
-          <View style={{ flex: 1 }}>
-            <View style={{ padding: 12 }}>
-              {nearestCenter && (
-                <>
-                  <Text style={styles.nearestRecyclingCenterText}>
-                    {nearestCenter.fasiliti}
-                  </Text>
-                  <Text>{nearestCenter.alamat}</Text>
-                </>
-              )}
-              <CustomButton
-                onPress={() => onPress(nearestCenter)}
-                title="Jualan"
-                icon={'recycle'}
-              />
-              {/* <CustomButton
+          <View style={{ flex: 1, padding: 4, justifyContent: 'space-evenly' }}>
+            {nearestCenter && (
+              <>
+                <Text style={styles.nearestRecyclingCenterText}>
+                  {nearestCenter.fasiliti}
+                </Text>
+                <Text>{nearestCenter.alamat}</Text>
+              </>
+            )}
+            <CustomButton
+              onPress={() => onPress(nearestCenter)}
+              title="Jualan"
+              icon={'recycle'}
+            />
+            {/* <CustomButton
                 onPress={openNavigationApp}
                 title="Bawa saya ke sana"
                 icon={'location-arrow'}
               /> */}
-            </View>
           </View>
         )}
       </View>
@@ -132,11 +131,11 @@ const styles = StyleSheet.create({
   },
   map: {
     margin: 8,
-    height: 140,
+    height: 150,
   },
   section: {
     paddingHorizontal: 16,
-    paddingBottom: 8,
+
     flexDirection: 'row',
     alignItems: 'center',
   },

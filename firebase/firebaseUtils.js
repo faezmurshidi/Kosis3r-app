@@ -115,6 +115,23 @@ export const createTransactionFirestore = async (transaction) => {
   }
 };
 
+export const updateTransactionPaymentMethodFirestore = async (
+  transactionId,
+  paymentMethod,
+) => {
+  console.log('Updating tx payment method:', paymentMethod);
+  const transactionRef = firestore()
+    .collection('transactions')
+    .doc(transactionId);
+  console.log('Transaction ref:', transactionRef);
+  try {
+    await transactionRef.update({ paymentMethod: paymentMethod });
+    console.log('Tx payment method updated in Firestore');
+  } catch (error) {
+    console.log('Error updating tx payment method in Firestore:', error);
+  }
+};
+
 export const updateWalletFirestore = async (uid, wallet) => {
   console.log('Updating wallet:', wallet);
   const userRef = firestore().collection('users').doc(uid);
@@ -147,12 +164,45 @@ export const createWithdrawalRequest = async (withdrawalRequest) => {
 };
 
 export const getCurrentRate = async (kosisId) => {
-  const ratesRef = firestore().collection('rate').doc(kosisId);
-  const ratesSnapshot = await ratesRef.get();
-  if (ratesSnapshot.exists) {
-    return ratesSnapshot.data();
-  } else {
-    throw new Error(`Rates for ${kosisId} not found. Using default`);
+  const CACHE_KEY = 'rateCache';
+  const CACHE_EXPIRATION = 24 * 60 * 60 * 1000;
+
+  try {
+    // Try getting the rate from cache
+    const cachedRatesStr = await AsyncStorage.getItem(CACHE_KEY);
+    const cachedRates = cachedRatesStr ? JSON.parse(cachedRatesStr) : {};
+
+    if (
+      cachedRates[kosisId] &&
+      new Date().getTime() - cachedRates[kosisId].fetchTime < CACHE_EXPIRATION
+    ) {
+      // If the data is less than 24 hours old, use it
+      return cachedRates[kosisId].rate;
+    }
+
+    // If the data doesn't exist or is older than 24 hours, fetch new data
+    const ratesRef = firestore().collection('rate').doc(kosisId);
+    const ratesSnapshot = await ratesRef.get();
+
+    if (ratesSnapshot.exists) {
+      const rate = ratesSnapshot.data();
+
+      // Save the new data in the cache
+      const newCachedRates = {
+        ...cachedRates,
+        [kosisId]: {
+          fetchTime: new Date().getTime(),
+          rate,
+        },
+      };
+      await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(newCachedRates));
+
+      return rate;
+    } else {
+      throw new Error(`Rates for ${kosisId} not found. Using default`);
+    }
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -160,7 +210,8 @@ export const getTransactions = async (uid) => {
   console.log('Fetching transactions for:', uid);
   const transactionsRef = firestore()
     .collection('transactions')
-    .where('user.uid', '==', uid);
+    .where('user.uid', '==', uid)
+    .orderBy('timestamp', 'desc');
   const transactionsSnapshot = await transactionsRef.get();
   const transactions = transactionsSnapshot.docs.map((doc) => doc.data());
   console.log('Transactions snapshot:', transactionsSnapshot);
@@ -171,7 +222,8 @@ export const getWithdrawals = async (uid) => {
   console.log('Fetching withdrawal for:', uid);
   const transactionsRef = firestore()
     .collection('withdrawal')
-    .where('user.uid', '==', uid);
+    .where('user.uid', '==', uid)
+    .orderBy('timestamp', 'desc');
   const transactionsSnapshot = await transactionsRef.get();
   const transactions = transactionsSnapshot.docs.map((doc) => doc.data());
   console.log('withdrawal snapshot:', transactionsSnapshot);
@@ -180,7 +232,7 @@ export const getWithdrawals = async (uid) => {
 
 export const getNews = async () => {
   const CACHE_KEY = 'newsCache';
-  const CACHE_EXPIRATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+  const CACHE_EXPIRATION = 24 * 60 * 60 * 1000;
 
   // Check if the cached news exists and is not expired
   const cachedNews = await AsyncStorage.getItem(CACHE_KEY);

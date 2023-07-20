@@ -27,6 +27,8 @@ const styles = StyleSheet.create({
     primaryDark: '#FFD54F',
     secondary: '#FEFEFE',
     tertiary: '#1D9469',
+    tertiaryDark: '#105B3F', // darker shade of the original color
+    tertiaryLight: '#4BC7A6',
     gray: '#CDCDCD',
     paper: {
       ivory: '#FAF0E6',
