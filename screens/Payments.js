@@ -421,6 +421,7 @@ const PaymentScreen = ({ navigation }) => {
               onPress={handlePresentModalPress}
               color={style.colors.primary}
               style={{ width: 150, height: 40 }}
+              disabled={user?.wallet <= 0 || user?.wallet === undefined}
             />
             <CustomButton
               icon="gift"
@@ -428,6 +429,7 @@ const PaymentScreen = ({ navigation }) => {
               onPress={handleVoucherModalPress}
               color={style.colors.primary}
               style={{ width: 150, height: 40, marginLeft: 10 }}
+              disabled={user?.wallet <= 0 || user?.wallet === undefined}
             />
           </View>
         </View>

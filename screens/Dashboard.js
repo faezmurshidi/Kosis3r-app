@@ -10,6 +10,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Linking,
   RefreshControl,
 } from 'react-native';
 import { Text, Card } from 'react-native-paper';
@@ -66,6 +67,9 @@ const Dashboard = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
+    if (!user?.name) {
+      navigation.navigate('EditProfile');
+    }
     const onTokenRefreshListener = messaging().onTokenRefresh(async (token) => {
       console.log('New FCM token:', token);
       updateFCMToken(user.uid, token);
@@ -94,45 +98,51 @@ const Dashboard = ({ navigation }) => {
     navigation.navigate('Akaun');
   };
 
+  const handleLinkPress = (link) => {
+    Linking.openURL(link);
+  };
+
   const renderItem = ({ item, index }) => {
     return (
-      <View
-        style={{
-          backgroundColor: style.colors.secondary,
-          elevation: 2,
-          borderRadius: 10,
-          marginHorizontal: 10,
-        }}
-      >
-        <Image
-          source={{ uri: item.img }}
+      <TouchableOpacity onPress={() => item.link && handleLinkPress(item.link)}>
+        <View
           style={{
-            height: 300,
+            backgroundColor: style.colors.secondary,
+            elevation: 2,
             borderRadius: 10,
-            margin: 10,
-            resizeMode: 'contain',
-          }}
-        />
-        <Text
-          style={{
-            color: style.colors.text.primary,
-            fontWeight: 'bold',
-            fontSize: 16,
-            margin: 10,
+            marginHorizontal: 10,
           }}
         >
-          {item.title}
-        </Text>
-        <Text
-          style={{
-            color: style.colors.text.secondary,
-            fontSize: 14,
-            padding: 10,
-          }}
-        >
-          {item.body}
-        </Text>
-      </View>
+          <Image
+            source={{ uri: item.img }}
+            style={{
+              height: 300,
+              borderRadius: 10,
+              margin: 10,
+              resizeMode: 'contain',
+            }}
+          />
+          <Text
+            style={{
+              color: style.colors.text.primary,
+              fontWeight: 'bold',
+              fontSize: 16,
+              margin: 10,
+            }}
+          >
+            {item.title}
+          </Text>
+          <Text
+            style={{
+              color: style.colors.text.secondary,
+              fontSize: 14,
+              padding: 10,
+            }}
+          >
+            {item.body}
+          </Text>
+        </View>
+      </TouchableOpacity>
     );
   };
 
@@ -163,88 +173,124 @@ const Dashboard = ({ navigation }) => {
       const co2saved = totalWeight * 0.23;
       return (
         <View style={styles.section}>
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <TouchableOpacity
-              style={{ alignItems: 'center', paddingHorizontal: 6 }}
-              onPress={goToAccount}
-            >
-              <FontAwesome5
-                name={'money-bill-wave'}
-                color={style.colors.background.light.offwhite}
-                size={18}
-                padding={6}
-              />
-              <Text
-                style={{
-                  color: style.colors.background.light.offwhite,
-                  fontWeight: 'bold',
-                  fontSize: 16,
-                }}
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <TouchableOpacity
+                style={{ alignItems: 'center', paddingHorizontal: 6 }}
+                onPress={goToAccount}
               >
-                RM {user?.wallet.toFixed(2) || 0}
-              </Text>
-              <Text variant="labelMedium">Baki Terkumpul</Text>
-            </TouchableOpacity>
+                <FontAwesome5
+                  name={'level-up-alt'}
+                  color={style.colors.background.light.offwhite}
+                  size={18}
+                  padding={6}
+                />
+                <Text
+                  style={{
+                    color: style.colors.background.light.offwhite,
+                    fontWeight: 'bold',
+                    fontSize: 16,
+                  }}
+                >
+                  {Math.floor(totalWeight / 50) + 1}
+                </Text>
+                <Text variant="labelMedium">Tahap</Text>
+              </TouchableOpacity>
+            </View>
+            {/* add seperator */}
+            <View
+              style={{
+                height: '100%',
+                width: 1,
+                backgroundColor: style.colors.background.light.offwhite,
+              }}
+            />
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <TouchableOpacity
+                style={{ alignItems: 'center', paddingHorizontal: 6 }}
+                onPress={goToAccount}
+              >
+                <FontAwesome5
+                  name={'recycle'}
+                  color={style.colors.background.light.offwhite}
+                  size={18}
+                  padding={6}
+                />
+                <Text
+                  style={{
+                    color: style.colors.background.light.offwhite,
+                    fontWeight: 'bold',
+                    fontSize: 16,
+                  }}
+                >
+                  {totalWeight}Kg
+                </Text>
+                <Text variant="labelMedium">Dikitar Semula</Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                height: '100%',
+                width: 1,
+                backgroundColor: style.colors.background.light.offwhite,
+              }}
+            />
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <TouchableOpacity
+                style={{ alignItems: 'center', paddingHorizontal: 6 }}
+                onPress={goToAccount}
+              >
+                <FontAwesome5
+                  name={'tree'}
+                  color={style.colors.background.light.offwhite}
+                  size={18}
+                  padding={6}
+                />
+                <Text
+                  style={{
+                    color: style.colors.background.light.offwhite,
+                    fontWeight: 'bold',
+                    fontSize: 16,
+                  }}
+                >
+                  {co2saved.toFixed(1)}Kg
+                </Text>
+                <Text variant="labelMedium">CO2 Jimat</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          {/* add seperator */}
           <View
             style={{
-              height: '100%',
-              width: 1,
+              flex: 1,
+              justifyContent: 'center',
               backgroundColor: style.colors.background.light.offwhite,
+              marginTop: 8,
+              borderRadius: 8,
+              width: '100%',
             }}
-          />
-          <View style={{ flex: 1, justifyContent: 'center' }}>
+          >
             <TouchableOpacity
               style={{ alignItems: 'center', paddingHorizontal: 6 }}
               onPress={goToAccount}
             >
-              <FontAwesome5
-                name={'recycle'}
-                color={style.colors.background.light.offwhite}
-                size={18}
-                padding={6}
-              />
-              <Text
+              <Text variant="labelLarge">BAKI TERKUMPUL</Text>
+              <View
                 style={{
-                  color: style.colors.background.light.offwhite,
-                  fontWeight: 'bold',
-                  fontSize: 16,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                {totalWeight}Kg
-              </Text>
-              <Text variant="labelMedium">Dikitar Semula</Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              height: '100%',
-              width: 1,
-              backgroundColor: style.colors.background.light.offwhite,
-            }}
-          />
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <TouchableOpacity
-              style={{ alignItems: 'center', paddingHorizontal: 6 }}
-              onPress={goToAccount}
-            >
-              <FontAwesome5
-                name={'tree'}
-                color={style.colors.background.light.offwhite}
-                size={18}
-                padding={6}
-              />
-              <Text
-                style={{
-                  color: style.colors.background.light.offwhite,
-                  fontWeight: 'bold',
-                  fontSize: 16,
-                }}
-              >
-                {co2saved.toFixed(1)}Kg
-              </Text>
-              <Text variant="labelMedium">CO2 Jimat</Text>
+                <FontAwesome5 name={'money-bill-wave'} size={23} padding={6} />
+                <Text
+                  style={{
+                    fontWeight: 'bold',
+                    fontSize: 25,
+                  }}
+                >
+                  RM {user?.wallet.toFixed(2) || 0}
+                </Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -401,7 +447,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: style.colors.tertiary,
     borderRadius: 8,
-    flexDirection: 'row',
+
     padding: 8,
     elevation: 12,
   },

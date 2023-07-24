@@ -48,7 +48,7 @@ const windowWidth = Dimensions.get('window').width;
 const paddingValue = (windowWidth - 24) / 12; // Adjust the value as per your needs
 
 const LoginScreen = ({ navigation }) => {
-  const [phoneNumber, setPhoneNumber] = useState('+60');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const { setUser } = useContext(AuthContext);
   const [language, setLanguage] = useState('en');
@@ -75,12 +75,13 @@ const LoginScreen = ({ navigation }) => {
         // setUser({ uid: user.uid, phoneNumber: user.phoneNumber });
         fetchUserFromFirestore(user, setUser).then((hasRegistered) => {
           console.log('hasRegistered', hasRegistered);
-          setLoading(false);
+
           if (!hasRegistered) {
             navigation.replace('EditProfile');
           }
         });
       }
+      setLoading(false);
     },
     [navigation, setUser],
   );
@@ -98,11 +99,14 @@ const LoginScreen = ({ navigation }) => {
   const loginUser = async () => {
     setLoading(true);
     try {
-      const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-      console.log('confirmation', confirmation);
+      const confirmation = await auth().signInWithPhoneNumber(
+        '+60' + phoneNumber,
+      );
+
       setConfirm(confirmation);
     } catch (error) {
       // Handle login errors
+      console.log('error', error);
       ToastAndroid.show(error.message, ToastAndroid.LONG);
     } finally {
       setLoading(false);
@@ -239,22 +243,38 @@ const LoginScreen = ({ navigation }) => {
             {mainTitle()}
           </Text>
           {loginMethod === 'phone' && (
-            <TextInput
-              label={'No Telefon'}
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              mode="outlined"
-              keyboardType="phone-pad"
-              style={styles.input}
-              activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.primaryDark}
-              returnKeyType="next"
-              onSubmitEditing={loginUser}
-              disabled={confirm}
-            />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: 16,
+              }}
+            >
+              <Text style={{ flex: 1, fontSize: 16, fontVariant: 'bold' }}>
+                +60
+              </Text>
+              <TextInput
+                label={'No Telefon'}
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                mode="outlined"
+                keyboardType="phone-pad"
+                style={{ flex: 7 }}
+                activeOutlineColor={style.colors.accent}
+                outlineColor={style.colors.primaryDark}
+                returnKeyType="next"
+                onSubmitEditing={loginUser}
+                disabled={confirm}
+              />
+            </View>
           )}
-          {!confirm && loginMethod === 'phone' && (
-            <Button mode="contained" onPress={loginUser} style={styles.button}>
+          {!confirm && (
+            <Button
+              mode="contained"
+              onPress={loginUser}
+              style={styles.button}
+              loading={loading}
+            >
               Log Masuk
             </Button>
           )}
@@ -333,11 +353,11 @@ const LoginScreen = ({ navigation }) => {
             />
           )}
 
-          {confirm && loginMethod === 'phone' && (
+          {/* {confirm && loginMethod === 'phone' && (
             <Button mode="contained" onPress={loginUser} style={styles.button}>
               Log Masuk
             </Button>
-          )}
+          )} */}
 
           {loginMethod === 'email' && (
             <Button
@@ -349,16 +369,16 @@ const LoginScreen = ({ navigation }) => {
             </Button>
           )}
 
-          {loginMethod !== 'register' && (
+          {/* {loginMethod !== 'register' && (
             <Text
               variant="labelSmall"
               style={{ margin: 12, alignSelf: 'center' }}
             >
               atau
             </Text>
-          )}
+          )} */}
 
-          {loginMethod === 'phone' && (
+          {/* {loginMethod === 'phone' && (
             <Button
               mode="contained"
               onPress={() => setLoginMethod('email')}
@@ -366,7 +386,7 @@ const LoginScreen = ({ navigation }) => {
             >
               Log masuk dengan email
             </Button>
-          )}
+          )} */}
 
           {loginMethod !== 'phone' && (
             <Button

@@ -340,12 +340,12 @@ const TransactionsScreen = ({ route, navigation }) => {
             outlineColor={style.colors.secondary}
           />
 
-          {category[selectedCategory] && (
+          {/* {category[selectedCategory] && (
             <View style={styles.todaysPrice}>
               <Text>Kadar Hari Ini:</Text>
               <Text style={{ fontWeight: 'bold' }}>RM{currentRate} per KG</Text>
             </View>
-          )}
+          )} */}
           <TouchableOpacity onPress={onPicker} style={styles.photoButton}>
             <Text style={styles.photoButtonText}>Tambah Gambar</Text>
           </TouchableOpacity>
@@ -374,8 +374,12 @@ const TransactionsScreen = ({ route, navigation }) => {
 
         <View style={styles.footer}>
           <View style={styles.totalSale}>
-            <Text>Jumlah Jualan</Text>
-            <Text style={{ fontWeight: 'bold' }}>RM {totalSale}</Text>
+            <Text style={{ fontWeight: 'bold', fontSize: 17 }}>
+              Jumlah Jualan
+            </Text>
+            <Text style={{ fontWeight: 'bold', fontSize: 30 }}>
+              RM {totalSale}
+            </Text>
           </View>
           <Divider />
           <TouchableOpacity
@@ -562,6 +566,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    alignContent: 'center',
     width: '80%',
   },
   image: {

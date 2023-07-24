@@ -58,6 +58,9 @@ const RegisterScreen = ({ navigation }) => {
     if (user?.name) {
       setName(user.name);
     }
+    if (user?.isPPR) {
+      setIsPPR(user.isPPR);
+    }
   }, [user]);
 
   const handleRadioPress = (value) => {
@@ -78,7 +81,7 @@ const RegisterScreen = ({ navigation }) => {
         phoneNumber,
         dob,
         isPPR,
-        ppr,
+        ppr: 'PPR Hiliran',
         address,
       };
 
@@ -118,12 +121,14 @@ const RegisterScreen = ({ navigation }) => {
       <ScrollView style={styles.scrollView}>
         <Text
           style={{
-            color: style.colors.text.secondary,
+            color: style.colors.text.primary,
             padding: 2,
             paddingTop: 8,
+            fontSize: 22,
+            fontWeight: 'bold',
           }}
         >
-          Tell us more about yourself...
+          Maklumat peribadi
         </Text>
 
         <TextInput

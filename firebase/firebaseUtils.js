@@ -40,21 +40,7 @@ export const addUserToFirestore = async (user) => {
   const userRef = firestore().collection('users').doc(user.uid);
   console.log('User ref:', userRef);
   try {
-    await userRef.set({
-      uid: user.uid,
-      name: user.name,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      isPpr: user.isPPR,
-      ppr: user.ppr,
-      address: {
-        line1: user.address.line1,
-        line2: user.address.line2,
-        postcode: user.address.postcode,
-        city: user.address.city,
-        state: user.address.state,
-      },
-    });
+    await userRef.set(user, { merge: true });
     console.log('User added to Firestore');
   } catch (error) {
     console.log('Error adding user to Firestore:', error);
