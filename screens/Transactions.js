@@ -268,7 +268,7 @@ const TransactionsScreen = ({ route, navigation }) => {
         appearsOnIndex={1}
         opacity={0.7}
       >
-        {/* <ConfettiCannon
+        <ConfettiCannon
           count={100}
           origin={{ x: -10, y: 0 }}
           autoStart={true}
@@ -279,7 +279,7 @@ const TransactionsScreen = ({ route, navigation }) => {
             style.colors.secondary,
             style.colors.tertiary,
           ]}
-        /> */}
+        />
       </BottomSheetBackdrop>
     ),
     [],
@@ -379,12 +379,12 @@ const TransactionsScreen = ({ route, navigation }) => {
           </View>
           <Divider />
           <TouchableOpacity
-            // onPress={() => submit(currentRate, totalSale)}
-            onPress={handlePresentModalPress}
+            onPress={() => submit(currentRate, totalSale)}
+            // onPress={handlePresentModalPress}
             style={[
               weight && photo ? styles.doneButton : styles.disabledButton,
             ]}
-            // disabled={weight && photo ? false : true}
+            disabled={weight && photo ? false : true}
           >
             {loading ? (
               <ActivityIndicator size="small" color="#FFFFFF" />
@@ -469,7 +469,7 @@ const TransactionsScreen = ({ route, navigation }) => {
                 }}
               >
                 <Text style={{ color: 'white', fontWeight: 'bold' }}>
-                  🏦 Masuk ke akaun
+                  🏦 Bayaran Terus
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -489,7 +489,7 @@ const TransactionsScreen = ({ route, navigation }) => {
                     fontWeight: 'bold',
                   }}
                 >
-                  Simpan ke wallet 💰
+                  Simpan 💰
                 </Text>
               </TouchableOpacity>
             </View>

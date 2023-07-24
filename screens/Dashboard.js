@@ -160,7 +160,7 @@ const Dashboard = ({ navigation }) => {
   const userStatistic = () => {
     if (user?.stat?.totalWeight) {
       const totalWeight = user?.stat?.totalWeight;
-      const co2saved = totalWeight * 0.5;
+      const co2saved = totalWeight * 0.23;
       return (
         <View style={styles.section}>
           <View style={{ flex: 1, justifyContent: 'center' }}>
@@ -181,9 +181,9 @@ const Dashboard = ({ navigation }) => {
                   fontSize: 16,
                 }}
               >
-                RM {user?.wallet || 0}
+                RM {user?.wallet.toFixed(2) || 0}
               </Text>
-              <Text variant="labelMedium">Wallet</Text>
+              <Text variant="labelMedium">Baki Terkumpul</Text>
             </TouchableOpacity>
           </View>
           {/* add seperator */}
@@ -212,7 +212,7 @@ const Dashboard = ({ navigation }) => {
                   fontSize: 16,
                 }}
               >
-                {totalWeight}kg
+                {totalWeight}Kg
               </Text>
               <Text variant="labelMedium">Dikitar Semula</Text>
             </TouchableOpacity>
@@ -242,7 +242,7 @@ const Dashboard = ({ navigation }) => {
                   fontSize: 16,
                 }}
               >
-                {co2saved}g
+                {co2saved.toFixed(1)}Kg
               </Text>
               <Text variant="labelMedium">CO2 Jimat</Text>
             </TouchableOpacity>

@@ -40,11 +40,13 @@ export const addUserToFirestore = async (user) => {
   const userRef = firestore().collection('users').doc(user.uid);
   console.log('User ref:', userRef);
   try {
-    await userRef.update({
+    await userRef.set({
       uid: user.uid,
       name: user.name,
       email: user.email,
       phoneNumber: user.phoneNumber,
+      isPpr: user.isPPR,
+      ppr: user.ppr,
       address: {
         line1: user.address.line1,
         line2: user.address.line2,

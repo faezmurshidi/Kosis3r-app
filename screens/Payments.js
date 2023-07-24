@@ -206,9 +206,10 @@ const PaymentScreen = ({ navigation }) => {
             <Text variant="titleMedium">
               {cat && cat.label} {item.items.weight}Kg
             </Text>
-            <Text variant="titleSmall">
+            {/* <Text variant="titleSmall">
               Kadar harga: RM{item.items.rate}/Kg
-            </Text>
+            </Text> */}
+            <Text variant="titleSmall">{item.center.fasiliti}</Text>
             <Text
               variant="labelSmall"
               style={{ color: style.colors.lightGray }}
@@ -409,9 +410,9 @@ const PaymentScreen = ({ navigation }) => {
         }}
       >
         <View style={styles.balanceSection}>
-          <Text style={styles.balanceText}>Wallet</Text>
+          <Text style={styles.balanceText}>Baki Terkumpul</Text>
           <Text style={{ fontSize: 31, fontWeight: '900' }}>
-            RM{user?.wallet}
+            RM{user?.wallet || 0}
           </Text>
           <View style={styles.balanceButtonContainer}>
             <CustomButton
