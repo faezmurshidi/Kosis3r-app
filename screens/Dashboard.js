@@ -288,7 +288,7 @@ const Dashboard = ({ navigation }) => {
                     fontSize: 25,
                   }}
                 >
-                  RM {user?.wallet.toFixed(2) || 0}
+                  RM {user?.wallet?.toFixed(2) || 0}
                 </Text>
               </View>
             </TouchableOpacity>

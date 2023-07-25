@@ -15,6 +15,7 @@ import ProfileScreen from '../screens/Profile';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import DashboardScreen from '../screens/Dashboard';
 import TransactionsScreen from '../screens/Transactions';
+import HelpScreen from '../screens/Help';
 import PaymentScreen from '../screens/Payments';
 import RNBootSplash from 'react-native-bootsplash';
 import styles from '../styles';
@@ -83,7 +84,7 @@ const MainTabs = () => {
           paddingHorizontal: 16,
           paddingTop: 8,
           paddingBottom: 8,
-          height: 55, // Add custom height
+          height: 65, // Add custom height
           elevation: 14,
         },
       }}
@@ -116,6 +117,16 @@ const MainTabs = () => {
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="user" color={color} size={size + 4} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Bantuan"
+        component={HelpScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="headset" color={color} size={size + 4} />
           ),
         }}
       />

@@ -50,7 +50,7 @@ const TransactionsScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [rate, setRate] = useState(0);
-  const [txId, setTxId] = useState(null);
+  const [txReceipt, setTxReceipt] = useState(null);
 
   // ref
   const bottomSheetModalRef = useRef(null);
@@ -103,8 +103,6 @@ const TransactionsScreen = ({ route, navigation }) => {
   const renderSuccessModal = () => (
     <Modal
       isVisible={isModalVisible}
-      onBackdropPress={() => setIsModalVisible(false)}
-      onBackButtonPress={() => setIsModalVisible(false)}
       animationIn="zoomIn"
       animationOut="zoomOut"
       animationInTiming={500}
@@ -132,7 +130,7 @@ const TransactionsScreen = ({ route, navigation }) => {
           }}
         >
           <TouchableOpacity
-            onPress={() => goToPayment()}
+            onPress={() => closeModal()}
             style={{
               backgroundColor: style.colors.accent,
               borderRadius: 10,
@@ -144,7 +142,7 @@ const TransactionsScreen = ({ route, navigation }) => {
             }}
           >
             <Text style={{ color: 'white', fontWeight: 'bold' }}>
-              Lihat transaksi
+              Transaksi Baru
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -212,7 +210,12 @@ const TransactionsScreen = ({ route, navigation }) => {
         setLoading(false); // Set loading state to false if there is an error during the submit process
         console.log('Error:', error);
       } finally {
-        setTxId(transactionId);
+        setTxReceipt(transaction);
+        //clear form
+        setPhoto(null);
+        setWeight(0);
+        setSelectedCategory(0);
+
         handlePresentModalPress();
       }
     } catch (error) {
@@ -222,7 +225,6 @@ const TransactionsScreen = ({ route, navigation }) => {
 
   const closeModal = () => {
     setIsModalVisible(false);
-    navigation.pop(2);
   };
 
   const currentRate = category[selectedCategory].id
@@ -233,7 +235,7 @@ const TransactionsScreen = ({ route, navigation }) => {
 
   const transactionToBank = async () => {
     try {
-      //await updateTransactionPaymentMethodFirestore(txId, 'bank');
+      await updateTransactionPaymentMethodFirestore(txReceipt.id, 'bank');
     } catch (error) {
       console.log('Error:', error);
     } finally {
@@ -330,7 +332,7 @@ const TransactionsScreen = ({ route, navigation }) => {
           </Text>
 
           <TextInput
-            placeholder="Weight (KG)"
+            placeholder="Berat (KG)"
             value={weight}
             onChangeText={(value) => setWeight(value)}
             style={styles.input}
@@ -404,100 +406,105 @@ const TransactionsScreen = ({ route, navigation }) => {
           onChange={handleSheetChanges}
           backdropComponent={renderBackdrop}
         >
-          <View style={{ margin: 12 }}>
-            <View
-              style={{
-                padding: 8,
-                backgroundColor: style.colors.tertiary,
-                borderRadius: 8,
-              }}
-            >
-              <Text
-                style={{
-                  marginBottom: 10,
-                  alignSelf: 'center',
-                  fontSize: 16,
-                  fontWeight: 'bold',
-                }}
-              >
-                Kitar Semula Berjaya 🎉
-              </Text>
-              <Text style={{ color: 'white', marginHorizontal: 6 }}>
-                Anda telah berjaya menjual barang kitar semula kepada{' '}
-                {nearestCenter.fasiliti}. Berikut merupakan ringkasan transaksi:
-              </Text>
-
+          {txReceipt && (
+            <View style={{ margin: 12 }}>
               <View
                 style={{
-                  margin: 4,
                   padding: 8,
-                  backgroundColor: style.colors.primary,
-                  elevation: 2,
+                  backgroundColor: style.colors.tertiary,
                   borderRadius: 8,
-                  marginVertical: 12,
-                }}
-              >
-                <Text style={{ color: 'gray' }}>{txId}</Text>
-                <Text>Kategori: {category[selectedCategory].label}</Text>
-                <Text>Berat: {weight}</Text>
-                <Text>Kadar Hari Ini: {currentRate}</Text>
-                <Text>Jumlah: RM{totalSale}</Text>
-              </View>
-              <Text
-                variant="labelSmall"
-                style={{ color: 'white', marginHorizontal: 6 }}
-              >
-                Transaksi anda sedang menunggu pengesahan. Anda boleh lihat
-                status transaksi anda di tab "Akaun".
-              </Text>
-            </View>
-            <Text style={{ alignSelf: 'center', marginVertical: 12 }}>
-              Pilih cara untuk menerima wang anda
-            </Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-evenly',
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => transactionToBank()}
-                style={{
-                  backgroundColor: style.colors.accent,
-                  borderRadius: 10,
-                  paddingVertical: 12,
-                  paddingHorizontal: 20,
-                  justifyItem: 'center',
-                  alignItems: 'center',
-                  width: '46%',
-                }}
-              >
-                <Text style={{ color: 'white', fontWeight: 'bold' }}>
-                  🏦 Bayaran Terus
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => transactionToWallet()}
-                style={{
-                  backgroundColor: style.colors.tertiaryDark,
-                  borderRadius: 10,
-                  paddingVertical: 12,
-                  justifyItem: 'center',
-                  alignItems: 'center',
-                  width: '46%',
                 }}
               >
                 <Text
                   style={{
-                    color: 'white',
+                    marginBottom: 10,
+                    alignSelf: 'center',
+                    fontSize: 16,
                     fontWeight: 'bold',
                   }}
                 >
-                  Simpan 💰
+                  Kitar Semula Berjaya 🎉
                 </Text>
-              </TouchableOpacity>
+                <Text style={{ color: 'white', marginHorizontal: 6 }}>
+                  Anda telah berjaya menjual barang kitar semula kepada{' '}
+                  {txReceipt.center.fasiliti}. Berikut merupakan ringkasan
+                  transaksi:
+                </Text>
+
+                <View
+                  style={{
+                    margin: 4,
+                    padding: 8,
+                    backgroundColor: style.colors.primary,
+                    elevation: 2,
+                    borderRadius: 8,
+                    marginVertical: 12,
+                  }}
+                >
+                  <Text style={{ color: 'gray' }}>{txReceipt.id}</Text>
+                  {/* <Text>
+                  Kategori: {category[txReceipt.items.category].label}
+                </Text> */}
+                  <Text>Berat: {txReceipt.items.weight}</Text>
+
+                  <Text>Jumlah: RM{txReceipt.items.price}</Text>
+                </View>
+                <Text
+                  variant="labelSmall"
+                  style={{ color: 'white', marginHorizontal: 6 }}
+                >
+                  Transaksi anda sedang menunggu pengesahan. Anda boleh lihat
+                  status transaksi anda di tab "Akaun".
+                </Text>
+              </View>
+              <Text style={{ alignSelf: 'center', marginVertical: 12 }}>
+                Pilih cara untuk menerima wang anda
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-evenly',
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => transactionToBank()}
+                  style={{
+                    backgroundColor: style.colors.accent,
+                    borderRadius: 10,
+                    paddingVertical: 12,
+                    paddingHorizontal: 20,
+                    justifyItem: 'center',
+                    alignItems: 'center',
+                    width: '46%',
+                  }}
+                >
+                  <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                    🏦 Bayaran Terus
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => transactionToWallet()}
+                  style={{
+                    backgroundColor: style.colors.tertiaryDark,
+                    borderRadius: 10,
+                    paddingVertical: 12,
+                    justifyItem: 'center',
+                    alignItems: 'center',
+                    width: '46%',
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    Simpan 💰
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          )}
         </BottomSheetModal>
         {renderSuccessModal()}
       </View>
