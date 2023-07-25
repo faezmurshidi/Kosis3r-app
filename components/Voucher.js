@@ -59,7 +59,14 @@ const Voucher = ({ vouchers }) => {
 
   return (
     <View style={{ flex: 1, margin: 12 }}>
-      <Text variant="titleSmall" style={{ marginHorizontal: 16 }}>
+      <Text
+        style={{
+          marginVertical: 8,
+          fontSize: 20,
+          fontWeight: 'bold',
+          color: 'black',
+        }}
+      >
         Tebus Baucar
       </Text>
       <FlatList

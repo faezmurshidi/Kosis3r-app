@@ -26,7 +26,7 @@ import {
   Text,
   TextInput,
 } from 'react-native-paper';
-import { LineChart } from 'react-native-chart-kit';
+import { LineChart, BarChart } from 'react-native-chart-kit';
 import moment from 'moment';
 import PagerView from 'react-native-pager-view';
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
@@ -147,11 +147,11 @@ const PaymentScreen = ({ navigation }) => {
     const randomNum = Math.floor(Math.random() * 1000); // This will generate a random number between 0 and 999
 
     if (withdrawAmount <= 0) {
-      setWithdrawError('Please enter a valid amount');
+      setWithdrawError('Sila masukkan jumlah yang sah');
       return;
     }
     if (withdrawAmount > user?.wallet) {
-      setWithdrawError('Insufficient balance');
+      setWithdrawError('Baki tidak mencukupi');
       return;
     }
 
@@ -194,7 +194,7 @@ const PaymentScreen = ({ navigation }) => {
       (category && category.find((x) => x.id === item.items.category)) || null;
 
     return (
-      <View>
+      <View style={{ marginHorizontal: 12 }}>
         <View style={styles.transaction}>
           <View style={styles.transactionInfoContainer}>
             <Text
@@ -253,7 +253,7 @@ const PaymentScreen = ({ navigation }) => {
     const date = moment(item.timestamp).format('DD MMMM YYYY hh:mm a');
 
     return (
-      <>
+      <View style={{ marginHorizontal: 12 }}>
         <View style={styles.transaction}>
           <View style={styles.transactionInfoContainer}>
             <Text
@@ -281,7 +281,7 @@ const PaymentScreen = ({ navigation }) => {
           </View>
         </View>
         <Divider />
-      </>
+      </View>
     );
   };
 
@@ -302,16 +302,55 @@ const PaymentScreen = ({ navigation }) => {
     );
   };
 
+  const renderTxChartItem = () => {
+    if (!txHistory.length) {
+      return renderEmptyComponent();
+    }
+    const groupedData = txHistory.reduce((acc, item) => {
+      const month = moment(item.timestamp).format('MMMM');
+      if (!acc[month]) {
+        acc[month] = { month, weight: 0 };
+      }
+      acc[month].weight += item.items.weight;
+      return acc;
+    }, {});
+    const chartData = Object.values(groupedData);
+    return (
+      <View style={styles.chartContainer}>
+        <BarChart
+          data={{
+            labels: chartData.map((item) => item.month),
+            datasets: [{ data: chartData.map((item) => item.weight) }],
+          }}
+          width={screenWidth}
+          height={250}
+          yAxisSuffix="Kg"
+          fromZero
+          yAxisInterval={0} // optional, defaults to 1
+          chartConfig={{
+            backgroundGradientFrom: style.colors.primary,
+            backgroundGradientTo: style.colors.background.light.offwhite,
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          }}
+          bezier
+          style={{
+            borderRadius: 10,
+            elevation: 5,
+            margin: 10,
+          }}
+        />
+      </View>
+    );
+  };
+
   const FirstRoute = () => (
-    <View
-      style={{
-        flex: 1,
-      }}
-    >
+    <View style={styles.container}>
       <FlatList
-        style={styles.transactionsList}
-        data={txHistory}
-        renderItem={renderItem}
+        data={[{ id: 'chart' }, ...txHistory]}
+        renderItem={({ item }) =>
+          item.id === 'chart' ? renderTxChartItem() : renderItem({ item })
+        }
         keyExtractor={(item) => item.id}
         ListEmptyComponent={renderEmptyComponent}
         refreshControl={
@@ -321,52 +360,66 @@ const PaymentScreen = ({ navigation }) => {
           />
         }
       />
-      {/* <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-        <Text style={styles.viewAll}>View All</Text>
-      </TouchableOpacity> */}
     </View>
   );
 
-  const SecondRoute = () => (
-    <View style={{ flex: 1 }}>
-      {/* <View
-        style={{ alignSelf: 'center', alignItems: 'center', marginTop: 40 }}
-      >
-        <FontAwesome5Icon
-          name="chart-line"
-          size={40}
-          color={style.colors.background.dark.offBlack}
+  const renderWithdrawalChartItem = () => {
+    if (!withdrawalHistory.length) {
+      return renderEmptyComponent();
+    }
+    const groupedData = withdrawalHistory.reduce((acc, item) => {
+      const month = moment(item.timestamp).format('MMMM');
+      if (!acc[month]) {
+        acc[month] = { month, amount: 0 };
+      }
+      acc[month].amount += item.amount;
+      return acc;
+    }, {});
+    const chartData = Object.values(groupedData);
+    return (
+      <View style={styles.chartContainer}>
+        <BarChart
+          data={{
+            labels: chartData.map((item) => item.month),
+            datasets: [{ data: chartData.map((item) => item.amount) }],
+          }}
+          width={screenWidth}
+          height={250}
+          yAxisLabel="RM"
+          fromZero
+          yAxisInterval={0} // optional, defaults to 1
+          chartConfig={{
+            backgroundGradientFrom: style.colors.primary,
+            backgroundGradientTo: style.colors.background.light.offwhite,
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          }}
+          bezier
+          style={{
+            borderRadius: 10,
+            elevation: 5,
+            margin: 10,
+          }}
         />
-        <Text color={style.colors.background.light.offwhite}>
-          {i18n.t('Payments.noEarned')}
-        </Text>
-      </View> */}
+      </View>
+    );
+  };
+
+  const SecondRoute = () => (
+    <View style={styles.container}>
       <FlatList
-        style={styles.transactionsList}
-        data={withdrawalHistory}
-        renderItem={renderWithdrawal}
+        data={[{ id: 'chart' }, ...withdrawalHistory]}
+        renderItem={({ item }) =>
+          item.id === 'chart'
+            ? renderWithdrawalChartItem()
+            : renderWithdrawal({ item })
+        }
         keyExtractor={(item) => item.id}
         ListEmptyComponent={renderEmptyComponent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={fetchWihdrawal} />
         }
       />
-      {/* <LineChart
-        data={{
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-          datasets: [{ data: [50, 100, 150, 200, 250] }],
-        }}
-        width={screenWidth}
-        height={250}
-        chartConfig={{
-          backgroundColor: style.colors.background.light.offwhite,
-          backgroundGradientFrom: style.colors.background.light.offwhite,
-          backgroundGradientTo: style.colors.background.light.offwhite,
-          decimalPlaces: 0,
-          color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-        }}
-        bezier
-      /> */}
     </View>
   );
 
@@ -421,7 +474,7 @@ const PaymentScreen = ({ navigation }) => {
               onPress={handlePresentModalPress}
               color={style.colors.primary}
               style={{ width: 150, height: 40 }}
-              disabled={user?.wallet <= 0 || user?.wallet === undefined}
+              // disabled={user?.wallet <= 0 || user?.wallet === undefined}
             />
             <CustomButton
               icon="gift"
@@ -429,7 +482,7 @@ const PaymentScreen = ({ navigation }) => {
               onPress={handleVoucherModalPress}
               color={style.colors.primary}
               style={{ width: 150, height: 40, marginLeft: 10 }}
-              disabled={user?.wallet <= 0 || user?.wallet === undefined}
+              // disabled={user?.wallet <= 0 || user?.wallet === undefined}
             />
           </View>
         </View>
@@ -458,33 +511,49 @@ const PaymentScreen = ({ navigation }) => {
           backdropComponent={renderBackdrop}
           keyboardDismissMode="none"
         >
-          <View style={{}}>
-            <View style={{ padding: 12 }}>
-              <Text style={{ marginBottom: 10 }}>
-                Pengeluaran maksimum: RM{user?.wallet}
+          <View style={{ margin: 12 }}>
+            <Text
+              style={{ marginBottom: 10, fontSize: 20, fontWeight: 'bold' }}
+            >
+              Pengeluaran ke akaun bank
+            </Text>
+            <Text style={{ marginBottom: 10, fontSize: 15 }}>
+              Pengeluaran maksimum: RM{user?.wallet}
+            </Text>
+            <TextInput
+              label="Jumlah Pengeluaran"
+              keyboardType="numeric"
+              value={withdrawAmount}
+              onChangeText={setWithdrawAmount}
+              mode="outlined"
+              style={{ marginBottom: 10 }}
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.accent}
+              returnKeyType="done"
+            />
+            {withdrawError && (
+              <Text style={{ color: 'red', marginBottom: 10 }}>
+                {withdrawError}
               </Text>
-              <TextInput
-                label="Jumlah Pengeluaran"
-                keyboardType="numeric"
-                value={withdrawAmount}
-                onChangeText={setWithdrawAmount}
-                mode="outlined"
-                style={{ marginBottom: 10 }}
-                activeOutlineColor={style.colors.accent}
-                outlineColor={style.colors.secondary}
-                returnKeyType="done"
+            )}
+            <Button
+              onPress={() => requestWithdrawal()}
+              title="Sahkan"
+              color={style.colors.tertiary}
+            />
+            <View
+              style={{ flexDirection: 'row', marginVertical: 8, width: '90%' }}
+            >
+              <FontAwesome5Icon
+                name="info-circle"
+                size={18}
+                color={style.colors.accent}
+                style={{ margin: 5 }}
               />
-              {withdrawError && (
-                <Text style={{ color: 'red', marginBottom: 10 }}>
-                  {withdrawError}
-                </Text>
-              )}
-              <Button
-                onPress={() => requestWithdrawal()}
-                title="Confirm"
-                color={style.colors.tertiary}
-                style={{ borderRadius: 10 }}
-              />
+              <Text style={{ color: style.colors.accent }}>
+                Permohonan akan diproses dalam masa 24 jam. Anda akan menerima
+                notifikasi apabila permohonan telah diproses.
+              </Text>
             </View>
           </View>
         </BottomSheetModal>

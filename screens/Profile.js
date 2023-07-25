@@ -124,6 +124,16 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <Text
+        style={{
+          fontSize: 30,
+          fontWeight: 'bold',
+          color: 'black',
+          padding: 18,
+        }}
+      >
+        Profil
+      </Text>
       <SectionList
         sections={sections}
         keyExtractor={(item, index) => item + index}
