@@ -59,6 +59,45 @@ export const updateFCMToken = async (uid, fcmToken) => {
   }
 };
 
+export const fetchVouchers = async () => {
+  console.log('Fetching vouchers');
+  const vouchersRef = firestore().collection('vouchers');
+  const vouchersSnapshot = await vouchersRef.get();
+  const vouchers = vouchersSnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+  console.log('Vouchers snapshot:', vouchersSnapshot);
+  return vouchers;
+};
+
+export const deleteVoucherCode = async (voucherId, codeToDelete) => {
+  const db = firebase.firestore();
+  const voucherRef = db.collection('vouchers').doc(voucherId);
+
+  try {
+    const voucherDoc = await voucherRef.get();
+    if (voucherDoc.exists) {
+      const voucherData = voucherDoc.data();
+      const updatedCodes = voucherData.code.filter(
+        (code) => code !== codeToDelete,
+      );
+      const updatedQuantity = voucherData.quantity - 1;
+
+      await voucherRef.update({
+        code: updatedCodes,
+        quantity: updatedQuantity,
+      });
+
+      console.log(`Code ${codeToDelete} deleted successfully`);
+    } else {
+      console.log(`Voucher with ID ${voucherId} does not exist`);
+    }
+  } catch (error) {
+    console.error('Error deleting code:', error);
+  }
+};
+
 export const fetchUserFromFirestore = async (user, setUser) => {
   console.log('Fetching user from Firestore:', user.uid);
   const userRef = firestore().collection('users').doc(user.uid);

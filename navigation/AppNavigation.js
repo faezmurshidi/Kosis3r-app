@@ -18,6 +18,8 @@ import TransactionsScreen from '../screens/Transactions';
 import HelpScreen from '../screens/Help';
 import PaymentScreen from '../screens/Payments';
 import RNBootSplash from 'react-native-bootsplash';
+import VoucherScreen from '../screens/VoucherScreen';
+import VoucherRedeemSuccess from '../screens/VoucherRedeemSuccess';
 import styles from '../styles';
 
 const Stack = createStackNavigator();
@@ -72,6 +74,28 @@ const DashboardStack = () => {
   );
 };
 
+const PaymentStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Akaun"
+        component={PaymentScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Voucher"
+        component={VoucherScreen}
+        options={{ title: 'Tebus Baucar' }}
+      />
+      <Stack.Screen
+        name="VoucherRedeemSuccess"
+        component={VoucherRedeemSuccess}
+        options={{ title: 'Tebus Baucar Berjaya' }}
+      />
+    </Stack.Navigator>
+  );
+};
+
 const MainTabs = () => {
   return (
     <Tab.Navigator
@@ -102,7 +126,7 @@ const MainTabs = () => {
 
       <Tab.Screen
         name="Akaun"
-        component={PaymentScreen}
+        component={PaymentStack}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (

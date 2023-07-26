@@ -186,8 +186,8 @@ const LoginScreen = ({ navigation }) => {
             source={logo}
             style={{
               alignSelf: 'flex-start',
-              height: 70,
-              width: 70,
+              height: 100,
+              width: 100,
             }}
             resizeMode="contain"
           />

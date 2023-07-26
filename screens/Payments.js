@@ -28,7 +28,7 @@ import {
 } from 'react-native-paper';
 import { LineChart, BarChart } from 'react-native-chart-kit';
 import moment from 'moment';
-import PagerView from 'react-native-pager-view';
+
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import i18n from '../i18n';
 import Modal from 'react-native-modal';
@@ -48,7 +48,6 @@ import {
   BottomSheetModalProvider,
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
-import Voucher from '../components/Voucher';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -434,25 +433,6 @@ const PaymentScreen = ({ navigation }) => {
     }
   };
 
-  const vouchers = [
-    {
-      id: '1',
-      title: 'RM 50 Voucher',
-      description: 'RM 5 OFF on your next purchase',
-      imageUrl:
-        'https://firebasestorage.googleapis.com/v0/b/kosis-dev.appspot.com/o/images%2Fkfc_logo.png?alt=media&token=0fde565d-cde5-43a2-8ae7-e7d1102a3a3a',
-      expiry: '31/12/2021',
-    },
-    {
-      id: '2',
-      title: 'RM 100 Voucher',
-      description: 'RM 10 OFF on your next purchase',
-      imageUrl:
-        'https://firebasestorage.googleapis.com/v0/b/kosis-dev.appspot.com/o/images%2Fkfc_logo.png?alt=media&token=0fde565d-cde5-43a2-8ae7-e7d1102a3a3a',
-      expiry: '31/12/2021',
-    },
-  ];
-
   return (
     <BottomSheetModalProvider>
       <View
@@ -479,7 +459,7 @@ const PaymentScreen = ({ navigation }) => {
             <CustomButton
               icon="gift"
               title={'Baucar'}
-              onPress={handleVoucherModalPress}
+              onPress={() => navigation.navigate('Voucher')}
               color={style.colors.primary}
               style={{ width: 150, height: 40, marginLeft: 10 }}
               // disabled={user?.wallet <= 0 || user?.wallet === undefined}
@@ -556,15 +536,6 @@ const PaymentScreen = ({ navigation }) => {
               </Text>
             </View>
           </View>
-        </BottomSheetModal>
-        <BottomSheetModal
-          ref={redeemVoucherRef}
-          index={1}
-          snapPoints={snapPointsVoucher}
-          onChange={handleSheetChanges}
-          backdropComponent={renderBackdrop}
-        >
-          <Voucher vouchers={vouchers} />
         </BottomSheetModal>
         <Modal isVisible={visible} onBackdropPress={() => setVisible(false)}>
           <View
