@@ -31,6 +31,7 @@ const RegisterScreen = ({ navigation }) => {
   const [open, setOpen] = useState(false);
   const [address, setAddress] = useState({
     unitNo: '',
+    floorNo: '',
     blockNo: '',
     line1: '',
     line2: '',
@@ -224,6 +225,17 @@ const RegisterScreen = ({ navigation }) => {
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
             />
+            {/* floor */}
+            <TextInput
+              label="Tingkat"
+              value={address.floorNo}
+              onChangeText={(text) => setAddress({ ...address, floorNo: text })}
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+            />
+
             {/* select blok: A, B or C */}
             <View style={{ paddingVertical: 8 }}>
               <Text style={{ color: style.colors.text.secondary, padding: 2 }}>

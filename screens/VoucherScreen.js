@@ -13,10 +13,15 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import style from '../styles';
 import { Modal } from 'react-native-paper';
-import { fetchVouchers, deleteVoucherCode } from '../firebase/firebaseUtils';
+import {
+  fetchVouchers,
+  deleteVoucherCode,
+  updateWalletFirestore,
+} from '../firebase/firebaseUtils';
 import CustomButton from '../components/CustomButton';
 
-const VoucherScreen = ({ navigation }) => {
+const VoucherScreen = ({ route, navigation }) => {
+  const { user } = route.params;
   const [vouchers, setVouchers] = useState([]);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -30,6 +35,7 @@ const VoucherScreen = ({ navigation }) => {
     const code = selectedVoucher.code[0];
     //delete the code from the voucher
     await deleteVoucherCode(selectedVoucher.id, code);
+    await updateWalletFirestore(user.uid, user.wallet - selectedVoucher.amount);
 
     setModalVisible(false);
     navigation.navigate('VoucherRedeemSuccess', {
@@ -47,24 +53,45 @@ const VoucherScreen = ({ navigation }) => {
   };
 
   const renderConfirmationModal = () => {
-    return (
-      <Modal
-        visible={modalVisible}
-        onDismiss={() => {
-          setModalVisible(false);
-        }}
-        contentContainerStyle={styles.modalContainer}
-        onBackdropPress={() => setModalVisible(false)}
-      >
-        <Text style={styles.modalTitle}>
-          Adakah anda pasti mahu menebus baucar ini?
-        </Text>
-        <Text style={styles.modalText}>
-          RM{selectedVoucher?.amount} akan ditolak dari baki terkumpul anda
-        </Text>
-        <CustomButton title="Sahkan" onPress={handleConfirm} />
-      </Modal>
-    );
+    if (selectedVoucher && user?.wallet >= selectedVoucher.amount) {
+      return (
+        <Modal
+          visible={modalVisible}
+          onDismiss={() => {
+            setModalVisible(false);
+          }}
+          contentContainerStyle={styles.modalContainer}
+          onBackdropPress={() => setModalVisible(false)}
+        >
+          <Text style={styles.modalTitle}>
+            Adakah anda pasti mahu menebus baucar ini?
+          </Text>
+          <Text style={styles.modalText}>
+            RM{selectedVoucher?.amount} akan ditolak dari baki terkumpul anda
+          </Text>
+          <CustomButton title="Sahkan" onPress={handleConfirm} />
+        </Modal>
+      );
+    } else {
+      return (
+        <Modal
+          visible={modalVisible}
+          onDismiss={() => {
+            setModalVisible(false);
+          }}
+          contentContainerStyle={styles.modalContainer}
+          onBackdropPress={() => setModalVisible(false)}
+        >
+          <Text style={styles.modalTitle}>
+            Adakah anda pasti mahu menebus baucar ini?
+          </Text>
+          <Text style={styles.modalText}>
+            RM{selectedVoucher?.amount} akan ditolak dari baki terkumpul anda
+          </Text>
+          <CustomButton title="Sahkan" onPress={handleConfirm} />
+        </Modal>
+      );
+    }
   };
   const fetchVoucherData = async () => {
     setRefreshing(true);
@@ -86,6 +113,7 @@ const VoucherScreen = ({ navigation }) => {
   };
 
   const renderVoucherItem = ({ item }) => {
+    if (item.quantity === 0) return null;
     return (
       <LinearGradient
         colors={['#B00A2C', 'white']}
@@ -133,7 +161,7 @@ const VoucherScreen = ({ navigation }) => {
                 fontWeight: 'bold',
               }}
             >
-              Jumlah : {item.quantity}x
+              Baucer tersedia : {item.quantity}x
             </Text>
             <Image
               source={{ uri: item.imageUrl }}

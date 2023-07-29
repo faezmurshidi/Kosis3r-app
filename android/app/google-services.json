@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "234848359612-jeadirq2umukhv7a7u7es1gvkrne9fso.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kosis3r",
+            "certificate_hash": "bdb172db0a3910a93aee4529fcc58779b1be8ce8"
+          }
+        },
+        {
           "client_id": "234848359612-6n8tb05rhmhineau7qtvtfnm2r1m2ilo.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -39,6 +39,7 @@ import {
 } from '@gorhom/bottom-sheet';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import Modal from 'react-native-modal';
+import moment from 'moment';
 
 const TransactionsScreen = ({ route, navigation }) => {
   const nearestCenter = route.params?.nearestCenter;
@@ -179,7 +180,7 @@ const TransactionsScreen = ({ route, navigation }) => {
         photo.width / 2,
         photo.height / 2,
         'JPEG',
-        100,
+        50, // reduce quality to compress image
         0,
         undefined,
       );
@@ -187,6 +188,7 @@ const TransactionsScreen = ({ route, navigation }) => {
       console.log('resized:', resized);
 
       const imageUrl = await saveImageToStorage(transactionId, resized.uri);
+      console.log('imageUrl:', imageUrl);
       const transaction = {
         id: transactionId,
         timestamp: Date.now(),
@@ -220,6 +222,7 @@ const TransactionsScreen = ({ route, navigation }) => {
       }
     } catch (error) {
       console.log('Unable to resize the photo', error);
+      setLoading(false);
     }
   };
 
@@ -445,7 +448,11 @@ const TransactionsScreen = ({ route, navigation }) => {
                   {/* <Text>
                   Kategori: {category[txReceipt.items.category].label}
                 </Text> */}
-                  <Text>Berat: {txReceipt.items.weight}</Text>
+                  <Text>Berat: {txReceipt.items.weight}Kg</Text>
+                  <Text>
+                    Masa:{' '}
+                    {moment(txReceipt.timestamp).format('D MMMM YYYY hh:mm a')}
+                  </Text>
 
                   <Text>Jumlah: RM{txReceipt.items.price}</Text>
                 </View>
@@ -578,7 +585,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '80%',
-    height: 150,
+    height: 250,
     resizeMode: 'contain',
     marginTop: 16,
     borderRadius: 8,

@@ -231,6 +231,21 @@ const PaymentScreen = ({ navigation }) => {
                 {i18n.t(`status.${item.status}`).toUpperCase()}
               </Text>
             </View>
+            {item.status === 'rejected' && (
+              <Text
+                variant="bodyMedium"
+                style={{
+                  color: style.colors.accent,
+                  fontSize: 14,
+                  marginTop: 5,
+                  fontWeight: 'bold',
+                }}
+              >
+                Transaksi anda ditolak pada{' '}
+                {moment(item.rejectedOn).format('D MMMM YYYY hh:mm a')} atas
+                sebab: {item.reason}
+              </Text>
+            )}
           </View>
           <Image
             style={{
@@ -459,7 +474,7 @@ const PaymentScreen = ({ navigation }) => {
             <CustomButton
               icon="gift"
               title={'Baucar'}
-              onPress={() => navigation.navigate('Voucher')}
+              onPress={() => navigation.navigate('Voucher', { user })}
               color={style.colors.primary}
               style={{ width: 150, height: 40, marginLeft: 10 }}
               // disabled={user?.wallet <= 0 || user?.wallet === undefined}
