@@ -199,13 +199,13 @@ export const getCurrentRate = async (kosisId) => {
     const cachedRatesStr = await AsyncStorage.getItem(CACHE_KEY);
     const cachedRates = cachedRatesStr ? JSON.parse(cachedRatesStr) : {};
 
-    if (
-      cachedRates[kosisId] &&
-      new Date().getTime() - cachedRates[kosisId].fetchTime < CACHE_EXPIRATION
-    ) {
-      // If the data is less than 24 hours old, use it
-      return cachedRates[kosisId].rate;
-    }
+    // if (
+    //   cachedRates[kosisId] &&
+    //   new Date().getTime() - cachedRates[kosisId].fetchTime < CACHE_EXPIRATION
+    // ) {
+    //   // If the data is less than 24 hours old, use it
+    //   return cachedRates[kosisId].rate;
+    // }
 
     // If the data doesn't exist or is older than 24 hours, fetch new data
     const ratesRef = firestore().collection('rate').doc(kosisId);

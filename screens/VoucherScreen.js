@@ -83,12 +83,15 @@ const VoucherScreen = ({ route, navigation }) => {
           onBackdropPress={() => setModalVisible(false)}
         >
           <Text style={styles.modalTitle}>
-            Adakah anda pasti mahu menebus baucar ini?
+            Baki terkumpul anda tidak mencukupi untuk menebus baucar ini.
           </Text>
           <Text style={styles.modalText}>
-            RM{selectedVoucher?.amount} akan ditolak dari baki terkumpul anda
+            Sila lakukan jualan kitar semula untuk menambah baki terkumpul anda.
           </Text>
-          <CustomButton title="Sahkan" onPress={handleConfirm} />
+          <CustomButton
+            title="Kembali"
+            onPress={() => setModalVisible(false)}
+          />
         </Modal>
       );
     }

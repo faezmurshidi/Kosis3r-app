@@ -69,6 +69,11 @@ const DashboardStack = () => {
         component={DashboardScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfile}
+        options={{ title: 'Daftar Profil' }}
+      />
       <Stack.Screen name="Jualan" component={TransactionsScreen} />
     </Stack.Navigator>
   );

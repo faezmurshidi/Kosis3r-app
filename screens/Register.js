@@ -17,7 +17,7 @@ import { addUserToFirestore } from '../firebase/firebaseUtils';
 import style from '../styles';
 import { AuthContext } from '../context/AuthContext';
 import DatePicker from 'react-native-date-picker';
-import DropDownPicker from 'react-native-dropdown-picker';
+import { Picker } from '@react-native-picker/picker';
 
 const RegisterScreen = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
@@ -133,7 +133,7 @@ const RegisterScreen = ({ navigation }) => {
         </Text>
 
         <TextInput
-          label="Name"
+          label="Nama"
           value={name}
           onChangeText={setName}
           style={styles.input}
@@ -153,7 +153,7 @@ const RegisterScreen = ({ navigation }) => {
           // disabled={email ? true : false}
         />
         <TextInput
-          label="Phone number"
+          label="No telefon"
           value={phoneNumber}
           style={styles.input}
           onChangeText={setPhoneNumber}
@@ -164,14 +164,20 @@ const RegisterScreen = ({ navigation }) => {
         />
 
         <Text style={{ color: style.colors.text.secondary, padding: 2 }}>
-          Date of birth
+          Tarikh Lahir
         </Text>
         <View style={{ alignItems: 'center' }}>
           <DatePicker
             date={dob}
             onDateChange={setDob}
             mode={'date'}
-            maximumDate={new Date()}
+            maximumDate={
+              new Date(
+                new Date().getFullYear() - 10,
+                new Date().getMonth(),
+                new Date().getDate(),
+              )
+            }
           />
         </View>
         {/* <TextInput
@@ -200,7 +206,14 @@ const RegisterScreen = ({ navigation }) => {
         {isPPR ? (
           <View>
             <View style={{ paddingVertical: 8 }}>
-              <Text style={{ color: style.colors.text.secondary, padding: 2 }}>
+              <Text
+                style={{
+                  color: style.colors.text.primary,
+                  padding: 4,
+                  fontSize: 15,
+                  fontWeight: 'bold',
+                }}
+              >
                 PPR Padang Hiliran
               </Text>
               {/* <DropDownPicker
@@ -224,6 +237,7 @@ const RegisterScreen = ({ navigation }) => {
               mode="outlined"
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
+              keyboardType="numeric"
             />
             {/* floor */}
             <TextInput
@@ -234,6 +248,7 @@ const RegisterScreen = ({ navigation }) => {
               mode="outlined"
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
+              keyboardType="numeric"
             />
 
             {/* select blok: A, B or C */}
@@ -268,7 +283,7 @@ const RegisterScreen = ({ navigation }) => {
         ) : (
           <View>
             <TextInput
-              label="Address Line 1"
+              label="No Unit"
               value={address.line1}
               onChangeText={(text) => setAddress({ ...address, line1: text })}
               style={styles.input}
@@ -277,7 +292,7 @@ const RegisterScreen = ({ navigation }) => {
               outlineColor={style.colors.secondary}
             />
             <TextInput
-              label="Address Line 2"
+              label="Jalan"
               value={address.line2}
               onChangeText={(text) => setAddress({ ...address, line2: text })}
               style={styles.input}
@@ -286,7 +301,7 @@ const RegisterScreen = ({ navigation }) => {
               outlineColor={style.colors.secondary}
             />
             <TextInput
-              label="Postcode"
+              label="Poskod"
               value={address.postcode}
               onChangeText={(text) =>
                 setAddress({ ...address, postcode: text })
@@ -295,9 +310,10 @@ const RegisterScreen = ({ navigation }) => {
               mode="outlined"
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
+              keyboardType="numeric"
             />
             <TextInput
-              label="City"
+              label="Bandar"
               value={address.city}
               onChangeText={(text) => setAddress({ ...address, city: text })}
               style={styles.input}
@@ -305,15 +321,35 @@ const RegisterScreen = ({ navigation }) => {
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
             />
-            <TextInput
-              label="State"
-              value={address.state}
-              onChangeText={(text) => setAddress({ ...address, state: text })}
-              style={styles.input}
-              mode="outlined"
-              activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
-            />
+            <Picker
+              selectedValue={address.state}
+              onValueChange={(itemValue) =>
+                setAddress({ ...address, state: itemValue })
+              }
+            >
+              <Picker.Item label="Johor" value="johor" />
+              <Picker.Item label="Kedah" value="kedah" />
+              <Picker.Item label="Kelantan" value="kelantan" />
+              <Picker.Item label="Melaka" value="melaka" />
+              <Picker.Item label="Negeri Sembilan" value="negeri_sembilan" />
+              <Picker.Item label="Pahang" value="pahang" />
+              <Picker.Item label="Perak" value="perak" />
+              <Picker.Item label="Perlis" value="perlis" />
+              <Picker.Item label="Pulau Pinang" value="pulau_pinang" />
+              <Picker.Item label="Sabah" value="sabah" />
+              <Picker.Item label="Sarawak" value="sarawak" />
+              <Picker.Item label="Selangor" value="selangor" />
+              <Picker.Item label="Terengganu" value="terengganu" />
+              <Picker.Item
+                label="Wilayah Persekutuan Kuala Lumpur"
+                value="kuala_lumpur"
+              />
+              <Picker.Item label="Wilayah Persekutuan Labuan" value="labuan" />
+              <Picker.Item
+                label="Wilayah Persekutuan Putrajaya"
+                value="putrajaya"
+              />
+            </Picker>
           </View>
         )}
       </ScrollView>

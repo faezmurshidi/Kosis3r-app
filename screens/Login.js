@@ -102,7 +102,10 @@ const LoginScreen = ({ navigation }) => {
       const confirmation = await auth().signInWithPhoneNumber(
         '+60' + phoneNumber,
       );
-
+      ToastAndroid.show(
+        'OTP telah dihantar, sila semak mesej',
+        ToastAndroid.LONG,
+      );
       setConfirm(confirmation);
     } catch (error) {
       // Handle login errors

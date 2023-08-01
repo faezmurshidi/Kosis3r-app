@@ -67,7 +67,9 @@ const Dashboard = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
+    console.log('User:', user);
     if (!user?.name) {
+      console.log('User has not set up profile yet');
       navigation.navigate('EditProfile');
     }
     const onTokenRefreshListener = messaging().onTokenRefresh(async (token) => {

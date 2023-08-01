@@ -18,7 +18,8 @@ import {
 } from 'react-native';
 import { TextInput, Text, Divider, Portal, Dialog } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
-import { openPicker } from '@baronha/react-native-multiple-image-picker';
+
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import i18n from '../i18n';
 import style from '../styles';
 import { generateTransactionId } from '../util';
@@ -30,8 +31,7 @@ import {
 } from '../firebase/firebaseUtils';
 import { AuthContext } from '../context/AuthContext';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import CustomButton from '../components/CustomButton';
-import ImageResizer from '@bam.tech/react-native-image-resizer';
+
 import {
   BottomSheetModal,
   BottomSheetModalProvider,
@@ -43,15 +43,15 @@ import moment from 'moment';
 
 const TransactionsScreen = ({ route, navigation }) => {
   const nearestCenter = route.params?.nearestCenter;
-  const category = i18n.t('recycleCategories', { returnObjects: true });
+  // const category = i18n.t('recycleCategories', { returnObjects: true });
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [photo, setPhoto] = useState(null);
   const [weight, setWeight] = useState(0);
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [rate, setRate] = useState(0);
   const [txReceipt, setTxReceipt] = useState(null);
+  const [categoryRate, setCategoryRate] = useState([]);
 
   // ref
   const bottomSheetModalRef = useRef(null);
@@ -68,36 +68,42 @@ const TransactionsScreen = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
-    const getRate = async () => {
-      const latestRate = await getCurrentRate('default');
-      console.log('latestRate', latestRate);
-      setRate(latestRate);
+    const getCategoryRate = async () => {
+      const catRate = await getCurrentRate('master');
+      console.log('catRate', catRate);
+      setCategoryRate(catRate);
     };
 
-    getRate();
+    getCategoryRate();
   }, []);
 
   const onPicker = async () => {
     try {
-      const singleSelectedMode = true;
+      const options = {
+        mediaType: 'photo',
+        quality: 0.5,
+      };
 
-      const response = await openPicker({
-        selectedAssets: photo,
-        mediaType: 'image',
-        doneTitle: 'Done',
-        singleSelectedMode,
-        isCrop: true,
-      });
-
-      const crop = response.crop;
-
-      if (crop) {
-        response.path = crop.path;
-        response.width = crop.width;
-        response.height = crop.height;
+      const result = await launchImageLibrary(options);
+      if (result.assets[0]) {
+        console.log('result', result.assets[0]);
+        setPhoto(result.assets[0]);
       }
+    } catch (e) {}
+  };
 
-      setPhoto(response);
+  const onCamera = async () => {
+    try {
+      const options = {
+        mediaType: 'photo',
+        quality: 0.5,
+      };
+
+      const result = await launchCamera(options);
+      if (result.assets[0]) {
+        console.log('result', result.assets[0]);
+        setPhoto(result.assets[0]);
+      }
     } catch (e) {}
   };
 
@@ -175,19 +181,7 @@ const TransactionsScreen = ({ route, navigation }) => {
     const transactionId = generateTransactionId(nearestCenter.id);
 
     try {
-      let resized = await ImageResizer.createResizedImage(
-        photo.path,
-        photo.width / 2,
-        photo.height / 2,
-        'JPEG',
-        50, // reduce quality to compress image
-        0,
-        undefined,
-      );
-
-      console.log('resized:', resized);
-
-      const imageUrl = await saveImageToStorage(transactionId, resized.uri);
+      const imageUrl = await saveImageToStorage(transactionId, photo.uri);
       console.log('imageUrl:', imageUrl);
       const transaction = {
         id: transactionId,
@@ -197,7 +191,8 @@ const TransactionsScreen = ({ route, navigation }) => {
         status: 'pending', // approved, pending, rejected
         paymentMethod: 'wallet', //default
         items: {
-          category: category[selectedCategory].id,
+          category: categoryRate[selectedCategory].name,
+          categoryId: selectedCategory,
           weight: Number(weight),
           price: totalSale,
           rate: currentRate,
@@ -230,8 +225,8 @@ const TransactionsScreen = ({ route, navigation }) => {
     setIsModalVisible(false);
   };
 
-  const currentRate = category[selectedCategory].id
-    ? rate[category[selectedCategory].id]
+  const currentRate = selectedCategory
+    ? categoryRate[selectedCategory].rate
     : null;
 
   const totalSale = (currentRate * weight).toFixed(2);
@@ -290,6 +285,8 @@ const TransactionsScreen = ({ route, navigation }) => {
     [],
   );
 
+  console.log('selectedCategory', selectedCategory);
+
   return (
     <BottomSheetModalProvider>
       <View style={styles.container}>
@@ -317,19 +314,19 @@ const TransactionsScreen = ({ route, navigation }) => {
           <Text variant="labelLarge" style={{ marginBottom: 4 }}>
             Jenis Barang Kitar Semula
           </Text>
-          <Picker
-            selectedValue={category[selectedCategory].id}
-            onValueChange={(value, index) => {
-              setSelectedCategory(index);
-            }}
-            style={styles.picker}
-          >
-            {category.map((list, index) => {
-              return (
-                <Picker.Item key={index} label={list.label} value={list.id} />
-              );
-            })}
-          </Picker>
+          {categoryRate && (
+            <Picker
+              selectedValue={selectedCategory}
+              onValueChange={(value, index) => {
+                setSelectedCategory(value);
+              }}
+              style={styles.picker}
+            >
+              {Object.entries(categoryRate).map(([id, { name }]) => {
+                return <Picker.Item key={id} label={name} value={id} />;
+              })}
+            </Picker>
+          )}
           <Text variant="labelLarge" style={{ marginBottom: 2 }}>
             Berat (KG)
           </Text>
@@ -351,16 +348,27 @@ const TransactionsScreen = ({ route, navigation }) => {
               <Text style={{ fontWeight: 'bold' }}>RM{currentRate} per KG</Text>
             </View>
           )} */}
-          <TouchableOpacity onPress={onPicker} style={styles.photoButton}>
-            <Text style={styles.photoButtonText}>Tambah Gambar</Text>
-          </TouchableOpacity>
-          {photo && (
-            <Image
-              source={{ uri: 'file://' + photo.path }}
-              style={styles.image}
-            />
-          )}
-          {/* image info */}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              margin: 10,
+              paddingHorizontal: 18,
+            }}
+          >
+            <TouchableOpacity onPress={onPicker} style={styles.photoButton}>
+              <Text style={styles.photoButtonText}>Pilih Gambar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onCamera}
+              style={[
+                styles.photoButton,
+                { backgroundColor: style.colors.accent },
+              ]}
+            >
+              <Text style={styles.photoButtonText}>Ambil Gambar</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.imageInfo}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <FontAwesome5Icon
@@ -375,6 +383,8 @@ const TransactionsScreen = ({ route, navigation }) => {
               </Text>
             </View>
           </View>
+          {photo && <Image source={{ uri: photo.uri }} style={styles.image} />}
+          {/* image info */}
         </ScrollView>
 
         <View style={styles.footer}>
@@ -448,6 +458,7 @@ const TransactionsScreen = ({ route, navigation }) => {
                   {/* <Text>
                   Kategori: {category[txReceipt.items.category].label}
                 </Text> */}
+                  <Text>Jenis Barang: {txReceipt.items.category}</Text>
                   <Text>Berat: {txReceipt.items.weight}Kg</Text>
                   <Text>
                     Masa:{' '}
@@ -556,10 +567,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   photoButton: {
+    flex: 1,
+    marginHorizontal: 4,
+    paddingVertical: 12,
     backgroundColor: style.colors.tertiary,
-    width: '80%',
-    paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -587,7 +599,7 @@ const styles = StyleSheet.create({
     width: '80%',
     height: 250,
     resizeMode: 'contain',
-    marginTop: 16,
+    marginVertical: 16,
     borderRadius: 8,
   },
   scrollViewContent: {
