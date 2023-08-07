@@ -40,6 +40,11 @@ const RegisterScreen = ({ navigation }) => {
     state: '',
   });
 
+  const floorNoRef = React.createRef();
+  const line2Ref = React.createRef();
+  const postcodeRef = React.createRef();
+  const cityRef = React.createRef();
+
   const pprList = [
     { label: 'PPR Hiliran', value: 'PPR Hiliran' },
     { label: 'PPR Kempas', value: 'PPR Kempas' },
@@ -61,6 +66,9 @@ const RegisterScreen = ({ navigation }) => {
     }
     if (user?.isPPR) {
       setIsPPR(user.isPPR);
+    }
+    if (user?.dob) {
+      setDob(user.dob);
     }
   }, [user]);
 
@@ -163,21 +171,44 @@ const RegisterScreen = ({ navigation }) => {
           disabled={phoneNumber ? true : false}
         />
 
-        <Text style={{ color: style.colors.text.secondary, padding: 2 }}>
+        <Text
+          style={{
+            color: style.colors.text.secondary,
+            padding: 2,
+            fontWeight: 'bold',
+            fontSize: 16,
+          }}
+        >
           Tarikh Lahir
         </Text>
+
         <View style={{ alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ color: style.colors.text.secondary, padding: 12 }}>
+              {dob.toDateString()}
+            </Text>
+            <Button mode="contained" onPress={() => setOpen(true)}>
+              Pilih
+            </Button>
+          </View>
           <DatePicker
+            modal
+            title={'Pilih tarikh lahir'}
+            confirmText="Sahkan"
+            cancelText="Batal"
+            open={open}
+            onConfirm={(date) => {
+              setOpen(false);
+              setDob(date);
+            }}
+            onCancel={() => {
+              setOpen(false);
+            }}
             date={dob}
-            onDateChange={setDob}
             mode={'date'}
-            maximumDate={
-              new Date(
-                new Date().getFullYear() - 10,
-                new Date().getMonth(),
-                new Date().getDate(),
-              )
-            }
+            locale={'ms'}
+            maximumDate={new Date(new Date().getFullYear() - 10, 11, 31)}
+            minimumDate={new Date(new Date().getFullYear() - 90, 0, 1)}
           />
         </View>
         {/* <TextInput
@@ -192,7 +223,14 @@ const RegisterScreen = ({ navigation }) => {
         /> */}
 
         <View>
-          <Text style={{ color: style.colors.text.secondary, padding: 2 }}>
+          <Text
+            style={{
+              color: style.colors.text.secondary,
+              padding: 2,
+              fontWeight: 'bold',
+              fontSize: 16,
+            }}
+          >
             Adakah anda penghuni PPR?
           </Text>
           <RadioButton.Group onValueChange={handleRadioPress} value={isPPR}>
@@ -238,6 +276,9 @@ const RegisterScreen = ({ navigation }) => {
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
               keyboardType="numeric"
+              onSubmitEditing={() => {
+                floorNoRef.current.focus();
+              }}
             />
             {/* floor */}
             <TextInput
@@ -249,6 +290,7 @@ const RegisterScreen = ({ navigation }) => {
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
               keyboardType="numeric"
+              ref={floorNoRef}
             />
 
             {/* select blok: A, B or C */}
@@ -290,18 +332,26 @@ const RegisterScreen = ({ navigation }) => {
               mode="outlined"
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
+              onSubmitEditing={() => {
+                line2Ref.current.focus();
+              }}
             />
             <TextInput
               label="Jalan"
+              ref={line2Ref}
               value={address.line2}
               onChangeText={(text) => setAddress({ ...address, line2: text })}
               style={styles.input}
               mode="outlined"
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
+              onSubmitEditing={() => {
+                postcodeRef.current.focus();
+              }}
             />
             <TextInput
               label="Poskod"
+              ref={postcodeRef}
               value={address.postcode}
               onChangeText={(text) =>
                 setAddress({ ...address, postcode: text })
@@ -311,9 +361,13 @@ const RegisterScreen = ({ navigation }) => {
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
               keyboardType="numeric"
+              onSubmitEditing={() => {
+                cityRef.current.focus();
+              }}
             />
             <TextInput
               label="Bandar"
+              ref={cityRef}
               value={address.city}
               onChangeText={(text) => setAddress({ ...address, city: text })}
               style={styles.input}

@@ -28,7 +28,7 @@ import {
 } from 'react-native-paper';
 import { LineChart, BarChart } from 'react-native-chart-kit';
 import moment from 'moment';
-
+import { Picker } from '@react-native-picker/picker';
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import i18n from '../i18n';
 import Modal from 'react-native-modal';
@@ -60,6 +60,7 @@ const PaymentScreen = ({ navigation }) => {
   const [withdrawalHistory, setWithdrawalHistory] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [withdrawError, setWithdrawError] = useState(null);
+  const [selectedValue, setSelectedValue] = useState('weight');
 
   // ref
   const bottomSheetModalRef = useRef(null);
@@ -323,22 +324,35 @@ const PaymentScreen = ({ navigation }) => {
     const groupedData = txHistory.reduce((acc, item) => {
       const month = moment(item.timestamp).format('MMMM');
       if (!acc[month]) {
-        acc[month] = { month, weight: 0 };
+        acc[month] = { month, weight: 0, price: 0 };
       }
       acc[month].weight += item.items.weight;
+      acc[month].price += Number(item.items.price);
       return acc;
     }, {});
     const chartData = Object.values(groupedData);
     return (
       <View style={styles.chartContainer}>
+        <View style={{ margin: 10 }}>
+          <Picker
+            selectedValue={selectedValue}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedValue(itemValue)
+            }
+          >
+            <Picker.Item label="Jumlah Jualan (KG)" value="weight" />
+            <Picker.Item label="Jumlah Jualan (RM)" value="price" />
+          </Picker>
+        </View>
         <BarChart
           data={{
             labels: chartData.map((item) => item.month),
-            datasets: [{ data: chartData.map((item) => item.weight) }],
+            datasets: [{ data: chartData.map((item) => item[selectedValue]) }],
           }}
           width={screenWidth}
           height={250}
-          yAxisSuffix="Kg"
+          yAxisSuffix={selectedValue === 'weight' ? ' Kg' : ''}
+          yAxisLabel={selectedValue === 'weight' ? '' : ' RM'}
           fromZero
           yAxisInterval={0} // optional, defaults to 1
           chartConfig={{
@@ -351,7 +365,7 @@ const PaymentScreen = ({ navigation }) => {
           style={{
             borderRadius: 10,
             elevation: 5,
-            margin: 10,
+            marginHorizontal: 10,
           }}
         />
       </View>
