@@ -187,16 +187,12 @@ const Dashboard = ({ navigation }) => {
                   size={18}
                   padding={6}
                 />
-                <Text
-                  style={{
-                    color: style.colors.background.light.offwhite,
-                    fontWeight: 'bold',
-                    fontSize: 16,
-                  }}
-                >
-                  {Math.floor(totalWeight / 50) + 1}
+                <Text style={styles.statsTitle}>
+                  {user?.stat?.totalTransaction || 0}
                 </Text>
-                <Text variant="labelMedium">Tahap</Text>
+                <Text variant="labelMedium" style={styles.statsDescription}>
+                  Jumlah Transaksi
+                </Text>
               </TouchableOpacity>
             </View>
             {/* add seperator */}
@@ -218,16 +214,10 @@ const Dashboard = ({ navigation }) => {
                   size={18}
                   padding={6}
                 />
-                <Text
-                  style={{
-                    color: style.colors.background.light.offwhite,
-                    fontWeight: 'bold',
-                    fontSize: 16,
-                  }}
-                >
-                  {totalWeight}Kg
+                <Text style={styles.statsTitle}>{totalWeight}Kg</Text>
+                <Text variant="labelMedium" style={styles.statsDescription}>
+                  Jumlah Dikitarkan Semula
                 </Text>
-                <Text variant="labelMedium">Dikitar Semula</Text>
               </TouchableOpacity>
             </View>
             <View
@@ -248,16 +238,12 @@ const Dashboard = ({ navigation }) => {
                   size={18}
                   padding={6}
                 />
-                <Text
-                  style={{
-                    color: style.colors.background.light.offwhite,
-                    fontWeight: 'bold',
-                    fontSize: 16,
-                  }}
-                >
-                  {co2saved.toFixed(1)}Kg
+                <Text style={styles.statsTitle}>
+                  {co2saved.toFixed(1)}Kg CO2
                 </Text>
-                <Text variant="labelMedium">CO2 Jimat</Text>
+                <Text variant="labelMedium" style={styles.statsDescription}>
+                  Jumlah Dijimatkan
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -272,7 +258,7 @@ const Dashboard = ({ navigation }) => {
             }}
           >
             <TouchableOpacity
-              style={{ alignItems: 'center', paddingHorizontal: 6 }}
+              style={{ alignItems: 'center', paddingHorizontal: 6, margin: 2 }}
               onPress={goToAccount}
             >
               <Text variant="labelLarge">BAKI TERKUMPUL</Text>
@@ -316,15 +302,6 @@ const Dashboard = ({ navigation }) => {
       >
         <View style={styles.profileSection}>
           <View style={styles.welcomeCard}>
-            <Image
-              source={logo}
-              style={{
-                height: 50,
-                width: 50,
-                marginLeft: 6,
-              }}
-              resizeMode="contain"
-            />
             {user?.name && (
               <Text
                 variant="titleLarge"
@@ -407,7 +384,7 @@ const styles = StyleSheet.create({
     backgroundColor: style.colors.background.light.offwhite,
   },
   welcomeCard: {
-    padding: 6,
+    padding: 18,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -456,6 +433,18 @@ const styles = StyleSheet.create({
   carouselContainer: {
     marginTop: 16,
     marginBottom: 24,
+  },
+  statsTitle: {
+    color: style.colors.background.light.offwhite,
+    fontWeight: 'bold',
+    fontSize: 18,
+    paddingVertical: 4,
+  },
+  statsDescription: {
+    color: style.colors.background.light.lightGray,
+    textAlign: 'center',
+    fontSize: 12,
+    lineHeight: 11,
   },
 });
 

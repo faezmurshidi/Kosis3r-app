@@ -57,7 +57,7 @@ const TransactionsScreen = ({ route, navigation }) => {
   const bottomSheetModalRef = useRef(null);
 
   // variables
-  const snapPoints = useMemo(() => ['65%', '75%'], []);
+  const snapPoints = useMemo(() => ['65%', '70%'], []);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -222,7 +222,8 @@ const TransactionsScreen = ({ route, navigation }) => {
   };
 
   const closeModal = () => {
-    setIsModalVisible(false);
+    // setIsModalVisible(false);
+    bottomSheetModalRef.current?.close();
   };
 
   const currentRate = selectedCategory
@@ -322,9 +323,11 @@ const TransactionsScreen = ({ route, navigation }) => {
               }}
               style={styles.picker}
             >
-              {Object.entries(categoryRate).map(([id, { name }]) => {
-                return <Picker.Item key={id} label={name} value={id} />;
-              })}
+              {Object.entries(categoryRate)
+                .sort(([, a], [, b]) => a.name.localeCompare(b.name))
+                .map(([id, { name }]) => {
+                  return <Picker.Item key={id} label={name} value={id} />;
+                })}
             </Picker>
           )}
           <Text variant="labelLarge" style={{ marginBottom: 2 }}>
@@ -383,7 +386,13 @@ const TransactionsScreen = ({ route, navigation }) => {
               </Text>
             </View>
           </View>
-          {photo && <Image source={{ uri: photo.uri }} style={styles.image} />}
+          {photo && (
+            <Image
+              source={{ uri: photo.uri }}
+              style={styles.image}
+              resizeMode="cover"
+            />
+          )}
           {/* image info */}
         </ScrollView>
 
@@ -434,6 +443,7 @@ const TransactionsScreen = ({ route, navigation }) => {
                     alignSelf: 'center',
                     fontSize: 16,
                     fontWeight: 'bold',
+                    color: style.colors.text.light,
                   }}
                 >
                   Kitar Semula Berjaya 🎉
@@ -476,7 +486,7 @@ const TransactionsScreen = ({ route, navigation }) => {
                 </Text>
               </View>
               <Text style={{ alignSelf: 'center', marginVertical: 12 }}>
-                Pilih cara untuk menerima wang anda
+                Selesai
               </Text>
               <View
                 style={{
@@ -485,7 +495,7 @@ const TransactionsScreen = ({ route, navigation }) => {
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => transactionToBank()}
+                  onPress={() => backToHome()}
                   style={{
                     backgroundColor: style.colors.accent,
                     borderRadius: 10,
@@ -497,13 +507,13 @@ const TransactionsScreen = ({ route, navigation }) => {
                   }}
                 >
                   <Text style={{ color: 'white', fontWeight: 'bold' }}>
-                    🏦 Bayaran Terus
+                    🏦 Kembali
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => transactionToWallet()}
+                  onPress={() => closeModal()}
                   style={{
-                    backgroundColor: style.colors.tertiaryDark,
+                    backgroundColor: style.colors.tertiary,
                     borderRadius: 10,
                     paddingVertical: 12,
                     justifyItem: 'center',
@@ -517,7 +527,7 @@ const TransactionsScreen = ({ route, navigation }) => {
                       fontWeight: 'bold',
                     }}
                   >
-                    Simpan 💰
+                    Transaksi Baru 💰
                   </Text>
                 </TouchableOpacity>
               </View>

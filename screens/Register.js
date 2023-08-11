@@ -18,6 +18,7 @@ import style from '../styles';
 import { AuthContext } from '../context/AuthContext';
 import DatePicker from 'react-native-date-picker';
 import { Picker } from '@react-native-picker/picker';
+import moment from 'moment';
 
 const RegisterScreen = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
@@ -41,6 +42,7 @@ const RegisterScreen = ({ navigation }) => {
   });
 
   const floorNoRef = React.createRef();
+  const unitNoRef = React.createRef();
   const line2Ref = React.createRef();
   const postcodeRef = React.createRef();
   const cityRef = React.createRef();
@@ -68,7 +70,7 @@ const RegisterScreen = ({ navigation }) => {
       setIsPPR(user.isPPR);
     }
     if (user?.dob) {
-      setDob(user.dob);
+      setDob(user.dob.toDate ? user.dob.toDate() : user.dob);
     }
   }, [user]);
 
@@ -125,6 +127,11 @@ const RegisterScreen = ({ navigation }) => {
     }
   };
 
+  const dateOfBirth = user?.dob
+    ? moment(user.dob.toDate ? user.dob.toDate() : user.dob).format(
+        'DD MMMM YYYY',
+      )
+    : '';
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -185,7 +192,7 @@ const RegisterScreen = ({ navigation }) => {
         <View style={{ alignItems: 'center' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={{ color: style.colors.text.secondary, padding: 12 }}>
-              {dob.toDateString()}
+              {dateOfBirth}
             </Text>
             <Button mode="contained" onPress={() => setOpen(true)}>
               Pilih
@@ -267,31 +274,6 @@ const RegisterScreen = ({ navigation }) => {
                 onChangeItem={handleOptionSelect}
               /> */}
             </View>
-            <TextInput
-              label="No. Rumah"
-              value={address.unitNo}
-              onChangeText={(text) => setAddress({ ...address, unitNo: text })}
-              style={styles.input}
-              mode="outlined"
-              activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
-              keyboardType="numeric"
-              onSubmitEditing={() => {
-                floorNoRef.current.focus();
-              }}
-            />
-            {/* floor */}
-            <TextInput
-              label="Tingkat"
-              value={address.floorNo}
-              onChangeText={(text) => setAddress({ ...address, floorNo: text })}
-              style={styles.input}
-              mode="outlined"
-              activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
-              keyboardType="numeric"
-              ref={floorNoRef}
-            />
 
             {/* select blok: A, B or C */}
             <View style={{ paddingVertical: 8 }}>
@@ -311,6 +293,35 @@ const RegisterScreen = ({ navigation }) => {
                 </View>
               </RadioButton.Group>
             </View>
+
+            {/* floor */}
+            <TextInput
+              label="Tingkat"
+              value={address.floorNo}
+              onChangeText={(text) => setAddress({ ...address, floorNo: text })}
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+              keyboardType="numeric"
+              ref={floorNoRef}
+              onSubmitEditing={() => {
+                unitNoRef.current.focus();
+              }}
+            />
+
+            <TextInput
+              label="No. Rumah"
+              value={address.unitNo}
+              onChangeText={(text) => setAddress({ ...address, unitNo: text })}
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+              keyboardType="numeric"
+              ref={unitNoRef}
+              onSubmitEditing={() => updateUser()}
+            />
 
             {/* <TextInput
               label="Blok"

@@ -52,7 +52,7 @@ const NearestCentre = ({ onPress }) => {
           style={{ marginRight: 8, marginTop: 2 }}
         />
         <View>
-          <Text style={styles.sectionTitle}>Pusat Kosis Terdekat</Text>
+          <Text style={styles.sectionTitle}>Pusat KOSIS Terdekat</Text>
         </View>
       </View>
 
@@ -98,11 +98,7 @@ const NearestCentre = ({ onPress }) => {
                 <Text>{nearestCenter.alamat}</Text>
               </>
             )}
-            <CustomButton
-              onPress={() => onPress(nearestCenter)}
-              title="Jualan"
-              icon={'recycle'}
-            />
+
             {/* <CustomButton
                 onPress={openNavigationApp}
                 title="Bawa saya ke sana"
@@ -111,6 +107,11 @@ const NearestCentre = ({ onPress }) => {
           </View>
         )}
       </View>
+      <CustomButton
+        onPress={() => onPress(nearestCenter)}
+        title="Jual"
+        icon={'recycle'}
+      />
     </View>
   );
 };

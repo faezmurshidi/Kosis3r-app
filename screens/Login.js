@@ -185,7 +185,7 @@ const LoginScreen = ({ navigation }) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <View style={{ padding: 12, marginLeft: 14 }}>
-          <Image
+          {/* <Image
             source={logo}
             style={{
               alignSelf: 'flex-start',
@@ -193,7 +193,7 @@ const LoginScreen = ({ navigation }) => {
               width: 100,
             }}
             resizeMode="contain"
-          />
+          /> */}
           <View style={{ alignItems: 'flex-start' }}>
             <Text
               style={{
@@ -202,7 +202,7 @@ const LoginScreen = ({ navigation }) => {
                 color: style.colors.text.light,
               }}
             >
-              Selamat Datang
+              Selamat Datang ke
             </Text>
             <Text
               style={{
@@ -211,7 +211,7 @@ const LoginScreen = ({ navigation }) => {
                 color: style.colors.text.light,
               }}
             >
-              3R PasarKita
+              i-KITAR
             </Text>
             <Text
               style={{
@@ -220,7 +220,7 @@ const LoginScreen = ({ navigation }) => {
                 color: style.colors.text.gray,
               }}
             >
-              Rakan kitar semula anda
+              Digital. Kitar Semula
             </Text>
           </View>
         </View>

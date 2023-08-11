@@ -23,12 +23,12 @@ const styles = StyleSheet.create({
   // },
 
   colors: {
-    primary: '#FFFBE6',
-    primaryDark: '#FFD54F',
+    primary: '#E0ECFF',
+    primaryDark: '#B3CFFF',
     secondary: '#FEFEFE',
-    tertiary: '#1D9469',
-    tertiaryDark: '#105B3F', // darker shade of the original color
-    tertiaryLight: '#4BC7A6',
+    tertiary: '#001F51',
+    tertiaryDark: '',
+
     gray: '#CDCDCD',
     paper: {
       ivory: '#FAF0E6',

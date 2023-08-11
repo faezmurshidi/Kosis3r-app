@@ -135,6 +135,7 @@ export const createTransactionFirestore = async (transaction) => {
       'stat.totalWeight': firestore.FieldValue.increment(
         transaction.items.weight,
       ),
+      'stat.totalTransaction': firestore.FieldValue.increment(1),
     });
     console.log('Adding tx to Firestore');
   } catch (error) {

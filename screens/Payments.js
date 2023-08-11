@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {
   useEffect,
@@ -84,6 +85,17 @@ const PaymentScreen = ({ navigation }) => {
   }, []);
 
   const category = i18n.t('recycleCategories', { returnObjects: true });
+
+  //pending tx amount
+  const pendingTxAmount = useMemo(() => {
+    let pendingAmount = 0;
+    txHistory.forEach((tx) => {
+      if (tx.status === 'pending') {
+        pendingAmount += Number(tx.items.price);
+      }
+    });
+    return pendingAmount;
+  }, [txHistory]);
 
   const fetchTransactions = async () => {
     setRefreshing(true);
@@ -472,10 +484,43 @@ const PaymentScreen = ({ navigation }) => {
         }}
       >
         <View style={styles.balanceSection}>
-          <Text style={styles.balanceText}>Baki Terkumpul</Text>
-          <Text style={{ fontSize: 31, fontWeight: '900' }}>
-            RM{user?.wallet || 0}
-          </Text>
+          <View style={{ paddingLeft: 10, flexDirection: 'row' }}>
+            <View style={{ paddingRight: 10 }}>
+              <Text style={styles.balanceText}>Baki Terkumpul</Text>
+              <Text style={{ fontSize: 31, fontWeight: '900' }}>
+                RM{user?.wallet?.toFixed(2) || '0.00'}
+              </Text>
+            </View>
+            {/* seperator */}
+            <View
+              style={{
+                borderLeftWidth: 1,
+                borderLeftColor: style.colors.background.dark.offBlack,
+                height: 50,
+                marginVertical: 10,
+                marginHorizontal: 10,
+              }}
+            />
+            <View style={{ paddingLeft: 10, paddingTop: 16 }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: style.colors.text.secondary,
+                }}
+              >
+                Menunggu Pengesahan
+              </Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  color: style.colors.background.dark.offBlack,
+                }}
+              >
+                RM{pendingTxAmount.toFixed(2) || 0}
+              </Text>
+            </View>
+          </View>
           <View style={styles.balanceButtonContainer}>
             <CustomButton
               icon="wallet"
@@ -483,7 +528,7 @@ const PaymentScreen = ({ navigation }) => {
               onPress={handlePresentModalPress}
               color={style.colors.primary}
               style={{ width: 150, height: 40 }}
-              // disabled={user?.wallet <= 0 || user?.wallet === undefined}
+              disabled={user?.wallet <= 0 || user?.wallet === undefined}
             />
             <CustomButton
               icon="gift"
@@ -610,15 +655,15 @@ const styles = StyleSheet.create({
     color: style.colors.text.primary,
   },
   balanceSection: {
-    alignItems: 'center',
     marginTop: 20,
     paddingHorizontal: 20,
-    marginBottom: 20,
+    marginBottom: 1,
     backgroundColor: style.colors.background.light.offwhite,
   },
   balanceText: {
     fontSize: 18,
     color: style.colors.text.primary,
+    fontWeight: '400',
   },
   radioButton: {
     flexDirection: 'row',

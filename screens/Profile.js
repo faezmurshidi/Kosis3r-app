@@ -19,6 +19,7 @@ import { fetchUserFromFirestore } from '../firebase/firebaseUtils';
 import { Avatar } from 'react-native-paper';
 import { CommonActions } from '@react-navigation/native';
 import i18n from '../i18n';
+import moment from 'moment';
 
 const ProfileScreen = ({ navigation }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -50,6 +51,30 @@ const ProfileScreen = ({ navigation }) => {
     );
   };
 
+  const dateOfBirth = user?.dob
+    ? moment(user.dob.toDate ? user.dob.toDate() : user.dob).format(
+        'DD MMMM YYYY',
+      )
+    : '';
+
+  const address = user?.isPPR
+    ? user?.address?.unitNo +
+      ', ' +
+      user?.address?.floorNo +
+      ', ' +
+      user?.address?.blockNo +
+      ', ' +
+      user?.ppr
+    : user?.address?.line1 +
+      ', ' +
+      user?.address?.line2 +
+      ', ' +
+      user?.address?.postcode +
+      ' ' +
+      user?.address?.city +
+      ', ' +
+      user?.address?.state;
+
   const sections = [
     {
       title: i18n.t('Profile.userDetails'),
@@ -57,6 +82,8 @@ const ProfileScreen = ({ navigation }) => {
         { title: i18n.t('Profile.name'), value: user?.name },
         { title: i18n.t('Profile.email'), value: user?.email },
         { title: i18n.t('Profile.phone'), value: user?.phoneNumber },
+        { title: 'Alamat', value: address },
+        { title: 'Tarikh Lahir', value: dateOfBirth },
         // {
         //   title: i18n.t('Profile.language'),
         //   value: language === 'en' ? 'English' : 'Bahasa',

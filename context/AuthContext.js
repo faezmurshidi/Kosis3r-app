@@ -26,12 +26,12 @@ const AuthProvider = ({ children }) => {
   const setUser = async (newUser) => {
     console.log('Setting user:', newUser);
     try {
-      await AsyncStorage.setItem('user', JSON.stringify(newUser));
-      setUserState(newUser);
       if (!newUser) {
         console.log('User logged out');
         setLoggedIn(false);
       } else {
+        await AsyncStorage.setItem('user', JSON.stringify(newUser));
+        setUserState(newUser);
         setLoggedIn(true);
       }
     } catch (error) {
