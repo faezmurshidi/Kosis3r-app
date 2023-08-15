@@ -110,7 +110,7 @@ const NearestCentre = ({ onPress }) => {
       <CustomButton
         onPress={() => onPress(nearestCenter)}
         title="Jual"
-        icon={'recycle'}
+        icon={'money-bill-wave'}
       />
     </View>
   );
@@ -146,8 +146,8 @@ const styles = StyleSheet.create({
     color: style.colors.text.primary,
   },
   nearestRecyclingCenterText: {
-    fontSize: 14,
-    color: '#1C8E65',
+    fontSize: 17,
+    color: style.colors.tertiary,
     fontWeight: 'bold',
   },
 });

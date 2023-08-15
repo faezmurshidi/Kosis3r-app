@@ -182,7 +182,7 @@ const Dashboard = ({ navigation }) => {
                 onPress={goToAccount}
               >
                 <FontAwesome5
-                  name={'level-up-alt'}
+                  name={'file-invoice-dollar'}
                   color={style.colors.background.light.offwhite}
                   size={18}
                   padding={6}
@@ -269,7 +269,7 @@ const Dashboard = ({ navigation }) => {
                   justifyContent: 'center',
                 }}
               >
-                <FontAwesome5 name={'money-bill-wave'} size={23} padding={6} />
+                <FontAwesome5 name={'wallet'} size={23} padding={6} />
                 <Text
                   style={{
                     fontWeight: 'bold',

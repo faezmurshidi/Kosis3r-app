@@ -298,8 +298,10 @@ const LoginScreen = ({ navigation }) => {
               <Button
                 mode="contained"
                 onPress={confirmCode}
-                style={styles.button}
+                // style={styles.button}
                 loading={loading}
+                disabled={code.length < 4}
+                buttonColor={style.colors.tertiary}
               >
                 Sahkan
               </Button>
