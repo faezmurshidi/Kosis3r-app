@@ -97,6 +97,12 @@ const PaymentScreen = ({ navigation }) => {
     return pendingAmount;
   }, [txHistory]);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchUserFromFirestore(user, setUser);
+    fetchTransactions().then(() => setRefreshing(false));
+  };
+
   const fetchTransactions = async () => {
     setRefreshing(true);
     try {
@@ -394,10 +400,7 @@ const PaymentScreen = ({ navigation }) => {
         keyExtractor={(item) => item.id}
         ListEmptyComponent={renderEmptyComponent}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={fetchTransactions}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
     </View>
@@ -623,7 +626,9 @@ const PaymentScreen = ({ navigation }) => {
               height: 200,
             }}
           >
-            <Text>Permintaan pengeluaran telah dihantar </Text>
+            <Text style={{ fontSize: 15, margin: 12 }}>
+              Permintaan pengeluaran telah dihantar{' '}
+            </Text>
             <CustomButton
               title="Okay"
               onPress={() => {
