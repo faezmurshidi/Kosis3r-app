@@ -60,6 +60,12 @@ const Dashboard = ({ navigation }) => {
 
       if (enabled) {
         console.log('Authorization status:', authStatus);
+        messaging()
+          .getToken()
+          .then((token) => {
+            console.log('FCM token:', token);
+            updateFCMToken(user.uid, token);
+          });
       }
     };
 

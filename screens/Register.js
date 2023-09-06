@@ -6,6 +6,7 @@ import {
   ScrollView,
   ToastAndroid,
 } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
 import {
   TextInput,
   Button,
@@ -22,13 +23,31 @@ import moment from 'moment';
 
 const RegisterScreen = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: user?.name,
+      email: user?.email,
+      phoneNumber: user?.phoneNumber,
+    },
+  });
+
+  const onSubmit = (data) => console.log('test', data);
+
   console.log('user@RegisterScreen', user);
-  const [name, setName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [dob, setDob] = useState(new Date());
-  const [phoneNumber, setPhoneNumber] = useState(null);
+
   const [isPPR, setIsPPR] = useState(false);
+  const [dob, setDob] = useState(new Date());
   const [ppr, setPpr] = useState(null);
+  const [owner, setOwner] = useState(false); // ['owner', 'renter'
+  const [sex, setSex] = useState('Lelaki');
+  const [race, setRace] = useState('Melayu');
+  const [citizenship, setCitizenship] = useState('Warganegara');
+  const [householdNumber, setHouseholdNumber] = useState(0);
   const [open, setOpen] = useState(false);
   const [address, setAddress] = useState({
     unitNo: '',
@@ -41,6 +60,8 @@ const RegisterScreen = ({ navigation }) => {
     state: '',
   });
 
+  const emailRef = React.createRef();
+  const phoneNumberRef = React.createRef();
   const floorNoRef = React.createRef();
   const unitNoRef = React.createRef();
   const line2Ref = React.createRef();
@@ -54,23 +75,30 @@ const RegisterScreen = ({ navigation }) => {
   ];
 
   useEffect(() => {
-    if (user?.phoneNumber) {
-      setPhoneNumber(user.phoneNumber);
-    }
     if (user?.address) {
       setAddress(user.address);
     }
-    if (user?.email) {
-      setEmail(user.email);
-    }
-    if (user?.name) {
-      setName(user.name);
-    }
+
     if (user?.isPPR) {
       setIsPPR(user.isPPR);
     }
     if (user?.dob) {
       setDob(user.dob.toDate ? user.dob.toDate() : user.dob);
+    }
+    if (user?.sex) {
+      setSex(user.sex);
+    }
+    if (user?.citizenship) {
+      setCitizenship(user.citizenship);
+    }
+    if (user?.householdNumber) {
+      setHouseholdNumber(user.householdNumber);
+    }
+    if (user?.owner) {
+      setOwner(user.owner);
+    }
+    if (user?.race) {
+      setRace(user.race);
     }
   }, [user]);
 
@@ -78,20 +106,37 @@ const RegisterScreen = ({ navigation }) => {
     setIsPPR(value);
   };
 
+  const handleOwnerSelect = (value) => {
+    setOwner(value);
+  };
+
+  const handleSexSelect = (value) => {
+    setSex(value);
+  };
+
+  const handleCitizenshipSelect = (value) => {
+    setCitizenship(value);
+  };
+
   const handleOptionSelect = (option) => {
     setPpr(option.value);
   };
 
-  const updateUser = async () => {
+  const updateUser = async (data) => {
     try {
       // await user.updateProfile({ displayName: name });
       const userData = {
         uid: user.uid,
-        name,
-        email,
-        phoneNumber,
+        name: data.name,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+        sex,
+        citizenship,
+        race,
         dob,
         isPPR,
+        owner,
+        householdNumber,
         ppr: 'PPR Hiliran',
         address,
       };
@@ -132,6 +177,7 @@ const RegisterScreen = ({ navigation }) => {
         'DD MMMM YYYY',
       )
     : '';
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -139,7 +185,7 @@ const RegisterScreen = ({ navigation }) => {
           style={{
             color: style.colors.text.primary,
             padding: 2,
-            paddingTop: 8,
+            paddingVertical: 8,
             fontSize: 22,
             fontWeight: 'bold',
           }}
@@ -147,36 +193,140 @@ const RegisterScreen = ({ navigation }) => {
           Maklumat peribadi
         </Text>
 
-        <TextInput
-          label="Nama"
-          value={name}
-          onChangeText={setName}
-          style={styles.input}
-          mode="outlined"
-          activeOutlineColor={style.colors.accent}
-          outlineColor={style.colors.secondary}
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              label="Nama"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+              onSubmitEditing={() => {
+                emailRef.current.focus();
+              }}
+            />
+          )}
+          name="name"
         />
-        <TextInput
-          label="Email"
-          value={email}
-          onChangeText={setEmail}
-          style={styles.input}
-          keyboardType="email-address"
-          mode="outlined"
-          activeOutlineColor={style.colors.accent}
-          outlineColor={style.colors.secondary}
-          // disabled={email ? true : false}
+        {errors.name && <Text style={styles.error}>* Mesti diisi</Text>}
+
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              ref={emailRef}
+              label="Email"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+              onSubmitEditing={() => {
+                phoneNumberRef.current.focus();
+              }}
+            />
+          )}
+          name="email"
         />
-        <TextInput
-          label="No telefon"
-          value={phoneNumber}
-          style={styles.input}
-          onChangeText={setPhoneNumber}
-          mode="outlined"
-          activeOutlineColor={style.colors.accent}
-          outlineColor={style.colors.secondary}
-          disabled={phoneNumber ? true : false}
+        {errors.email && <Text style={styles.error}>* Mesti diisi</Text>}
+
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              ref={phoneNumberRef}
+              label="No telefon"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              style={styles.input}
+              mode="outlined"
+              activeOutlineColor={style.colors.accent}
+              outlineColor={style.colors.secondary}
+              onSubmitEditing={() => {
+                emailRef.current.focus();
+              }}
+            />
+          )}
+          name="email"
         />
+        {errors.phoneNumber && <Text style={styles.error}>* Mesti diisi</Text>}
+
+        <Text
+          style={{
+            color: style.colors.text.secondary,
+            padding: 2,
+            fontWeight: 'bold',
+            fontSize: 16,
+          }}
+        >
+          Jantina
+        </Text>
+        <RadioButton.Group onValueChange={handleSexSelect} value={sex}>
+          <View style={{ flexDirection: 'row' }}>
+            <RadioButton.Item label="Lelaki" value={'Lelaki'} />
+            <RadioButton.Item label="Perempuan" value={'Perempuan'} />
+          </View>
+        </RadioButton.Group>
+
+        <Text
+          style={{
+            color: style.colors.text.secondary,
+            padding: 2,
+            fontWeight: 'bold',
+            fontSize: 16,
+          }}
+        >
+          Kerakyatan
+        </Text>
+        <RadioButton.Group
+          onValueChange={handleCitizenshipSelect}
+          value={citizenship}
+        >
+          <View style={{ flexDirection: 'row' }}>
+            <RadioButton.Item label="Malaysia" value={'Warganegara'} />
+            <RadioButton.Item label="Lain-lain" value={'Bukan Warganegara'} />
+          </View>
+        </RadioButton.Group>
+
+        {citizenship === 'Warganegara' && (
+          <View>
+            <Text
+              style={{
+                color: style.colors.text.secondary,
+                padding: 2,
+                fontWeight: 'bold',
+                fontSize: 16,
+              }}
+            >
+              Bangsa
+            </Text>
+            <Picker
+              selectedValue={race}
+              onValueChange={(itemValue) => setRace(itemValue)}
+            >
+              <Picker.Item label="Melayu" value="Melayu" />
+              <Picker.Item label="Cina" value="Cina" />
+              <Picker.Item label="India" value="India" />
+              <Picker.Item label="Lain-lain" value="Lain-lain" />
+            </Picker>
+          </View>
+        )}
 
         <Text
           style={{
@@ -218,16 +368,6 @@ const RegisterScreen = ({ navigation }) => {
             minimumDate={new Date(new Date().getFullYear() - 90, 0, 1)}
           />
         </View>
-        {/* <TextInput
-          label="Date of birth"
-          value={dob}
-          style={styles.input}
-          onChangeText={setDob}
-          mode="outlined"
-          activeOutlineColor={style.colors.accent}
-          outlineColor={style.colors.secondary}
-          disabled={true}
-        /> */}
 
         <View>
           <Text
@@ -253,9 +393,44 @@ const RegisterScreen = ({ navigation }) => {
             <View style={{ paddingVertical: 8 }}>
               <Text
                 style={{
+                  color: style.colors.text.secondary,
+                  padding: 2,
+                  fontWeight: 'bold',
+                  fontSize: 16,
+                }}
+              >
+                Adakah anda pemilik atau penyewa PPR?
+              </Text>
+              <RadioButton.Group
+                onValueChange={handleOwnerSelect}
+                value={owner}
+              >
+                <View style={{ flexDirection: 'row' }}>
+                  <RadioButton.Item label="Pemilik" value={true} />
+                  <RadioButton.Item label="Penyewa" value={false} />
+                </View>
+              </RadioButton.Group>
+
+              <TextInput
+                label="Jumlah Isi Rumah"
+                value={householdNumber}
+                onChangeText={(text) => setHouseholdNumber(text)}
+                style={styles.input}
+                mode="outlined"
+                activeOutlineColor={style.colors.accent}
+                outlineColor={style.colors.secondary}
+                keyboardType="numeric"
+                ref={floorNoRef}
+                onSubmitEditing={() => {
+                  unitNoRef.current.focus();
+                }}
+              />
+
+              <Text
+                style={{
                   color: style.colors.text.primary,
                   padding: 4,
-                  fontSize: 15,
+                  fontSize: 18,
                   fontWeight: 'bold',
                 }}
               >
@@ -322,16 +497,6 @@ const RegisterScreen = ({ navigation }) => {
               ref={unitNoRef}
               onSubmitEditing={() => updateUser()}
             />
-
-            {/* <TextInput
-              label="Blok"
-              value={address.blockNo}
-              onChangeText={(text) => setAddress({ ...address, blockNo: text })}
-              style={styles.input}
-              mode="outlined"
-              activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
-            /> */}
           </View>
         ) : (
           <View>
@@ -418,7 +583,10 @@ const RegisterScreen = ({ navigation }) => {
           </View>
         )}
       </ScrollView>
-      <TouchableOpacity onPress={updateUser} style={styles.button}>
+      <TouchableOpacity
+        onPress={handleSubmit(updateUser)}
+        style={styles.button}
+      >
         <Text style={styles.buttonText}>Simpan Profil</Text>
       </TouchableOpacity>
     </View>
@@ -443,6 +611,10 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 16,
     outlineStyle: '#FFC0CB',
+  },
+  error: {
+    color: 'red',
+    marginBottom: 16,
   },
   button: {
     backgroundColor: style.colors.tertiary,
