@@ -256,6 +256,7 @@ const RegisterScreen = ({ navigation }) => {
               onBlur={onBlur}
               style={styles.input}
               mode="outlined"
+              keyboardType="numeric"
               activeOutlineColor={style.colors.accent}
               outlineColor={style.colors.secondary}
               onSubmitEditing={() => {
@@ -263,7 +264,7 @@ const RegisterScreen = ({ navigation }) => {
               }}
             />
           )}
-          name="email"
+          name="phoneNumber"
         />
         {errors.phoneNumber && <Text style={styles.error}>* Mesti diisi</Text>}
 

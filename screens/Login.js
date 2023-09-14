@@ -220,7 +220,7 @@ const LoginScreen = ({ navigation }) => {
                 color: style.colors.text.gray,
               }}
             >
-              Digital. Kitar Semula
+              Digital Kitar Semula
             </Text>
           </View>
         </View>
