@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   // },
 
   colors: {
-    primary: '#E0ECFF',
+    primary: '#F0F6FF',
     primaryDark: '#B3CFFF',
     secondary: '#FEFEFE',
     tertiary: '#001F51',

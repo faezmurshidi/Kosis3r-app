@@ -106,7 +106,7 @@ const MainTabs = () => {
     <Tab.Navigator
       screenOptions={{
         tabBarShowLabel: true,
-        tabBarActiveTintColor: styles.colors.accent,
+        tabBarActiveTintColor: styles.colors.tertiary,
         tabBarInactiveTintColor: styles.colors.gray,
         tabBarStyle: {
           backgroundColor: styles.colors.primary,
