@@ -23,11 +23,11 @@ const styles = StyleSheet.create({
   // },
 
   colors: {
-    primary: '#F0F6FF',
+    primary: '#F7F8FD',
     primaryDark: '#B3CFFF',
     secondary: '#FEFEFE',
     tertiary: '#001F51',
-    tertiaryDark: '',
+    tertiaryDark: '#041c44',
 
     gray: '#CDCDCD',
     paper: {
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
       offwhite: '#F8F8F8',
     },
     text: {
-      primary: '#333333',
+      primary: '#0C1227',
       secondary: '#5C5C5C',
       light: '#FFFFFF',
       gray: '#CDCDCD',

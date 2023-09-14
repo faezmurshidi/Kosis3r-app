@@ -57,7 +57,7 @@ const TransactionsScreen = ({ route, navigation }) => {
   const bottomSheetModalRef = useRef(null);
 
   // variables
-  const snapPoints = useMemo(() => ['65%', '70%'], []);
+  const snapPoints = useMemo(() => ['60%', '70%'], []);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
