@@ -57,7 +57,7 @@ const TransactionsScreen = ({ route, navigation }) => {
   const bottomSheetModalRef = useRef(null);
 
   // variables
-  const snapPoints = useMemo(() => ['60%', '70%'], []);
+  const snapPoints = useMemo(() => ['65%', '70%'], []);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -306,13 +306,22 @@ const TransactionsScreen = ({ route, navigation }) => {
                 />
               </View>
               <View style={{ padding: 2 }}>
-                <Text variant="labelLarge">Anda kini berada di</Text>
-                <Text variant="titleMedium">{nearestCenter.fasiliti}</Text>
-                <Text>{nearestCenter.alamat}</Text>
+                <Text variant="labelLarge" style={{ color: 'black' }}>
+                  Anda kini berada di
+                </Text>
+                <Text
+                  variant="titleMedium"
+                  style={{ color: style.colors.accent }}
+                >
+                  {nearestCenter.fasiliti}
+                </Text>
+                <Text style={{ color: style.colors.tertiaryDark }}>
+                  {nearestCenter.alamat}
+                </Text>
               </View>
             </View>
           )}
-          <Text variant="labelLarge" style={{ marginBottom: 4 }}>
+          <Text variant="labelLarge" style={{ marginBottom: 4, color: 'grey' }}>
             Jenis Barang Kitar Semula
           </Text>
           {categoryRate && (
@@ -330,7 +339,7 @@ const TransactionsScreen = ({ route, navigation }) => {
                 })}
             </Picker>
           )}
-          <Text variant="labelLarge" style={{ marginBottom: 2 }}>
+          <Text variant="labelLarge" style={{ marginBottom: 2, color: 'grey' }}>
             Berat (KG)
           </Text>
 
@@ -339,6 +348,7 @@ const TransactionsScreen = ({ route, navigation }) => {
             value={weight}
             onChangeText={(value) => setWeight(value)}
             style={styles.input}
+            textColor={style.colors.text.primary}
             keyboardType="numeric"
             mode="outlined"
             activeOutlineColor={style.colors.accent}
@@ -398,10 +408,16 @@ const TransactionsScreen = ({ route, navigation }) => {
 
         <View style={styles.footer}>
           <View style={styles.totalSale}>
-            <Text style={{ fontWeight: 'bold', fontSize: 17 }}>
+            <Text style={{ fontWeight: 'bold', fontSize: 17, color: 'black' }}>
               Jumlah Jualan
             </Text>
-            <Text style={{ fontWeight: 'bold', fontSize: 30 }}>
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 30,
+                color: style.colors.primary,
+              }}
+            >
               RM {totalSale}
             </Text>
           </View>
@@ -571,6 +587,7 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: style.colors.background.light.lightGray,
+    color: 'black',
     width: '80%',
     height: 50,
     borderRadius: 8,
@@ -617,7 +634,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footer: {
-    backgroundColor: style.colors.gray,
+    backgroundColor: style.colors.darkGray,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 14,

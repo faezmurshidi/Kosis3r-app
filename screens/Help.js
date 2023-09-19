@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import style from '../styles';
-
+import DeviceInfo from 'react-native-device-info';
 import { Linking } from 'react-native';
 
 const HelpScreen = () => {
@@ -15,6 +15,11 @@ const HelpScreen = () => {
   const handleCallPress = () => {
     const url = `tel:${helpNumber}`;
     Linking.openURL(url);
+  };
+
+  const appVersion = () => {
+    //insert function to get app version
+    return DeviceInfo.getVersion() ? `v${DeviceInfo.getVersion()}` : '';
   };
 
   return (
@@ -33,6 +38,10 @@ const HelpScreen = () => {
           Hubungi Kami
         </Text>
       </TouchableOpacity>
+
+      <Text style={{ marginTop: 24, fontSize: 10, alignSelf: 'center' }}>
+        {appVersion()}
+      </Text>
     </View>
   );
 };

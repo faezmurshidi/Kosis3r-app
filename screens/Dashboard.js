@@ -267,7 +267,9 @@ const Dashboard = ({ navigation }) => {
               style={{ alignItems: 'center', paddingHorizontal: 6, margin: 2 }}
               onPress={goToAccount}
             >
-              <Text variant="labelLarge">BAKI TERKUMPUL</Text>
+              <Text variant="labelLarge" style={{ color: 'black' }}>
+                BAKI TERKUMPUL
+              </Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -280,6 +282,7 @@ const Dashboard = ({ navigation }) => {
                   style={{
                     fontWeight: 'bold',
                     fontSize: 25,
+                    color: 'black',
                   }}
                 >
                   RM {user?.wallet?.toFixed(2) || 0}
@@ -315,6 +318,7 @@ const Dashboard = ({ navigation }) => {
                   alignItems: 'center',
                   fontWeight: 'bold',
                   paddingLeft: 2,
+                  color: 'black',
                 }}
               >
                 {i18n.t('Dashboard.greeting')}

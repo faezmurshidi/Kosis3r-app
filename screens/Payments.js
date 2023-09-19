@@ -208,6 +208,7 @@ const PaymentScreen = ({ navigation }) => {
 
   const renderItem = ({ item, index }) => {
     const date = moment(item.timestamp).format('D MMMM YYYY hh:mm a');
+    console.log('item', item);
     const cat =
       (category && category.find((x) => x.id === item.items.category)) || null;
 
@@ -221,13 +222,18 @@ const PaymentScreen = ({ navigation }) => {
             >
               #{item.id}
             </Text>
-            <Text variant="titleMedium">
-              {cat && cat.label} {item.items.weight}Kg
+            <Text
+              variant="titleMedium"
+              style={{ color: style.colors.darkGray, fontWeight: 'bold' }}
+            >
+              {item.items.weight}Kg {item.items?.category}
             </Text>
             {/* <Text variant="titleSmall">
               Kadar harga: RM{item.items.rate}/Kg
             </Text> */}
-            <Text variant="titleSmall">{item.center.fasiliti}</Text>
+            <Text variant="titleSmall" style={{ color: style.colors.tertiary }}>
+              {item.center.fasiliti}
+            </Text>
             <Text
               variant="labelSmall"
               style={{ color: style.colors.lightGray }}
@@ -241,6 +247,7 @@ const PaymentScreen = ({ navigation }) => {
                 color: style.colors.tertiary,
                 fontSize: 16,
                 marginTop: 5,
+                fontWeight: 'bold',
               }}
             >
               RM{item.items.price}
@@ -490,7 +497,13 @@ const PaymentScreen = ({ navigation }) => {
           <View style={{ paddingLeft: 10, flexDirection: 'row' }}>
             <View style={{ paddingRight: 10 }}>
               <Text style={styles.balanceText}>Baki Terkumpul</Text>
-              <Text style={{ fontSize: 31, fontWeight: '900' }}>
+              <Text
+                style={{
+                  fontSize: 31,
+                  fontWeight: '900',
+                  color: style.colors.accent,
+                }}
+              >
                 RM{user?.wallet?.toFixed(2) || '0.00'}
               </Text>
             </View>
@@ -498,7 +511,7 @@ const PaymentScreen = ({ navigation }) => {
             <View
               style={{
                 borderLeftWidth: 1,
-                borderLeftColor: style.colors.background.dark.offBlack,
+                borderLeftColor: style.colors.background.dark.darkGray,
                 height: 50,
                 marginVertical: 10,
                 marginHorizontal: 10,
@@ -698,7 +711,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   transactionInfoContainer: {
-    flex: 1,
+    flex: 3,
   },
   statusContainer: {
     backgroundColor: style.colors.secondary,
@@ -737,7 +750,7 @@ const styles = StyleSheet.create({
         : status === 'rejected'
         ? '#FFE2E2'
         : '#E6FFE6',
-    flex: 1,
+    flex: 2,
   }),
 
   viewAll: {

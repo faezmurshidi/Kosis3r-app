@@ -28,8 +28,9 @@ const styles = StyleSheet.create({
     secondary: '#FEFEFE',
     tertiary: '#001F51',
     tertiaryDark: '#041c44',
-
-    gray: '#CDCDCD',
+    gray: '#F6F6F6',
+    lightGray: '#CDCDCD',
+    darkGray: '#424242',
     paper: {
       ivory: '#FAF0E6',
       antiqueWhite: '#FAEBD7',

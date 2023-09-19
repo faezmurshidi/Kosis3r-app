@@ -206,8 +206,9 @@ const RegisterScreen = ({ navigation }) => {
               onBlur={onBlur}
               style={styles.input}
               mode="outlined"
+              textColor="black"
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.darkGray}
               onSubmitEditing={() => {
                 emailRef.current.focus();
               }}
@@ -231,8 +232,9 @@ const RegisterScreen = ({ navigation }) => {
               onBlur={onBlur}
               style={styles.input}
               mode="outlined"
+              textColor="black"
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.darkGray}
               onSubmitEditing={() => {
                 phoneNumberRef.current.focus();
               }}
@@ -257,8 +259,9 @@ const RegisterScreen = ({ navigation }) => {
               style={styles.input}
               mode="outlined"
               keyboardType="numeric"
+              textColor="black"
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.darkGray}
               onSubmitEditing={() => {
                 emailRef.current.focus();
               }}
@@ -418,8 +421,9 @@ const RegisterScreen = ({ navigation }) => {
                 onChangeText={(text) => setHouseholdNumber(text)}
                 style={styles.input}
                 mode="outlined"
+                textColor="black"
                 activeOutlineColor={style.colors.accent}
-                outlineColor={style.colors.secondary}
+                outlineColor={style.colors.darkGray}
                 keyboardType="numeric"
                 ref={floorNoRef}
                 onSubmitEditing={() => {
@@ -477,8 +481,9 @@ const RegisterScreen = ({ navigation }) => {
               onChangeText={(text) => setAddress({ ...address, floorNo: text })}
               style={styles.input}
               mode="outlined"
+              textColor="black"
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.darkGray}
               keyboardType="numeric"
               ref={floorNoRef}
               onSubmitEditing={() => {
@@ -492,8 +497,9 @@ const RegisterScreen = ({ navigation }) => {
               onChangeText={(text) => setAddress({ ...address, unitNo: text })}
               style={styles.input}
               mode="outlined"
+              textColor="black"
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.darkGray}
               keyboardType="numeric"
               ref={unitNoRef}
               onSubmitEditing={() => updateUser()}
@@ -507,8 +513,9 @@ const RegisterScreen = ({ navigation }) => {
               onChangeText={(text) => setAddress({ ...address, line1: text })}
               style={styles.input}
               mode="outlined"
+              textColor="black"
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.darkGray}
               onSubmitEditing={() => {
                 line2Ref.current.focus();
               }}
@@ -520,8 +527,9 @@ const RegisterScreen = ({ navigation }) => {
               onChangeText={(text) => setAddress({ ...address, line2: text })}
               style={styles.input}
               mode="outlined"
+              textColor="black"
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.darkGray}
               onSubmitEditing={() => {
                 postcodeRef.current.focus();
               }}
@@ -535,8 +543,9 @@ const RegisterScreen = ({ navigation }) => {
               }
               style={styles.input}
               mode="outlined"
+              textColor="black"
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.darkGray}
               keyboardType="numeric"
               onSubmitEditing={() => {
                 cityRef.current.focus();
@@ -549,8 +558,9 @@ const RegisterScreen = ({ navigation }) => {
               onChangeText={(text) => setAddress({ ...address, city: text })}
               style={styles.input}
               mode="outlined"
+              textColor="black"
               activeOutlineColor={style.colors.accent}
-              outlineColor={style.colors.secondary}
+              outlineColor={style.colors.darkGray}
             />
             <Picker
               selectedValue={address.state}
@@ -598,6 +608,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
+    backgroundColor: style.colors.background.light.offwhite,
   },
   scrollView: {
     flexGrow: 1,
@@ -610,8 +621,10 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   input: {
-    marginBottom: 16,
-    outlineStyle: '#FFC0CB',
+    backgroundColor: style.colors.background.light.offwhite,
+    height: 50,
+    borderRadius: 8,
+    marginBottom: 20,
   },
   error: {
     color: 'red',

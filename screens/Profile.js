@@ -58,12 +58,12 @@ const ProfileScreen = ({ navigation }) => {
     : '';
 
   const address = user?.isPPR
-    ? user?.address?.unitNo +
-      ', ' +
+    ? user?.address?.blockNo +
+      '-' +
       user?.address?.floorNo +
-      ', ' +
-      user?.address?.blockNo +
-      ', ' +
+      '-' +
+      user?.address?.unitNo +
+      ' ' +
       user?.ppr
     : user?.address?.line1 +
       ', ' +

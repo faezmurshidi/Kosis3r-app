@@ -107,7 +107,7 @@ const MainTabs = () => {
       screenOptions={{
         tabBarShowLabel: true,
         tabBarActiveTintColor: styles.colors.tertiary,
-        tabBarInactiveTintColor: styles.colors.gray,
+        tabBarInactiveTintColor: styles.colors.lightGray,
         tabBarStyle: {
           backgroundColor: styles.colors.primary,
           paddingHorizontal: 16,

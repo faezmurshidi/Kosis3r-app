@@ -37,10 +37,13 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 const theme = {
   ...DefaultTheme,
   roundness: 2,
+  mode: 'exact',
+  dark: true,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#3498db',
-    accent: '#f1c40f',
+    primary: style.colors.tertiary,
+    secondary: style.colors.primaryDark,
+    accent: style.colors.accent,
   },
 };
 
