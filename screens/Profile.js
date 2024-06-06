@@ -99,11 +99,11 @@ const ProfileScreen = ({ navigation }) => {
           icon: 'edit',
           onPress: () => navigation.navigate('EditProfile'),
         },
-        // {
-        //   title: 'Bank Account Details',
-        //   icon: 'bank',
-        //   onPress: () => navigation.navigate('EditProfile'),
-        // },
+        {
+          title: 'Maklumat Perbankan',
+          icon: 'bank',
+          onPress: () => navigation.navigate('BankDetails'),
+        },
       ],
     },
   ];

@@ -56,7 +56,7 @@ const PaymentScreen = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
   const [visible, setVisible] = useState(false);
   const [withdrawMethod, setWithdrawMethod] = useState('ewallet');
-  const [withdrawAmount, setWithdrawAmount] = useState(0);
+  const [withdrawAmount, setWithdrawAmount] = useState('00.00');
   const [txHistory, setTxHistory] = useState([]);
   const [withdrawalHistory, setWithdrawalHistory] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -70,6 +70,32 @@ const PaymentScreen = ({ navigation }) => {
   // variables
   const snapPoints = useMemo(() => ['50%'], []);
   const snapPointsVoucher = useMemo(() => ['50%', '50%'], []);
+
+  const handleChange = (text) => {
+    // Remove any non-digit characters
+    const cleaned = text.replace(/[^0-9]/g, '');
+    
+    // If cleaned is empty or only contains zeros, reset to '00.00'
+    if (cleaned.length === 0 || /^0+$/.test(cleaned)) {
+      setWithdrawAmount('00.00');
+      return;
+    }
+
+    // Ensure we have at least 3 characters to avoid errors when slicing
+    const padded = cleaned.padStart(3, '0');
+
+    // Extract the decimal part
+    const decimalPart = padded.slice(-2);
+
+    // Extract the integer part and remove leading zeros
+    const integerPart = padded.slice(0, -2).replace(/^0+/, '') || '0';
+
+    // Combine the integer and decimal parts
+    const formatted = `${integerPart}.${decimalPart}`;
+
+    // Update the state
+    setWithdrawAmount(formatted);
+  };
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -161,6 +187,12 @@ const PaymentScreen = ({ navigation }) => {
 
   const requestWithdrawal = async () => {
     console.log('requestWithdrawal');
+
+    if(user?.bankDetails === undefined) {
+      navigation.navigate('BankDetails');
+      return;
+    }
+
     const timestamp = Date.now();
     const randomNum = Math.floor(Math.random() * 1000); // This will generate a random number between 0 and 999
 
@@ -174,7 +206,7 @@ const PaymentScreen = ({ navigation }) => {
     }
 
     const withdrawal = {
-      amount: withdrawAmount,
+      amount: parseFloat(withdrawAmount),
       method: withdrawMethod,
       timestamp,
       user,
@@ -594,7 +626,7 @@ const PaymentScreen = ({ navigation }) => {
               label="Jumlah Pengeluaran"
               keyboardType="numeric"
               value={withdrawAmount}
-              onChangeText={setWithdrawAmount}
+              onChangeText={handleChange}
               mode="outlined"
               style={{ marginBottom: 10 }}
               activeOutlineColor={style.colors.accent}
@@ -621,8 +653,8 @@ const PaymentScreen = ({ navigation }) => {
                 style={{ margin: 5 }}
               />
               <Text style={{ color: style.colors.accent }}>
-                Permohonan akan diproses dalam masa 24 jam. Anda akan menerima
-                notifikasi apabila permohonan telah diproses.
+              Permintaan pengeluaran telah dihantar. Sila tunggu pengesahan.{'\n\n'}
+  Peringatan: Tempoh pengkreditan bayaran adalah dalam 7 hari bekerja dari tarikh permohonan diluluskan.
               </Text>
             </View>
           </View>
@@ -640,8 +672,9 @@ const PaymentScreen = ({ navigation }) => {
             }}
           >
             <Text style={{ fontSize: 15, margin: 12 }}>
-              Permintaan pengeluaran telah dihantar{' '}
-            </Text>
+  Permintaan pengeluaran telah dihantar. Sila tunggu pengesahan.{'\n\n'}
+  Peringatan: Tempoh pengkreditan bayaran adalah dalam 7 hari bekerja dari tarikh permohonan diluluskan.
+</Text>
             <CustomButton
               title="Okay"
               onPress={() => {

@@ -25,6 +25,12 @@ const NearestCentre = ({ onPress }) => {
     jenis_fasiliti: 'Pusat Komuniti Sifar Sisa (KOSIS)',
     latitud: 5.31174,
     longitud: 103.12595,
+    openingHours: [
+      {
+        open: '08:00',
+        close: '17:00',
+      }
+    ],
   };
 
   const openNavigationApp = () => {
@@ -41,6 +47,33 @@ const NearestCentre = ({ onPress }) => {
   };
 
   const mapViewRef = useRef(null);
+
+  const isStoreOpen = (openingHours) => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+  
+    // Assuming openingHours has only one opening period for simplicity
+    const { open, close } = openingHours[0];
+  
+    // Parse opening and closing times
+    const [openHour, openMinute] = open.split(':').map(Number);
+    const [closeHour, closeMinute] = close.split(':').map(Number);
+  
+    // Convert times to minutes since midnight for easier comparison
+    const currentTimeInMinutes = currentHour * 60 + currentMinute;
+    const openTimeInMinutes = openHour * 60 + openMinute;
+    const closeTimeInMinutes = closeHour * 60 + closeMinute;
+  
+    // Check if current time is within the opening hours
+    if (currentTimeInMinutes >= openTimeInMinutes && currentTimeInMinutes < closeTimeInMinutes) {
+      return true; // Store is open
+    } else {
+      return false; // Store is closed
+    }
+  }
+
+  const centerOpen = isStoreOpen(nearestCenter.openingHours) ? 'Jual' : 'Pusat KOSIS Tutup';
 
   return (
     <View style={styles.container}>
@@ -109,8 +142,9 @@ const NearestCentre = ({ onPress }) => {
       </View>
       <CustomButton
         onPress={() => onPress(nearestCenter)}
-        title="Jual"
+        title={centerOpen}
         icon={'money-bill-wave'}
+        disabled={isStoreOpen(nearestCenter.openingHours) ? false : true}
       />
     </View>
   );

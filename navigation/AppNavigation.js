@@ -10,6 +10,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext } from '../context/AuthContext';
 import LoginScreen from '../screens/Login';
 import EditProfile from '../screens/Register';
+import BankDetails from '../screens/BankingDetails';
 import ForgotPassword from '../screens/ForgotPassword';
 import ProfileScreen from '../screens/Profile';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -57,6 +58,7 @@ const ProfileStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="EditProfile" component={EditProfile} />
+      <Stack.Screen name="BankDetails" component={BankDetails} />
     </Stack.Navigator>
   );
 };
