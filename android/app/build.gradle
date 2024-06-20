@@ -100,8 +100,8 @@ android {
         applicationId "com.kosis3r"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 19
-        versionName "1.1.5"
+        versionCode 22
+        versionName "1.2.0"
     }
 
     splits {

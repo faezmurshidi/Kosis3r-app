@@ -282,7 +282,7 @@ const PaymentScreen = ({ navigation }) => {
                 fontWeight: 'bold',
               }}
             >
-              RM{item.items.price}
+              RM{Number(item.items.price).toFixed(2)}
             </Text>
             <View style={styles.transactionStatusBackground(item.status)}>
               <Text style={styles.transactionStatusTitle(item.status)}>
@@ -384,7 +384,7 @@ const PaymentScreen = ({ navigation }) => {
         acc[month] = { month, weight: 0, price: 0 };
       }
       acc[month].weight += item.items.weight;
-      acc[month].price += Number(item.items.price);
+      acc[month].price += Number(item.items.price).toFixed(2);
       return acc;
     }, {});
     const chartData = Object.values(groupedData);
@@ -575,7 +575,7 @@ const PaymentScreen = ({ navigation }) => {
               title={i18n.t('Payments.title')}
               onPress={handlePresentModalPress}
               color={style.colors.primary}
-              style={{ width: 150, height: 40 }}
+              style={{ width: 150 }}
               disabled={user?.wallet <= 0 || user?.wallet === undefined}
             />
             <CustomButton
@@ -583,7 +583,7 @@ const PaymentScreen = ({ navigation }) => {
               title={'Baucar'}
               onPress={() => navigation.navigate('Voucher', { user })}
               color={style.colors.primary}
-              style={{ width: 150, height: 40, marginLeft: 10 }}
+              style={{ width: 150,  marginLeft: 10 }}
               // disabled={user?.wallet <= 0 || user?.wallet === undefined}
             />
           </View>
@@ -620,7 +620,7 @@ const PaymentScreen = ({ navigation }) => {
               Pengeluaran ke akaun bank
             </Text>
             <Text style={{ marginBottom: 10, fontSize: 15 }}>
-              Pengeluaran maksimum: RM{user?.wallet}
+              Pengeluaran maksimum: RM{user?.wallet?.toFixed(2) || '0.00'}
             </Text>
             <TextInput
               label="Jumlah Pengeluaran"
@@ -802,6 +802,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     width: '100%',
+    marginVertical: 10,
   },
 });
 
